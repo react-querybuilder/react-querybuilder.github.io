@@ -17,7 +17,7 @@
 
 
 <script src="/js/console.js"></script><link rel="stylesheet" href="/assets/css/styles.4720254c.css">
-<script src="/assets/js/runtime~main.57dd6bb2.js" defer="defer"></script>
+<script src="/assets/js/runtime~main.c6341ad5.js" defer="defer"></script>
 <script src="/assets/js/main.ecf444a1.js" defer="defer"></script>
 </head>
 <body class="navigation-with-keyboard">
@@ -41,8 +41,8 @@
 <h3 class="anchor anchorWithStickyNavbar_JmGV" id="rulegroupbodycomponents"><code>RuleGroupBodyComponents</code><a href="#rulegroupbodycomponents" class="hash-link" aria-label="Direct link to rulegroupbodycomponents" title="Direct link to rulegroupbodycomponents">​</a></h3>
 <p>This component loops through a group&#x27;s <code>rules</code> array and renders a child <code>RuleGroup</code> element for each group and a <a href="/docs/next/components/rule"><code>Rule</code></a> element for each rule.</p>
 <p>If <a href="/docs/next/components/querybuilder#showcombinatorsbetweenrules"><code>showCombinatorsBetweenRules</code></a> is <code>true</code>, an inline combinator<sup><a href="#user-content-fn-8" id="user-content-fnref-8" data-footnote-ref="true" aria-describedby="footnote-label">8</a></sup> (whose <code>value</code> is the group&#x27;s <code>combinator</code>) is rendered ahead of each rule or group except the first.</p>
-<p>When <a href="/docs/next/components/querybuilder#independentcombinators"><code>independentCombinators</code></a> is <code>true</code>, each odd-numbered index in the <code>rules</code> array is a <code>string</code> representing a combinator value. For those elements, an independent, inline combinator is rendered.</p>
-<div class="theme-admonition theme-admonition-note admonition_WCGJ alert alert--secondary"><div class="admonitionHeading_GCBg"><span class="admonitionIcon_L39b"><svg viewBox="0 0 14 16"><path fill-rule="evenodd" d="M6.3 5.69a.942.942 0 0 1-.28-.7c0-.28.09-.52.28-.7.19-.18.42-.28.7-.28.28 0 .52.09.7.28.18.19.28.42.28.7 0 .28-.09.52-.28.7a1 1 0 0 1-.7.3c-.28 0-.52-.11-.7-.3zM8 7.99c-.02-.25-.11-.48-.31-.69-.2-.19-.42-.3-.69-.31H6c-.27.02-.48.13-.69.31-.2.2-.3.44-.31.69h1v3c.02.27.11.5.31.69.2.2.42.31.69.31h1c.27 0 .48-.11.69-.31.2-.19.3-.42.31-.69H8V7.98v.01zM7 2.3c-3.14 0-5.7 2.54-5.7 5.68 0 3.14 2.56 5.7 5.7 5.7s5.7-2.55 5.7-5.7c0-3.15-2.56-5.69-5.7-5.69v.01zM7 .98c3.86 0 7 3.14 7 7s-3.14 7-7 7-7-3.12-7-7 3.14-7 7-7z"></path></svg></span>note</div><div class="admonitionContent_pbrs"><p>The <code>independentCombinators</code> prop supersedes <code>showCombinatorsBetweenRules</code>.</p></div></div>
+<p>When the query is using <a href="/docs/next/components/querybuilder#independent-combinators">independent combinators</a>, each odd-numbered index in the <code>rules</code> array is a <code>string</code> representing a combinator value. For those elements, an independent, inline combinator is rendered.</p>
+<div class="theme-admonition theme-admonition-note admonition_WCGJ alert alert--secondary"><div class="admonitionHeading_GCBg"><span class="admonitionIcon_L39b"><svg viewBox="0 0 14 16"><path fill-rule="evenodd" d="M6.3 5.69a.942.942 0 0 1-.28-.7c0-.28.09-.52.28-.7.19-.18.42-.28.7-.28.28 0 .52.09.7.28.18.19.28.42.28.7 0 .28-.09.52-.28.7a1 1 0 0 1-.7.3c-.28 0-.52-.11-.7-.3zM8 7.99c-.02-.25-.11-.48-.31-.69-.2-.19-.42-.3-.69-.31H6c-.27.02-.48.13-.69.31-.2.2-.3.44-.31.69h1v3c.02.27.11.5.31.69.2.2.42.31.69.31h1c.27 0 .48-.11.69-.31.2-.19.3-.42.31-.69H8V7.98v.01zM7 2.3c-3.14 0-5.7 2.54-5.7 5.68 0 3.14 2.56 5.7 5.7 5.7s5.7-2.55 5.7-5.7c0-3.15-2.56-5.69-5.7-5.69v.01zM7 .98c3.86 0 7 3.14 7 7s-3.14 7-7 7-7-3.12-7-7 3.14-7 7-7z"></path></svg></span>note</div><div class="admonitionContent_pbrs"><p>The <code>showCombinatorsBetweenRules</code> prop is ignored if the query is using independent combinators.</p></div></div>
 <section data-footnotes="true" class="footnotes"><h2 class="anchor anchorWithStickyNavbar_JmGV sr-only" id="footnote-label">Footnotes<a href="#footnote-label" class="hash-link" aria-label="Direct link to Footnotes" title="Direct link to Footnotes">​</a></h2>
 <ol>
 <li id="user-content-fn-1">
@@ -52,7 +52,7 @@
 <p>Only rendered if <a href="/docs/next/components/querybuilder#enabledraganddrop"><code>enableDragAndDrop</code></a> is <code>true</code>. <a href="#user-content-fnref-2" data-footnote-backref="" aria-label="Back to reference 2" class="data-footnote-backref">↩</a></p>
 </li>
 <li id="user-content-fn-3">
-<p>Only rendered if neither <a href="/docs/next/components/querybuilder#showcombinatorsbetweenrules"><code>showCombinatorsBetweenRules</code></a> nor <a href="/docs/next/components/querybuilder#independentcombinators"><code>independentCombinators</code></a> are <code>true</code>. <a href="#user-content-fnref-3" data-footnote-backref="" aria-label="Back to reference 3" class="data-footnote-backref">↩</a></p>
+<p>Only rendered if <a href="/docs/next/components/querybuilder#showcombinatorsbetweenrules"><code>showCombinatorsBetweenRules</code></a> is disabled and the query is not using <a href="/docs/next/components/querybuilder#independent-combinators">independent combinators</a>. <a href="#user-content-fnref-3" data-footnote-backref="" aria-label="Back to reference 3" class="data-footnote-backref">↩</a></p>
 </li>
 <li id="user-content-fn-4">
 <p>Only rendered if <a href="/docs/next/components/querybuilder#shownottoggle"><code>showNotToggle</code></a> is <code>true</code>. <a href="#user-content-fnref-4" data-footnote-backref="" aria-label="Back to reference 4" class="data-footnote-backref">↩</a></p>
