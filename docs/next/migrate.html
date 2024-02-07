@@ -18,7 +18,7 @@
 
 
 <script src="/js/console.js"></script><link rel="stylesheet" href="/assets/css/styles.a8a29550.css">
-<script src="/assets/js/runtime~main.7242375c.js" defer="defer"></script>
+<script src="/assets/js/runtime~main.d252650c.js" defer="defer"></script>
 <script src="/assets/js/main.1072fdc5.js" defer="defer"></script>
 </head>
 <body class="navigation-with-keyboard">
@@ -51,7 +51,7 @@
 <h3 class="anchor anchorWithStickyNavbar_JmGV" id="miscellaneous">Miscellaneous<a href="#miscellaneous" class="hash-link" aria-label="Direct link to Miscellaneous" title="Direct link to Miscellaneous">​</a></h3>
 <ul>
 <li><code>@react-querybuilder/mantine</code> now requires Mantine v7+.</li>
-<li><code>parseMongoDB</code> now generates more concise queries when it encounters <code>$not</code> operators that specify a single, boolean condition. Whereas previously that would yield a group with <code>not: true</code>, now it generates a rule with a negated operator (<code>&quot;=&quot;</code> becomes <code>&quot;!=&quot;</code>, <code>&quot;contains&quot;</code> becomes <code>&quot;doesNotContain&quot;</code>, etc.).</li>
+<li><code>parseMongoDB</code> now generates more concise queries when it encounters <code>$not</code> operators that specify a single, boolean condition. Whereas previously that would yield a group with <code>not: true</code>, now it generates a rule with a negated operator (<code>&quot;=&quot;</code> becomes <code>&quot;!=&quot;</code>, <code>&quot;contains&quot;</code> becomes <code>&quot;doesNotContain&quot;</code>, etc.). To prevent this behavior, set the <code>preventOperatorNegation</code> option to <code>true</code>.</li>
 <li>Paths are now declared with a new type alias <code>Path</code> instead of <code>number[]</code>. The actual type is the same: <code>type Path = number[]</code>.</li>
 <li>The <code>RuleGroupTypeIC</code> type now includes <code>combinator?: undefined</code> to ensure that query objects intended for use in query builders where <code>independentCombinators</code> is enabled do not contain <code>combinator</code> properties.</li>
 <li>The <code>useQueryBuilder</code> hook has been split into <code>useQueryBuilderSetup</code> and <code>useQueryBuilderSchema</code>. <code>useQueryBuilderSchema</code> must be called from a child component of one that calls <code>useQueryBuilderSetup</code> (<code>QueryBuilder</code> takes care of that internally). For example usage, see the <a href="https://github.com/react-querybuilder/react-querybuilder/blob/main/packages/react-querybuilder/src/components/QueryBuilder.tsx" target="_blank" rel="noopener noreferrer"><code>QueryBuilder</code> source code</a>.</li>
