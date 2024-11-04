@@ -1,1 +1,9 @@
-import ExecutionEnvironment from"@docusaurus/ExecutionEnvironment";if(ExecutionEnvironment.canUseDOM){(async()=>{const{formatQuery:r}=await import("react-querybuilder/formatQuery");globalThis.formatQuery=r;const{parseCEL:a}=await import("react-querybuilder/parseCEL");globalThis.parseCEL=a;const{parseJSONata:e}=await import("react-querybuilder/parseJSONata");globalThis.parseJSONata=e;const{parseJsonLogic:o}=await import("react-querybuilder/parseJsonLogic");globalThis.parseJsonLogic=o;const{parseMongoDB:s}=await import("react-querybuilder/parseMongoDB");globalThis.parseMongoDB=s;const{parseSpEL:t}=await import("react-querybuilder/parseSpEL");globalThis.parseSpEL=t;const{parseSQL:i}=await import("react-querybuilder/parseSQL");globalThis.parseSQL=i;const{transformQuery:n}=await import("react-querybuilder/transformQuery");globalThis.transformQuery=n,console.log("RQB utilities available in the console:\n \u2022 formatQuery\n \u2022 parseCEL\n \u2022 parseJSONata\n \u2022 parseJsonLogic\n \u2022 parseMongoDB\n \u2022 parseSpEL\n \u2022 parseSQL\n \u2022 transformQuery")})()}
+import r from"@docusaurus/ExecutionEnvironment";r.canUseDOM&&(async()=>{let{formatQuery:r}=await import("react-querybuilder/formatQuery");globalThis.formatQuery=r;let{parseCEL:a}=await import("react-querybuilder/parseCEL");globalThis.parseCEL=a;let{parseJSONata:e}=await import("react-querybuilder/parseJSONata");globalThis.parseJSONata=e;let{parseJsonLogic:t}=await import("react-querybuilder/parseJsonLogic");globalThis.parseJsonLogic=t;let{parseMongoDB:o}=await import("react-querybuilder/parseMongoDB");globalThis.parseMongoDB=o;let{parseSpEL:i}=await import("react-querybuilder/parseSpEL");globalThis.parseSpEL=i;let{parseSQL:s}=await import("react-querybuilder/parseSQL");globalThis.parseSQL=s;let{transformQuery:l}=await import("react-querybuilder/transformQuery");globalThis.transformQuery=l,console.log(`RQB utilities available in the console:
+ \u{2022} formatQuery
+ \u{2022} parseCEL
+ \u{2022} parseJSONata
+ \u{2022} parseJsonLogic
+ \u{2022} parseMongoDB
+ \u{2022} parseSpEL
+ \u{2022} parseSQL
+ \u{2022} transformQuery`)})();
