@@ -1,8 +1,77 @@
-const $="color: #82a7dd",c="color: #3c649f",o="text-shadow: none",a="text-shadow: 2px 2px 2px rgba(152, 152, 152, 0.69)",l=`\u00A0`,e=`%c
-\u{2588}\u{2588}\u{2588}\u{2588}\u{2588}\u{2588}%c\u{2557}%c${l}${l}${l}${l}${l}${l}${l}${l}\u{2588}\u{2588}\u{2588}\u{2588}\u{2588}%c\u{2557}%c${l}${l}${l}${l}${l}${l}${l}\u{2588}\u{2588}\u{2588}\u{2588}\u{2588}\u{2588}%c\u{2557}%c
-\u{2588}\u{2588}%c\u{2554}\u{2550}\u{2550}%c\u{2588}\u{2588}%c\u{2557}%c${l}${l}${l}${l}${l}${l}\u{2588}\u{2588}%c\u{2554}\u{2550}\u{2550}%c\u{2588}\u{2588}%c\u{2557}%c${l}${l}${l}${l}${l}${l}\u{2588}\u{2588}%c\u{2554}\u{2550}\u{2550}%c\u{2588}\u{2588}%c\u{2557}%c
-\u{2588}\u{2588}\u{2588}\u{2588}\u{2588}\u{2588}%c\u{2554}\u{255D}%c${l}${l}${l}${l}${l}${l}\u{2588}\u{2588}%c\u{2551}%c${l}${l}\u{2588}\u{2588}%c\u{2551}%c${l}${l}${l}${l}${l}${l}\u{2588}\u{2588}\u{2588}\u{2588}\u{2588}\u{2588}%c\u{2554}\u{255D}%c
-\u{2588}\u{2588}%c\u{2554}\u{2550}%c\u{2588}\u{2588}%c\u{2551}%c${l}${l}${l}${l}${l}${l}${l}\u{2588}\u{2588}%c\u{2551}%c${l}\u{2588}\u{2588}\u{2588}%c\u{2551}%c${l}${l}${l}${l}${l}${l}\u{2588}\u{2588}%c\u{2554}\u{2550}\u{2550}%c\u{2588}\u{2588}%c\u{2557}%c
-\u{2588}\u{2588}%c\u{2551}%c${l}%c\u{255A}%c\u{2588}\u{2588}%c\u{2557}%ceact%c${l}${l}${l}\u{2588}\u{2588}\u{2588}%c\u{2554}%c\u{2588}\u{2588}%c\u{2563}%cuery%c${l}${l}\u{2588}\u{2588}\u{2588}\u{2588}\u{2588}\u{2588}%c\u{2554}\u{255D}%cuilder%c
-\u{255A}\u{2550}\u{255D}${l}${l}\u{255A}\u{2550}\u{255D}${l}${l}${l}${l}${l}${l}${l}\u{255A}\u{2550}\u{2550}\u{2569}\u{2550}\u{2550}\u{255D}${l}${l}${l}${l}${l}${l}\u{255A}\u{2550}\u{2550}\u{2550}\u{2550}\u{2550}\u{255D}
-`,n=[[$,o],[c,o],[$,o],[c,o],[$,o],[c,o],[$,o],[c,o],[$,o],[c,o],[$,o],[c,o],[$,o],[c,o],[$,o],[c,o],[$,o],[c,o],[$,o],[c,o],[$,o],[c,o],[$,o],[c,o],[$,o],[c,o],[$,o],[c,o],[$,o],[c,o],[$,o],[c,o],[$,o],[c,o],[$,o],[c,o],[$,o],[c,o],[$,o],[c,o],[$,o],[c,o],[$,o],[c,o],[$,a],[$,o],[c,o],[$,o],[c,o],[$,a],[$,o],[c,o],[$,a],[c,o]].map($=>["font-family: monospace",...$].join("; "));console.log.apply(globalThis,[e,...n]);
+// Uncomment the line below to expose the `ReactQueryBuilder` object in the console
+// var process = { env: { NODE_ENV: 'development' } };
+
+const commonStyles = 'font-family: monospace';
+const colorPrimary = 'color: #82a7dd';
+const colorSecondary = 'color: #3c649f';
+const textShadowNone = 'text-shadow: none';
+const textShadow = 'text-shadow: 2px 2px 2px rgba(152, 152, 152, 0.69)';
+const s = `\u00A0`; // &nbsp;
+
+const rqb = `%c
+██████%c╗%c${s}${s}${s}${s}${s}${s}${s}${s}█████%c╗%c${s}${s}${s}${s}${s}${s}${s}██████%c╗%c
+██%c╔══%c██%c╗%c${s}${s}${s}${s}${s}${s}██%c╔══%c██%c╗%c${s}${s}${s}${s}${s}${s}██%c╔══%c██%c╗%c
+██████%c╔╝%c${s}${s}${s}${s}${s}${s}██%c║%c${s}${s}██%c║%c${s}${s}${s}${s}${s}${s}██████%c╔╝%c
+██%c╔═%c██%c║%c${s}${s}${s}${s}${s}${s}${s}██%c║%c${s}███%c║%c${s}${s}${s}${s}${s}${s}██%c╔══%c██%c╗%c
+██%c║%c${s}%c╚%c██%c╗%ceact%c${s}${s}${s}███%c╔%c██%c╣%cuery%c${s}${s}██████%c╔╝%cuilder%c
+╚═╝${s}${s}╚═╝${s}${s}${s}${s}${s}${s}${s}╚══╩══╝${s}${s}${s}${s}${s}${s}╚═════╝
+`;
+
+const styleSequence = [
+  [colorPrimary, textShadowNone], // start of line 1
+  [colorSecondary, textShadowNone],
+  [colorPrimary, textShadowNone],
+  [colorSecondary, textShadowNone],
+  [colorPrimary, textShadowNone],
+  [colorSecondary, textShadowNone],
+  [colorPrimary, textShadowNone],
+  [colorSecondary, textShadowNone], // first shadow in line 2
+  [colorPrimary, textShadowNone],
+  [colorSecondary, textShadowNone],
+  [colorPrimary, textShadowNone],
+  [colorSecondary, textShadowNone],
+  [colorPrimary, textShadowNone],
+  [colorSecondary, textShadowNone],
+  [colorPrimary, textShadowNone],
+  [colorSecondary, textShadowNone],
+  [colorPrimary, textShadowNone],
+  [colorSecondary, textShadowNone],
+  [colorPrimary, textShadowNone],
+  [colorSecondary, textShadowNone], // first shadow in line 3
+  [colorPrimary, textShadowNone],
+  [colorSecondary, textShadowNone],
+  [colorPrimary, textShadowNone],
+  [colorSecondary, textShadowNone],
+  [colorPrimary, textShadowNone],
+  [colorSecondary, textShadowNone],
+  [colorPrimary, textShadowNone],
+  [colorSecondary, textShadowNone], // first shadow in line 4
+  [colorPrimary, textShadowNone],
+  [colorSecondary, textShadowNone],
+  [colorPrimary, textShadowNone],
+  [colorSecondary, textShadowNone],
+  [colorPrimary, textShadowNone],
+  [colorSecondary, textShadowNone],
+  [colorPrimary, textShadowNone],
+  [colorSecondary, textShadowNone],
+  [colorPrimary, textShadowNone],
+  [colorSecondary, textShadowNone],
+  [colorPrimary, textShadowNone],
+  [colorSecondary, textShadowNone], // first shadow in line 5
+  [colorPrimary, textShadowNone],
+  [colorSecondary, textShadowNone],
+  [colorPrimary, textShadowNone],
+  [colorSecondary, textShadowNone],
+  [colorPrimary, textShadow],
+  [colorPrimary, textShadowNone],
+  [colorSecondary, textShadowNone],
+  [colorPrimary, textShadowNone],
+  [colorSecondary, textShadowNone],
+  [colorPrimary, textShadow],
+  [colorPrimary, textShadowNone],
+  [colorSecondary, textShadowNone],
+  [colorPrimary, textShadow],
+  [colorSecondary, textShadowNone], // end of line 5 to the end
+].map(s => [commonStyles, ...s].join('; '));
+
+console.log.apply(globalThis, [rqb, ...styleSequence]);
