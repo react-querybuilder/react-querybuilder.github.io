@@ -1,0 +1,329 @@
+# TypeScript reference
+
+Here are the key [TypeScript](https://www.typescriptlang.org/) types and interfaces used throughout React Query Builder. Even if you're using JavaScript, this reference helps you understand the expected shape of props and function parameters.
+
+note
+
+Some definitions below have been simplified from their actual implementations for legibility and ease of comprehension.
+
+The **[API documentation](/api)** is generated from source code and provides complete type definitions with repository links for detailed reference.
+
+## Fields[​](#fields "Direct link to Fields")
+
+```
+interface Field {
+  id?: string; // The field identifier (if not provided, `name` will be used)
+  name: string; // The field name (REQUIRED)
+  label: string; // The field label (REQUIRED)
+  operators?: OptionList<Operator>[]; // Array of operators (if not provided, `getOperators()` will be used)
+  valueEditorType?: ValueEditorType; // Value editor type for this field (if not provided, `getValueEditorType()` will be used)
+  inputType?: string | null; // @type attribute for the <input /> rendered by ValueEditor, e.g. 'text', 'number', or 'date' (if not provided, `getInputType()` will be used)
+  values?: OptionList; // Array of value options, applicable when valueEditorType is 'select', 'radio', or 'multiselect' (if not provided, `getValues()` will be used)
+  defaultOperator?: string; // Default operator for this field (if not provided, `getDefaultOperator()` will be used)
+  defaultValue?: any; // Default value for this field (if not provided, `getDefaultValue()` will be used)
+  placeholder?: string; // Placeholder text for the value editor when this field is selected
+  validator?: RuleValidator; // Validation function for rules that specify this field
+  valueSources?: ValueSources | ((operator: string) => ValueSources); // List of allowed value sources (must contain "value", "field", or both)
+  comparator?: string | ((f: Field, operator: string) => boolean); // Determines which (other) fields to include in the list when the rule's valueSource is "field"
+  className?: Classname; // Assigned to rules where this field is selected
+  separator?: ReactNode; // Rendered between multiple value editors, e.g. when the operator is "between" or "notBetween"
+}
+```
+
+Notes:
+
+* `Field` extends the `Option` interface, described [below](#option-lists).
+* More information on `valueEditorType` is available [below](#value-editor) and in the [`ValueEditor` component documentation](/docs/components/valueeditor.md).
+
+## Rules and groups[​](#rules-and-groups "Direct link to Rules and groups")
+
+*For more information about the `Path` type, see [Path concepts](/docs/tips/path.md).*
+
+```
+type Path = number[];
+
+type RuleType = {
+  path?: Path;
+  id?: string;
+  disabled?: boolean;
+  field: string;
+  operator: string;
+  value: any;
+  valueSource?: ValueSource;
+};
+
+type RuleGroupType = {
+  path?: Path;
+  id?: string;
+  disabled?: boolean;
+  combinator: string;
+  rules: (RuleType | RuleGroupType)[];
+  not?: boolean;
+};
+
+type RuleGroupTypeIC = {
+  path?: Path;
+  id?: string;
+  disabled?: boolean;
+  rules: (RuleType | RuleGroupTypeIC | string)[]; // see note below
+  not?: boolean;
+};
+
+type RuleGroupTypeAny = RuleGroupType | RuleGroupTypeIC;
+
+type RuleOrGroupArray = RuleGroupType['rules'] | RuleGroupTypeIC['rules'];
+```
+
+info
+
+`RuleGroupTypeIC` (see [independent combinators](/docs/components/querybuilder.md#independent-combinators)) is *greatly* simplified here for brevity. In reality, TypeScript enforces the following conditions:
+
+* All even indexes in the `rules` array must be of type `RuleType` or `RuleGroupTypeIC`
+* All odd indexes in the `rules` array must be of type `string`
+* The array length must be zero or an odd number; therefore, the first and last elements of the `rules` array must be of type `RuleType` or `RuleGroupTypeIC`
+
+For example, the following would be invalid because the first element in the `rules` array (the `0`th index, which should be `RuleType | RuleGroupTypeIC`) is a `string`, and the second element (the `1`st index, which should be a `string`) is a `RuleType`. Also, the length is an even number (2).
+
+```
+const ruleGroupInvalid: RuleGroupTypeIC = {
+  rules: ['and', { field: 'firstName', operator: '=', value: 'Steve' }],
+};
+```
+
+We can resolve this by either removing the first element or inserting another rule before it:
+
+```
+const ruleGroupValid1: RuleGroupTypeIC = {
+  rules: [{ field: 'firstName', operator: '=', value: 'Steve' }],
+};
+
+// OR
+
+const ruleGroupValid2: RuleGroupTypeIC = {
+  rules: [
+    { field: 'lastName', operator: '=', value: 'Vai' },
+    'and',
+    { field: 'firstName', operator: '=', value: 'Steve' },
+  ],
+};
+```
+
+## Export[​](#export "Direct link to Export")
+
+```
+type ExportFormat =
+  | 'json'
+  | 'sql'
+  | 'json_without_ids'
+  | 'parameterized'
+  | 'parameterized_named'
+  | 'mongodb'
+  | 'mongodb_query'
+  | 'cel'
+  | 'jsonlogic'
+  | 'jsonata'
+  | 'ldap'
+  | 'elasticsearch'
+  | 'spel'
+  | 'natural_language';
+
+interface FormatQueryOptions {
+  format?: ExportFormat;
+  valueProcessor?: ValueProcessor;
+  ruleProcessor?: RuleProcessor;
+  quoteFieldNamesWith?: string | [string, string];
+  fieldIdentifierSeparator?: string;
+  quoteValuesWith?: string;
+  validator?: QueryValidator;
+  fields?: OptionList<Field>;
+  getOperators?: (
+    field: string,
+    misc: { fieldData: FullField }
+  ) => FlexibleOptionList<FullOperator> | null;
+  fallbackExpression?: string;
+  paramPrefix?: string;
+  paramsKeepPrefix?: boolean;
+  numberedParams?: boolean;
+  parseNumbers?: ParseNumberMethod;
+  placeholderFieldName?: string;
+  placeholderOperatorName?: string;
+  concatOperator?: string;
+  preset?: SQLPreset;
+  context?: Record<string, any>;
+}
+
+type RuleProcessor = (rule: RuleType, options?: ValueProcessorOptions) => any;
+
+type ValueProcessor = (field: string, operator: string, value: any) => string;
+
+interface ValueProcessorOptions extends FormatQueryOptions {
+  escapeQuotes?: boolean;
+  fieldData?: Field;
+  fieldParamNames?: Record<string, string[]>;
+  getNextNamedParam?: (field: string) => string;
+  wrapValueWith?: [string, string];
+}
+
+interface ParameterizedSQL {
+  sql: string;
+  params: any[];
+}
+
+interface ParameterizedNamedSQL {
+  sql: string;
+  params: { [p: string]: any };
+}
+
+type ParseNumberMethod = boolean | 'enhanced' | 'native' | 'strict';
+```
+
+## Import[​](#import "Direct link to Import")
+
+```
+interface ParserCommonOptions {
+  fields?: OptionList<Field>[] | Record<string, Field>;
+  getValueSources?: (field: string, operator: string) => ValueSources;
+  listsAsArrays?: boolean;
+  independentCombinators?: boolean;
+}
+
+interface ParseSQLOptions extends ParserCommonOptions {
+  paramPrefix?: string;
+  params?: any[] | Record<string, any>;
+}
+
+interface ParseCELOptions extends ParserCommonOptions {
+  customExpressionHandler?: (expr: CELExpression) => RuleType | RuleGroupType | null;
+}
+
+type ParseSpELOptions = ParserCommonOptions;
+
+type ParseJsonLogicOptions = ParserCommonOptions;
+
+interface ParseMongoDbOptions extends ParserCommonOptions {
+  preventOperatorNegation?: boolean;
+  additionalOperators?: Record<
+    string,
+    (operator: string, value: any, otherOptions: ParserCommonOptions) => RuleType | RuleGroupType
+  >;
+}
+```
+
+## Validation[​](#validation "Direct link to Validation")
+
+```
+interface ValidationResult {
+  valid: boolean;
+  reasons?: any[];
+}
+
+interface ValidationMap {
+  [id: string]: boolean | ValidationResult;
+}
+
+type QueryValidator = (query: RuleGroupTypeAny) => boolean | ValidationMap;
+
+type RuleValidator = (rule: RuleType) => boolean | ValidationResult;
+```
+
+## Option lists[​](#option-lists "Direct link to Option lists")
+
+*As of version 7, options and lists can use `name` **or** `value` as the item identifier. Both `name` and `value` are passed down to subcomponents, so `name` is available even if `value` is used in props and vice versa. `name` is used in the documentation for brevity and backwards compatibility. [Click here for more information](/docs/tips/option-lists.md).*
+
+```
+interface Option {
+  name: string;
+  label: string;
+  [x: string]: any;
+}
+
+interface OptionGroup {
+  label: string;
+  options: Option[];
+}
+
+type OptionList = Option[] | OptionGroup[];
+
+interface Combinator extends Option {
+  className?: Classname; // Assigned to groups where this combinator is selected
+}
+
+interface Operator extends Option {
+  arity?: number | 'unary' | 'binary' | 'ternary';
+  className?: Classname; // Assigned to rules where this operator is selected
+}
+```
+
+## Value editor[​](#value-editor "Direct link to Value editor")
+
+See [`ValueEditor` component documentation here](/docs/components/valueeditor.md).
+
+```
+type ValueEditorType =
+  | 'text'
+  | 'select'
+  | 'checkbox'
+  | 'radio'
+  | 'textarea'
+  | 'multiselect'
+  | 'date'
+  | 'datetime-local'
+  | 'time'
+  | null;
+
+type ValueSource = 'value' | 'field';
+
+type ValueSources = ['value'] | ['value', 'field'] | ['field', 'value'] | ['field'];
+```
+
+## Miscellaneous[​](#miscellaneous "Direct link to Miscellaneous")
+
+```
+interface Schema {
+  qbId: string;
+  fields: OptionList<Field>;
+  fieldMap: Record<string, Field>;
+  classNames: Classnames;
+  combinators: OptionList<Combinator>;
+  controls: Controls;
+  createRule(): RuleType;
+  createRuleGroup(): RuleGroupTypeAny;
+  dispatchQuery(query: RuleGroupTypeAny): void;
+  getQuery(): RuleGroupTypeAny | undefined;
+  getOperators(field: string): OptionList<Operator>;
+  getValueEditorType(field: string, operator: string): ValueEditorType;
+  getValueEditorSeparator(field: string, operator: string): ReactNode;
+  getValueSources(field: string, operator: string): ValueSources;
+  getInputType(field: string, operator: string): string | null;
+  getValues(field: string, operator: string): OptionList;
+  getRuleClassname(rule: RuleType): Classname;
+  getRuleGroupClassname(ruleGroup: RuleGroupTypeAny): Classname;
+  showCombinatorsBetweenRules: boolean;
+  showNotToggle: boolean;
+  showShiftActions: boolean;
+  showCloneButtons: boolean;
+  showLockButtons: boolean;
+  autoSelectField: boolean;
+  autoSelectOperator: boolean;
+  addRuleToNewGroups: boolean;
+  enableDragAndDrop: boolean;
+  validationMap: ValidationMap;
+  independentCombinators: boolean;
+  listsAsArrays: boolean;
+  parseNumbers: ParseNumbersMethod;
+  disabledPaths: Path[];
+}
+
+interface QueryActions {
+  onGroupAdd(group: RuleGroupTypeAny, parentPath: Path, context?: any): void;
+  onGroupRemove(path: Path): void;
+  onPropChange(
+    prop: Exclude<keyof RuleType | keyof RuleGroupType, 'id' | 'path'>,
+    value: any,
+    path: Path
+  ): void;
+  onRuleAdd(rule: RuleType, parentPath: Path, context?: any): void;
+  onRuleRemove(path: Path): void;
+  moveRule(oldPath: Path, newPath: Path, clone?: boolean): void;
+}
+```

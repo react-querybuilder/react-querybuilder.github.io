@@ -1,0 +1,90 @@
+# External controls
+
+React Query Builder exports the same [query tools](/docs/utils/misc.md#query-tools) used internally for managing query updates. You can use these functions outside the `<QueryBuilder />` component for greater UI design flexibility while maintaining full query management capabilities.
+
+This example hides the default add/remove buttons and implements external controls above the query builder. The query methods (`add`, `remove`, `update`, and `move`) are called from event handlers, with their return values updating the shared state variable to keep everything synchronized.
+
+```
+import { useState } from 'react';
+import {
+  add,
+  defaultCombinators,
+  Field,
+  move,
+  QueryBuilder,
+  remove,
+  RuleGroupType,
+  update,
+} from 'react-querybuilder';
+import 'react-querybuilder/dist/query-builder.css';
+
+const fields: Field[] = [
+  { name: 'firstName', label: 'First Name' },
+  { name: 'lastName', label: 'Last Name' },
+];
+
+const initialQuery: RuleGroupType = {
+  combinator: 'and',
+  rules: [
+    { field: 'firstName', operator: '=', value: 'Steve' },
+    { field: 'lastName', operator: '=', value: 'Vai' },
+  ],
+};
+
+const NullComponent = () => null;
+
+export default () => {
+  const [query, setQuery] = useState(initialQuery);
+
+  // add
+  const addRule = () =>
+    setQuery(add(query, { field: 'firstName', operator: '=', value: 'Steve' }, []));
+
+  // remove
+  const removeFirstRule = () => setQuery(remove(query, [0]));
+
+  // update
+  const updateCombinator = (e: ChangeEvent<HTMLSelectElement>) =>
+    setQuery(update(query, 'combinator', e.target.value, []));
+
+  // move
+  const moveBottomRuleToTop = () => setQuery(move(query, [query.rules.length - 1], [0]));
+
+  return (
+    <div>
+      <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '0.5rem' }}>
+        <button onClick={addRule} title="Add a rule at the bottom of the group">
+          Add rule
+        </button>
+        <button onClick={removeFirstRule} title="Remove the top-most rule">
+          Remove first rule
+        </button>
+        <button onClick={moveBottomRuleToTop} title="Move the bottom-most rule to the top">
+          Move bottom rule to top
+        </button>
+        <select value={query.combinator} onChange={updateCombinator} title="Update the combinator">
+          {defaultCombinators.map(c => (
+            <option key={c.name} value={c.name}>
+              Update combinator to {c.label}
+            </option>
+          ))}
+        </select>
+      </div>
+      <QueryBuilder
+        fields={fields}
+        query={query}
+        onQueryChange={setQuery}
+        controlElements={{
+          // These declarations prevent the "+ Rule", "+ Group",
+          // and "x" (rule removal) buttons from rendering:
+          addGroupAction: NullComponent,
+          addRuleAction: NullComponent,
+          removeRuleAction: NullComponent,
+        }}
+      />
+    </div>
+  );
+};
+```
+
+[Open Sandbox](https://codesandbox.io/api/v1/sandboxes/define?undefined\&environment=server "Open in CodeSandbox")

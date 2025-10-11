@@ -1,0 +1,62 @@
+# React Query Builder documentation and demos
+
+> Comprehensive guide to the React Query Builder component library and associated packages
+
+
+## Documentation
+
+- [Buildless](/docs/buildless.md): Use React Query Builder directly in the browser without a build step via ESM imports. For JSX parsing in script tags, include Babel.
+- [Compatibility packages](/docs/compat.md): React Query Builder's default components use basic HTML5 form controls that are highly customizable through styling, especially via the controlClassnames prop. However, some UI libraries require specific components or HTML structures to properly style their form controls.
+- [Date/time features](/docs/datetime.md): By default, React Query Builder components and utilities handle dates and times in a generic, unopinionated way. We recommend storing dates as strings in ISO 8601-compatible format and taking advantage of built-in date/time functionality like "date" and "datetime-local" inputs (see inputType).
+- [Drag-and-drop](/docs/dnd.md): The @react-querybuilder/dnd package augments React Query Builder with drag-and-drop functionality. .
+- [Getting started](/docs/intro.md): Basic setup instructions and principles
+- [TypeScript reference](/docs/typescript.md): Here are the key TypeScript types and interfaces used throughout React Query Builder. Even if you're using JavaScript, this reference helps you understand the expected shape of props and function parameters.
+
+### Components
+
+- [ActionElement](/docs/components/actionelement.md): Button component
+- [DragHandle](/docs/components/draghandle.md): Drag-and-drop handle component
+- [InlineCombinator](/docs/components/inlinecombinator.md): Wrapper element for inline combinator selectors
+- [MatchModeEditor](/docs/components/matchmodeeditor.md): Match mode selector and threshold numeric value editor
+- [NotToggle](/docs/components/nottoggle.md): Checkbox component to invert groups
+- [QueryBuilder](/docs/components/querybuilder.md): The root component and context provider
+- [QueryBuilder controlElements prop](/docs/components/querybuilder-controlelements.md): Prop to override default components
+- [Rule](/docs/components/rule.md): Layout and config component for rules
+- [RuleGroup](/docs/components/rulegroup.md): Recursive layout and config component for groups
+- [ShiftActions](/docs/components/shiftactions.md): Shift up/down buttons
+- [ValueEditor](/docs/components/valueeditor.md): Dynamic editor component
+- [ValueSelector](/docs/components/valueselector.md): Versatile selector component
+
+### Styling
+
+- [CSS classes](/docs/styling/classnames.md): Visual guide to CSS classes for each component element
+- [Styling overview](/docs/styling/overview.md): How to tweak or overhaul the default styles
+
+### Tips and Tricks
+
+- [Adding and removing query properties](/docs/tips/adding-removing-query-properties.md): Customizing the query object
+- [Arbitrary updates](/docs/tips/arbitrary-updates.md): Non-standard query management from custom components
+- [Common mistakes](/docs/tips/common-mistakes.md): How to resolve some frequently-reported issues
+- [Custom bind variables](/docs/tips/custom-bind-variables.md): Altering the SQL for certain RDBMS's
+- [Custom components with fallbacks](/docs/tips/custom-with-fallback.md): Augmenting the default components
+- [External controls](/docs/tips/external-controls.md): Managing queries outside the main component
+- [Limit rule groups](/docs/tips/limit-groups.md): Methods to prevent new groups
+- [Managing fields](/docs/tips/managing-fields.md): Generate a field array from database table/view specification
+- [Managing operators](/docs/tips/managing-operators.md): Which operators are allowed for which fields, and how they are labeled
+- [Maximizing rendering performance](/docs/tips/maximizing-performance.md): How to avoid common pitfalls for a smoother user experience
+- [Working with option lists](/docs/tips/option-lists.md): Managing ambiguity in option list types
+- [Path concepts](/docs/tips/path.md): Explanation of the "path" property of rules and groups
+- [Customization showcase](/docs/tips/showcase.md): Interesting/unconventional layouts or behavior
+- [Subqueries and nested data](/docs/tips/subqueries.md): Building queries for data with nested arrays and complex structures
+
+### Utilities
+
+- [Export](/docs/utils/export.md): Convert query builder objects to SQL, etc.
+- [Hooks](/docs/utils/hooks.md): Reuse React Query Builder's logic in your own components
+- [Import](/docs/utils/import.md): Convert SQL and other formats to query builder objects
+- [Miscellaneous](/docs/utils/misc.md): Assorted utilities and other exports
+- [Validation](/docs/utils/validation.md): Query validation methods and configuration
+
+## Optional
+- [GitHub repository](https://github.com/react-querybuilder/react-querybuilder)
+- [Discord server](https://discord.gg/MnAQWyUtEg)
