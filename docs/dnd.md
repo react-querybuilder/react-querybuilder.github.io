@@ -93,7 +93,7 @@ Key code for the modifier key that puts a drag-and-drop action in ["copy" mode](
 
 Key code for the modifier key that puts a drag-and-drop action in ["group" mode](#cloning-and-grouping). Default is `"ctrl"` (`Ctrl`).
 
-### `noDragPreview`[​](#nodragpreview "Direct link to nodragpreview")
+### `hideDefaultDragPreview`[​](#hidedefaultdragpreview "Direct link to hidedefaultdragpreview")
 
 `boolean`
 
