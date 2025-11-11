@@ -186,8 +186,9 @@ function App() {
 | `dndGroup`       | rules and groups hovered over by a dragged element when the `Ctrl` key is pressed |
 | `disabled`       | disabled elements                                                                 |
 | `valueListItem`  | each element in a series of value editors                                         |
-| `branches`       | (not applied, but see [Styling overview](/docs/styling/overview.md))              |
+| `branches`       | (not applied, but see [Styling overview](/docs/styling/overview.md#branch-lines)) |
 | `hasSubQuery`    | rules that render a subquery                                                      |
+| `loading`        | [async value selectors](/docs/tips/async-option-lists.md) during "loading" state  |
 
 ### `controlElements`[​](#controlelements "Direct link to controlelements")
 

@@ -219,6 +219,30 @@ function useQueryBuilderSchema(
 
 ## Other utilities[​](#other-utilities "Direct link to Other utilities")
 
+### `useAsyncOptionList`[​](#useasyncoptionlist "Direct link to useasyncoptionlist")
+
+Augments a `ValueSelectorProps` or `ValueEditorProps` object with [async option loading](/docs/tips/async-option-lists.md).
+
+```
+import { type UseAsyncOptionListParams, useAsyncOptionList } from 'react-querybuilder';
+
+const useAsyncOptionListParams: UseAsyncOptionListParams = {
+  getCacheKey: 'field',
+  loadOptionList: async (value, { ruleOrGroup }) => {
+    const response = await fetch(`/api/operators?field=${ruleOrGroup.field}`);
+    return response.json();
+  },
+};
+
+const AsyncOperatorSelector = (props: ValueSelectorProps) => {
+  const asyncProps = useAsyncOptionList(props, useAsyncOptionListParams);
+
+  return <props.schema.controls.valueSelector {...asyncProps} />;
+};
+
+const App = () => <QueryBuilder controlElements={{ operatorSelector: AsyncOperatorSelector }} />;
+```
+
 ### `useMergedContext`[​](#usemergedcontext "Direct link to usemergedcontext")
 
 Merges the values inherited from the nearest ancestor `QueryBuilderContext.Provider` with the current component's props. For `controlClassnames`, `controlElements`, and `translations`, options that are not defined through either context or props will fall back to the defaults.

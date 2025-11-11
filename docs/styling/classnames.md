@@ -13,6 +13,7 @@ The following standard classnames are not labeled below. For most of them, the e
 * `.rule.queryBuilder-invalid` (red outline for invalid rules)
 * `.shiftActions` (orange outline for the wrapper `<div>` around the "Shift up"/"Shift down" buttons)
 * `.rule-hasSubQuery` (applied to rules that render a subquery)
+* `.queryBuilder-loading` (applied to rules/groups while an [async promise is pending](/docs/tips/async-option-lists.md))
 * `.dndDragging` (applied to "preview" element while dragging)
 * `.dndOver` (applied to "hovered over" element while dragging)
 * `.dndCopy` (applied to "hovered over" element while dragging and the ["copy" modifier key is pressed](/docs/dnd.md#cloning-and-grouping))
@@ -115,7 +116,8 @@ export const standardClassnames = {
   branches: 'queryBuilder-branches',
   justified: 'queryBuilder-justified',
   hasSubQuery: 'rule-hasSubQuery',
+  loading: 'queryBuilder-loading',
 } as const;
 ```
 
-> *Source: [/packages/core/src/defaults.ts#L275-L315](https://github.com/react-querybuilder/react-querybuilder/blob/main/packages/core/src/defaults.ts#L275-L315)*
+> *Source: [/packages/core/src/defaults.ts#L275-L316](https://github.com/react-querybuilder/react-querybuilder/blob/main/packages/core/src/defaults.ts#L275-L316)*

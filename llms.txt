@@ -36,6 +36,7 @@
 
 - [Adding and removing query properties](/docs/tips/adding-removing-query-properties.md): Customizing the query object
 - [Arbitrary updates](/docs/tips/arbitrary-updates.md): Non-standard query management from custom components
+- [Async option list loading](/docs/tips/async-option-lists.md): Augment value selectors or value editors with async option list loading
 - [Common mistakes](/docs/tips/common-mistakes.md): How to resolve some frequently-reported issues
 - [Custom bind variables](/docs/tips/custom-bind-variables.md): Altering the SQL for certain RDBMS's
 - [Custom components with fallbacks](/docs/tips/custom-with-fallback.md): Augmenting the default components
