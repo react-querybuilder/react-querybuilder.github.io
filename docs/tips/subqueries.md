@@ -102,7 +102,7 @@ const getMatchModes = (field: string, misc: { fieldData: Field }) => {
   fields={fields}
   getMatchModes={getMatchModes}
   // ... other props
-/>
+/>;
 ```
 
 ### Customizing subquery builder props[​](#customizing-subquery-builder-props "Direct link to Customizing subquery builder props")
@@ -141,7 +141,7 @@ const getSubQueryBuilderProps = (field: string, misc: { fieldData: Field }) => {
   fields={fields}
   getSubQueryBuilderProps={getSubQueryBuilderProps}
   // ... other props
-/>
+/>;
 ```
 
 **Note:** Props like `query`, `onQueryChange`, and `enableDragAndDrop` are automatically managed and cannot be overridden for subquery builders.
