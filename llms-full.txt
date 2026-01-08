@@ -5453,11 +5453,11 @@ When a rule has a valid `match` property, the `operator` property is ignored. Th
 
 Export format support for subqueries varies by implementation:
 
-| Support level                  | Formats                                                                                                            |
-| ------------------------------ | ------------------------------------------------------------------------------------------------------------------ |
-| Full                           | "jsonlogic"[1](#user-content-fn-1), "jsonata", "cel", "spel", "natural\_language", ~~"mongodb"~~, "mongodb\_query" |
-| Partial[2](#user-content-fn-2) | "sql", "parameterized", "drizzle"                                                                                  |
-| None                           | "parameterized\_named"[3](#user-content-fn-3), "prisma", "sequelize", "elasticsearch", "ldap"                      |
+| Support level | Formats                                                                                                                                        |
+| ------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
+| Full          | "jsonlogic"[1](#user-content-fn-1), "jsonata", "cel", "spel", "natural\_language", ~~"mongodb"~~, "mongodb\_query"                             |
+| Partial       | "sql"[2](#user-content-fn-2), "parameterized"[2](#user-content-fn-2), "drizzle"[2](#user-content-fn-2), "elasticsearch"[3](#user-content-fn-3) |
+| None          | "parameterized\_named"[4](#user-content-fn-4), "prisma", "sequelize", "ldap"                                                                   |
 
 caution
 
@@ -5469,9 +5469,11 @@ In unsupported formats, rules with valid `match` properties are treated as inval
 
 1. JsonLogic was the original inspiration for this feature. [↩](#user-content-fnref-1)
 
-2. SQL-based formats only support primitive value arrays when `preset` is "postgresql". Other RDBMS platforms lack support for nested tables or have overly complex implementations. [↩](#user-content-fnref-2)
+2. SQL-based formats only support primitive value arrays when `preset` is "postgresql". Other RDBMS platforms lack support for nested tables or have overly complex implementations. [↩](#user-content-fnref-2) [↩2](#user-content-fnref-2-2) [↩3](#user-content-fnref-2-3)
 
-3. PostgreSQL does not support named parameters [↩](#user-content-fnref-3)
+3. ElasticSearch nested queries only support `"some"` and `"none"` match modes. [↩](#user-content-fnref-3)
+
+4. PostgreSQL does not support named parameters [↩](#user-content-fnref-4)
 
 
 ---
