@@ -27,6 +27,12 @@
 - [ValueEditor](/docs/components/valueeditor.md): Dynamic editor component
 - [ValueSelector](/docs/components/valueselector.md): Versatile selector component
 
+### rules-engine
+
+This package is in an early stage of development.
+
+- [Rules engine](/docs/rules-engine.md): This package is in an early stage of development.
+
 ### Styling
 
 - [CSS classes](/docs/styling/classnames.md): Visual guide to CSS classes for each component element
