@@ -32,6 +32,8 @@ tip
 
 Field objects can include custom properties. The complete field object is passed as `fieldData` to `OperatorSelector` and `ValueEditor` components (see [`controlElements`](#controlelements)).
 
+For more information about option list props like `fields`, see [Working with option lists](/docs/tips/option-lists.md).
+
 ### `onQueryChange`[​](#onquerychange "Direct link to onquerychange")
 
 `(query: RuleGroupTypeAny) => void`
@@ -99,6 +101,8 @@ export const defaultOperators: DefaultOperators = [
 
 > *Source: [/packages/core/src/defaults.ts#L176-L195](https://github.com/react-querybuilder/react-querybuilder/blob/main/packages/core/src/defaults.ts#L176-L195)*
 
+For more information about option list props like `operators`, see [Working with option lists](/docs/tips/option-lists.md).
+
 ### `combinators`[​](#combinators "Direct link to combinators")
 
 `OptionList`
@@ -113,6 +117,8 @@ export const defaultCombinators: DefaultCombinators = [
 ```
 
 > *Source: [/packages/core/src/defaults.ts#L232-L235](https://github.com/react-querybuilder/react-querybuilder/blob/main/packages/core/src/defaults.ts#L232-L235)*
+
+For more information about option list props like `combinators`, see [Working with option lists](/docs/tips/option-lists.md).
 
 ### `baseField`[​](#basefield "Direct link to basefield")
 
@@ -204,6 +210,8 @@ Returns allowed operators for the given `field`. Returning `null` uses the [oper
 
 `fieldData` provides the complete `Field` object for accessing custom properties.
 
+For more information about option list props like `operators`, see [Working with option lists](/docs/tips/option-lists.md).
+
 ### `getValueEditorType`[​](#getvalueeditortype "Direct link to getvalueeditortype")
 
 `(field: string, operator: string, misc: { fieldData: Field }) => ValueEditorType`
@@ -245,6 +253,8 @@ Returns the `type` attribute for `<input />` elements. Only applies when [`getVa
 Returns allowed values for the given `field` and `operator`. Only applies when [`getValueEditorType`](#getvalueeditortype) returns `"select"`, `"multiselect"`, or `"radio"`. Defaults to empty array.
 
 `fieldData` provides the complete `Field` object for accessing custom properties.
+
+For more information about option list props, see [Working with option lists](/docs/tips/option-lists.md).
 
 ### `getMatchModes`[​](#getmatchmodes "Direct link to getmatchmodes")
 

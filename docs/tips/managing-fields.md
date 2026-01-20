@@ -1,6 +1,10 @@
 # Managing fields
 
-The [`fields`](/docs/components/querybuilder.md#fields) array forms the foundation of React Query Builder configuration, defining which data fields users can query against.
+The [`fields`](/docs/components/querybuilder.md#fields) array forms the foundation of React Query Builder configuration, defining which data fields users can include in a query.
+
+tip
+
+For more information about option list props like `fields`, see [Working with option lists](/docs/tips/option-lists.md).
 
 ## Generating `fields` dynamically[​](#generating-fields-dynamically "Direct link to generating-fields-dynamically")
 

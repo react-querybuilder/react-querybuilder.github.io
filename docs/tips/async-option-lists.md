@@ -4,6 +4,10 @@ To load option lists asynchronously for a value selector or editor, use the `use
 
 This opt-in feature enables dynamic loading of options based on rule/group context, with intelligent caching for performance optimization.
 
+tip
+
+For more information about option list props, see [Working with option lists](/docs/tips/option-lists.md).
+
 ## Basic usage[​](#basic-usage "Direct link to Basic usage")
 
 1. Create a component that accepts `ValueSelectorProps` or `ValueEditorProps`.

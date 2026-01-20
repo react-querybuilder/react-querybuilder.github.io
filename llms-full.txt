@@ -530,6 +530,8 @@ tip
 
 Field objects can include custom properties. The complete field object is passed as `fieldData` to `OperatorSelector` and `ValueEditor` components (see [`controlElements`](#controlelements)).
 
+For more information about option list props like `fields`, see [Working with option lists](/docs/tips/option-lists.md).
+
 ### `onQueryChange`[​](#onquerychange "Direct link to onquerychange")
 
 `(query: RuleGroupTypeAny) => void`
@@ -597,6 +599,8 @@ export const defaultOperators: DefaultOperators = [
 
 > *Source: [/packages/core/src/defaults.ts#L176-L195](https://github.com/react-querybuilder/react-querybuilder/blob/main/packages/core/src/defaults.ts#L176-L195)*
 
+For more information about option list props like `operators`, see [Working with option lists](/docs/tips/option-lists.md).
+
 ### `combinators`[​](#combinators "Direct link to combinators")
 
 `OptionList`
@@ -611,6 +615,8 @@ export const defaultCombinators: DefaultCombinators = [
 ```
 
 > *Source: [/packages/core/src/defaults.ts#L232-L235](https://github.com/react-querybuilder/react-querybuilder/blob/main/packages/core/src/defaults.ts#L232-L235)*
+
+For more information about option list props like `combinators`, see [Working with option lists](/docs/tips/option-lists.md).
 
 ### `baseField`[​](#basefield "Direct link to basefield")
 
@@ -702,6 +708,8 @@ Returns allowed operators for the given `field`. Returning `null` uses the [oper
 
 `fieldData` provides the complete `Field` object for accessing custom properties.
 
+For more information about option list props like `operators`, see [Working with option lists](/docs/tips/option-lists.md).
+
 ### `getValueEditorType`[​](#getvalueeditortype "Direct link to getvalueeditortype")
 
 `(field: string, operator: string, misc: { fieldData: Field }) => ValueEditorType`
@@ -743,6 +751,8 @@ Returns the `type` attribute for `<input />` elements. Only applies when [`getVa
 Returns allowed values for the given `field` and `operator`. Only applies when [`getValueEditorType`](#getvalueeditortype) returns `"select"`, `"multiselect"`, or `"radio"`. Defaults to empty array.
 
 `fieldData` provides the complete `Field` object for accessing custom properties.
+
+For more information about option list props, see [Working with option lists](/docs/tips/option-lists.md).
 
 ### `getMatchModes`[​](#getmatchmodes "Direct link to getmatchmodes")
 
@@ -3652,6 +3662,10 @@ To load option lists asynchronously for a value selector or editor, use the `use
 
 This opt-in feature enables dynamic loading of options based on rule/group context, with intelligent caching for performance optimization.
 
+tip
+
+For more information about option list props, see [Working with option lists](/docs/tips/option-lists.md).
+
 ## Basic usage[​](#basic-usage "Direct link to Basic usage")
 
 1. Create a component that accepts `ValueSelectorProps` or `ValueEditorProps`.
@@ -4595,7 +4609,11 @@ This approach alone may confuse users since the "+ Group" button appears clickab
 
 # Managing fields
 
-The [`fields`](/docs/components/querybuilder.md#fields) array forms the foundation of React Query Builder configuration, defining which data fields users can query against.
+The [`fields`](/docs/components/querybuilder.md#fields) array forms the foundation of React Query Builder configuration, defining which data fields users can include in a query.
+
+tip
+
+For more information about option list props like `fields`, see [Working with option lists](/docs/tips/option-lists.md).
 
 ## Generating `fields` dynamically[​](#generating-fields-dynamically "Direct link to generating-fields-dynamically")
 
@@ -4746,6 +4764,10 @@ SELECT json_arrayagg(
 # Managing operators
 
 Many React Query Builder implementations need to customize operators based on the selected field type. For example, date fields might use "before" as a more intuitive label than the default `"<"` operator. Number fields could display "less than" for the `<` operator, while text fields might exclude comparison operators entirely.
+
+tip
+
+For more information about option list props like `operators`, see [Working with option lists](/docs/tips/option-lists.md).
 
 ## Field `operators` property[​](#field-operators-property "Direct link to field-operators-property")
 
@@ -5307,6 +5329,24 @@ function uniqByIdentifier(arr: any): boolean;
 ```
 
 Removes duplicate options from an `Option` array by comparing identifier properties (`name` or `value`).
+
+## String option lists[​](#string-option-lists "Direct link to String option lists")
+
+Option list props also accept `string[]`. Each string becomes an option with `name`, `value`, and `label` all set to that string.
+
+```
+// These are equivalent:
+<QueryBuilder combinators={['and', 'or']} />
+<QueryBuilder combinators={[{ name: 'and', label: 'and' }, { name: 'or', label: 'or' }]} />
+```
+
+Strings can be mixed with option objects:
+
+```
+<QueryBuilder operators={['=', '!=', { name: 'contains', label: 'Contains' }]} />
+```
+
+This shorthand is convenient for simple option lists but lacks the flexibility of full option objects, such as custom labels.
 
 
 ---

@@ -2,6 +2,10 @@
 
 Many React Query Builder implementations need to customize operators based on the selected field type. For example, date fields might use "before" as a more intuitive label than the default `"<"` operator. Number fields could display "less than" for the `<` operator, while text fields might exclude comparison operators entirely.
 
+tip
+
+For more information about option list props like `operators`, see [Working with option lists](/docs/tips/option-lists.md).
+
 ## Field `operators` property[​](#field-operators-property "Direct link to field-operators-property")
 
 One approach uses the field's `operators` property to specify which operators appear when users select a particular field. However, this method requires defining complete operator lists for each field, potentially creating duplication across fields with similar data types.
