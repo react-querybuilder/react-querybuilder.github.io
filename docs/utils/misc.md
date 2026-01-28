@@ -152,7 +152,7 @@ export interface UpdateOptions {
 }
 ```
 
-> *Source: [/packages/core/src/utils/queryTools.ts#L98-L126](https://github.com/react-querybuilder/react-querybuilder/blob/main/packages/core/src/utils/queryTools.ts#L98-L126)*
+> *Source: [/packages/core/src/utils/queryTools.ts#L121-L149](https://github.com/react-querybuilder/react-querybuilder/blob/main/packages/core/src/utils/queryTools.ts#L121-L149)*
 
 ### `move`[​](#move "Direct link to move")
 
@@ -181,7 +181,7 @@ export interface MoveOptions {
 }
 ```
 
-> *Source: [/packages/core/src/utils/queryTools.ts#L355-L370](https://github.com/react-querybuilder/react-querybuilder/blob/main/packages/core/src/utils/queryTools.ts#L355-L370)*
+> *Source: [/packages/core/src/utils/queryTools.ts#L419-L434](https://github.com/react-querybuilder/react-querybuilder/blob/main/packages/core/src/utils/queryTools.ts#L419-L434)*
 
 ### `insert`[​](#insert "Direct link to insert")
 
@@ -227,7 +227,7 @@ export interface InsertOptions {
 }
 ```
 
-> *Source: [/packages/core/src/utils/queryTools.ts#L490-L522](https://github.com/react-querybuilder/react-querybuilder/blob/main/packages/core/src/utils/queryTools.ts#L490-L522)*
+> *Source: [/packages/core/src/utils/queryTools.ts#L580-L612](https://github.com/react-querybuilder/react-querybuilder/blob/main/packages/core/src/utils/queryTools.ts#L580-L612)*
 
 ### `group`[​](#group "Direct link to group")
 
@@ -256,7 +256,7 @@ export interface GroupOptions {
 }
 ```
 
-> *Source: [/packages/core/src/utils/queryTools.ts#L595-L610](https://github.com/react-querybuilder/react-querybuilder/blob/main/packages/core/src/utils/queryTools.ts#L595-L610)*
+> *Source: [/packages/core/src/utils/queryTools.ts#L709-L724](https://github.com/react-querybuilder/react-querybuilder/blob/main/packages/core/src/utils/queryTools.ts#L709-L724)*
 
 ## Number parsing[​](#number-parsing "Direct link to Number parsing")
 
