@@ -104,7 +104,7 @@ export interface AddOptions {
 }
 ```
 
-> *Source: [/packages/core/src/utils/queryTools.ts#L33-L51](https://github.com/react-querybuilder/react-querybuilder/blob/main/packages/core/src/utils/queryTools.ts#L33-L51)*
+> *Source: [/packages/core/src/utils/queryTools.ts#L34-L52](https://github.com/react-querybuilder/react-querybuilder/blob/main/packages/core/src/utils/queryTools.ts#L34-L52)*
 
 ### `remove`[​](#remove "Direct link to remove")
 
@@ -152,7 +152,7 @@ export interface UpdateOptions {
 }
 ```
 
-> *Source: [/packages/core/src/utils/queryTools.ts#L121-L149](https://github.com/react-querybuilder/react-querybuilder/blob/main/packages/core/src/utils/queryTools.ts#L121-L149)*
+> *Source: [/packages/core/src/utils/queryTools.ts#L122-L150](https://github.com/react-querybuilder/react-querybuilder/blob/main/packages/core/src/utils/queryTools.ts#L122-L150)*
 
 ### `move`[​](#move "Direct link to move")
 
@@ -181,7 +181,7 @@ export interface MoveOptions {
 }
 ```
 
-> *Source: [/packages/core/src/utils/queryTools.ts#L419-L434](https://github.com/react-querybuilder/react-querybuilder/blob/main/packages/core/src/utils/queryTools.ts#L419-L434)*
+> *Source: [/packages/core/src/utils/queryTools.ts#L420-L435](https://github.com/react-querybuilder/react-querybuilder/blob/main/packages/core/src/utils/queryTools.ts#L420-L435)*
 
 ### `insert`[​](#insert "Direct link to insert")
 
@@ -227,7 +227,7 @@ export interface InsertOptions {
 }
 ```
 
-> *Source: [/packages/core/src/utils/queryTools.ts#L580-L612](https://github.com/react-querybuilder/react-querybuilder/blob/main/packages/core/src/utils/queryTools.ts#L580-L612)*
+> *Source: [/packages/core/src/utils/queryTools.ts#L581-L613](https://github.com/react-querybuilder/react-querybuilder/blob/main/packages/core/src/utils/queryTools.ts#L581-L613)*
 
 ### `group`[​](#group "Direct link to group")
 
@@ -256,7 +256,7 @@ export interface GroupOptions {
 }
 ```
 
-> *Source: [/packages/core/src/utils/queryTools.ts#L709-L724](https://github.com/react-querybuilder/react-querybuilder/blob/main/packages/core/src/utils/queryTools.ts#L709-L724)*
+> *Source: [/packages/core/src/utils/queryTools.ts#L710-L725](https://github.com/react-querybuilder/react-querybuilder/blob/main/packages/core/src/utils/queryTools.ts#L710-L725)*
 
 ## Number parsing[​](#number-parsing "Direct link to Number parsing")
 
