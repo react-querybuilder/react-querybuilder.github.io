@@ -28,17 +28,29 @@ This example uses the Ant Design library:
 
 ```
 import { QueryBuilderAntD } from '@react-querybuilder/antd';
+
 import 'antd/dist/antd.compact.css'; // <- include this only if using `antd@<5`
+
 import { QueryBuilder } from 'react-querybuilder';
+
 import 'react-querybuilder/dist/query-builder.css';
+
 import { defaultQuery, fields } from './constants';
 
+
+
 export function App() {
+
   return (
+
     <QueryBuilderAntD>
+
       <QueryBuilder fields={fields} defaultQuery={defaultQuery} />
+
     </QueryBuilderAntD>
+
   );
+
 }
 ```
 
@@ -63,20 +75,35 @@ This example uses the Bulma library *and* enables drag-and-drop:
 
 ```
 import { QueryBuilderBulma } from '@react-querybuilder/bulma';
+
 import { QueryBuilderDnD } from '@react-querybuilder/dnd';
+
 import 'bulma/bulma.sass';
+
 import { QueryBuilder } from 'react-querybuilder';
+
 import 'react-querybuilder/dist/query-builder.css';
+
 import { defaultQuery, fields } from './constants';
 
+
+
 export function App() {
+
   return (
+
     <QueryBuilderDnD>
+
       <QueryBuilderBulma>
+
         <QueryBuilder fields={fields} defaultQuery={defaultQuery} />
+
       </QueryBuilderBulma>
+
     </QueryBuilderDnD>
+
   );
+
 }
 ```
 
@@ -88,22 +115,39 @@ This example uses the Bootstrap library:
 
 ```
 import {
+
   bootstrapControlClassnames,
+
   bootstrapControlElements,
+
 } from '@react-querybuilder/bootstrap';
+
 import 'bootstrap/dist/css/bootstrap.css';
+
 import { QueryBuilder } from 'react-querybuilder';
+
 import { defaultQuery, fields } from './constants';
 
+
+
 export function App() {
+
   return (
+
     <QueryBuilder
+
       fields={fields}
+
       defaultQuery={defaultQuery}
+
       controlElements={bootstrapControlElements}
+
       controlClassnames={bootstrapControlClassnames}
+
     />
+
   );
+
 }
 ```
 
@@ -129,26 +173,47 @@ In the example below, the `size` prop is accepted because it's an `antd` `Button
 
 ```
 import { AntDActionElement, antdControlElements } from '@react-querybuilder/antd';
+
 import { QueryBuilder, type ActionProps } from 'react-querybuilder';
+
+
 
 const MyAntDActionElement = (props: ActionProps) => <AntDActionElement {...props} size="large" />;
 
+
+
 export function App() {
+
   return (
+
     <QueryBuilder
+
       controlElements={{
+
         ...antdControlElements,
+
         addRuleAction: MyAntDActionElement,
+
         addGroupAction: MyAntDActionElement,
+
         cloneRuleAction: MyAntDActionElement,
+
         cloneGroupAction: MyAntDActionElement,
+
         lockRuleAction: MyAntDActionElement,
+
         lockGroupAction: MyAntDActionElement,
+
         removeRuleAction: MyAntDActionElement,
+
         removeGroupAction: MyAntDActionElement,
+
       }}
+
     />
+
   );
+
 }
 ```
 
@@ -197,63 +262,122 @@ To avoid rendering default components and render MUI components immediately inst
 
 ```
 import { createTheme, ThemeProvider } from '@mui/material/styles';
+
 import { QueryBuilderMaterial } from '@react-querybuilder/material';
+
 import { QueryBuilder } from 'react-querybuilder';
+
 import { defaultQuery, fields } from './constants';
+
 import CloseIcon from '@mui/icons-material/Close';
+
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
+
 import DragIndicator from '@mui/icons-material/DragIndicator';
+
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
+
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
+
 import LockIcon from '@mui/icons-material/Lock';
+
 import LockOpenIcon from '@mui/icons-material/LockOpen';
+
 import Button from '@mui/material/Button';
+
 import Checkbox from '@mui/material/Checkbox';
+
 import FormControl from '@mui/material/FormControl';
+
 import FormControlLabel from '@mui/material/FormControlLabel';
+
 import InputLabel from '@mui/material/InputLabel'; // (after 8.9.2)
+
 import ListSubheader from '@mui/material/ListSubheader';
+
 import MenuItem from '@mui/material/MenuItem';
+
 import Radio from '@mui/material/Radio';
+
 import RadioGroup from '@mui/material/RadioGroup';
+
 import Select from '@mui/material/Select';
+
 import Switch from '@mui/material/Switch';
+
 import TextareaAutosize from '@mui/material/TextareaAutosize';
+
 // (Use `Input` instead of `TextField` in versions lower than 7.7.1)
+
 import TextField from '@mui/material/TextField';
 
+
+
 const muiComponents = {
+
   Button,
+
   Checkbox,
+
   CloseIcon,
+
   ContentCopyIcon,
+
   DragIndicator,
+
   FormControl,
+
   FormControlLabel,
+
   InputLabel, // (after 8.9.2)
+
   KeyboardArrowDownIcon,
+
   KeyboardArrowUpIcon,
+
   ListSubheader,
+
   LockIcon,
+
   LockOpenIcon,
+
   MenuItem,
+
   Radio,
+
   RadioGroup,
+
   Select,
+
   Switch,
+
   TextareaAutosize,
+
   TextField, // (Use `Input` instead of `TextField` in versions lower than 7.7.1)
+
 };
+
+
 
 const muiTheme = createTheme();
 
+
+
 export function App() {
+
   return (
+
     <ThemeProvider theme={muiTheme}>
+
       <QueryBuilderMaterial muiComponents={muiComponents}>
+
         <QueryBuilder fields={fields} defaultQuery={defaultQuery} />
+
       </QueryBuilderMaterial>
+
     </ThemeProvider>
+
   );
+
 }
 ```

@@ -81,47 +81,89 @@ Use React Query Builder directly in the browser without a build step via ESM imp
 
 ```
 <!doctype html>
+
 <html lang="en">
+
   <head>
+
     <meta charset="UTF-8" />
+
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
     <title>React Query Builder ESM</title>
+
     <link rel="stylesheet" href="https://esm.sh/react-querybuilder@latest/dist/query-builder.css" />
+
   </head>
+
   <body>
+
     <div id="root"></div>
+
     <script type="importmap">
+
       {
+
         "imports": {
+
           "react": "https://esm.sh/react@latest",
+
           "react-dom/": "https://esm.sh/react-dom@latest/",
+
           "react-querybuilder": "https://esm.sh/react-querybuilder@latest"
+
         }
+
       }
+
     </script>
+
     <script type="module">
+
       import * as React from 'react';
+
       import { createRoot } from 'react-dom/client';
+
       import { QueryBuilder } from 'react-querybuilder';
 
+
+
       const fields = [
+
         { name: 'firstName', label: 'First Name' },
+
         { name: 'lastName', label: 'Last Name' },
+
       ];
 
+
+
       const defaultQuery = {
+
         combinator: 'and',
+
         rules: [
+
           { field: 'firstName', operator: 'beginsWith', value: 'Stev' },
+
           { field: 'lastName', operator: 'in', value: 'Vai,Vaughan' },
+
         ],
+
       };
 
+
+
       createRoot(document.getElementById('root')).render(
+
         React.createElement(QueryBuilder, { fields, defaultQuery })
+
       );
+
     </script>
+
   </body>
+
 </html>
 ```
 
@@ -131,56 +173,107 @@ For drag-and-drop functionality, import `react-dnd`, `react-dnd-html5-backend`, 
 
 ```
 <!doctype html>
+
 <html lang="en">
+
   <head>
+
     <meta charset="UTF-8" />
+
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
     <title>React Query Builder ESM (DnD)</title>
+
     <link rel="stylesheet" href="https://esm.sh/react-querybuilder@latest/dist/query-builder.css" />
+
   </head>
+
   <body>
+
     <div id="root"></div>
+
     <script type="importmap">
+
       {
+
         "imports": {
+
           "react": "https://esm.sh/react@latest",
+
           "react-dom/": "https://esm.sh/react-dom@latest/",
+
           "react-querybuilder": "https://esm.sh/react-querybuilder@latest",
+
           "@react-querybuilder/dnd": "https://esm.sh/@react-querybuilder/dnd@latest",
+
           "react-dnd": "https://esm.sh/react-dnd@latest",
+
           "react-dnd-html5-backend": "https://esm.sh/react-dnd-html5-backend@latest"
+
         }
+
       }
+
     </script>
+
     <script type="module">
+
       import * as React from 'react';
+
       import { createRoot } from 'react-dom/client';
+
       import { QueryBuilder } from 'react-querybuilder';
+
       import * as ReactDnD from 'react-dnd';
+
       import * as ReactDndHtml5Backend from 'react-dnd-html5-backend';
+
       import { QueryBuilderDnD } from '@react-querybuilder/dnd';
 
+
+
       const fields = [
+
         { name: 'firstName', label: 'First Name' },
+
         { name: 'lastName', label: 'Last Name' },
+
       ];
 
+
+
       const defaultQuery = {
+
         combinator: 'and',
+
         rules: [
+
           { field: 'firstName', operator: 'beginsWith', value: 'Stev' },
+
           { field: 'lastName', operator: 'in', value: 'Vai,Vaughan' },
+
         ],
+
       };
 
+
+
       createRoot(document.getElementById('root')).render(
+
         React.createElement(QueryBuilderDnD, {
+
           dnd: { ...ReactDnD, ...ReactDndHtml5Backend },
+
           children: [React.createElement(QueryBuilder, { fields, defaultQuery })],
+
         })
+
       );
+
     </script>
+
   </body>
+
 </html>
 ```
 
@@ -217,17 +310,29 @@ This example uses the Ant Design library:
 
 ```
 import { QueryBuilderAntD } from '@react-querybuilder/antd';
+
 import 'antd/dist/antd.compact.css'; // <- include this only if using `antd@<5`
+
 import { QueryBuilder } from 'react-querybuilder';
+
 import 'react-querybuilder/dist/query-builder.css';
+
 import { defaultQuery, fields } from './constants';
 
+
+
 export function App() {
+
   return (
+
     <QueryBuilderAntD>
+
       <QueryBuilder fields={fields} defaultQuery={defaultQuery} />
+
     </QueryBuilderAntD>
+
   );
+
 }
 ```
 
@@ -252,20 +357,35 @@ This example uses the Bulma library *and* enables drag-and-drop:
 
 ```
 import { QueryBuilderBulma } from '@react-querybuilder/bulma';
+
 import { QueryBuilderDnD } from '@react-querybuilder/dnd';
+
 import 'bulma/bulma.sass';
+
 import { QueryBuilder } from 'react-querybuilder';
+
 import 'react-querybuilder/dist/query-builder.css';
+
 import { defaultQuery, fields } from './constants';
 
+
+
 export function App() {
+
   return (
+
     <QueryBuilderDnD>
+
       <QueryBuilderBulma>
+
         <QueryBuilder fields={fields} defaultQuery={defaultQuery} />
+
       </QueryBuilderBulma>
+
     </QueryBuilderDnD>
+
   );
+
 }
 ```
 
@@ -277,22 +397,39 @@ This example uses the Bootstrap library:
 
 ```
 import {
+
   bootstrapControlClassnames,
+
   bootstrapControlElements,
+
 } from '@react-querybuilder/bootstrap';
+
 import 'bootstrap/dist/css/bootstrap.css';
+
 import { QueryBuilder } from 'react-querybuilder';
+
 import { defaultQuery, fields } from './constants';
 
+
+
 export function App() {
+
   return (
+
     <QueryBuilder
+
       fields={fields}
+
       defaultQuery={defaultQuery}
+
       controlElements={bootstrapControlElements}
+
       controlClassnames={bootstrapControlClassnames}
+
     />
+
   );
+
 }
 ```
 
@@ -318,26 +455,47 @@ In the example below, the `size` prop is accepted because it's an `antd` `Button
 
 ```
 import { AntDActionElement, antdControlElements } from '@react-querybuilder/antd';
+
 import { QueryBuilder, type ActionProps } from 'react-querybuilder';
+
+
 
 const MyAntDActionElement = (props: ActionProps) => <AntDActionElement {...props} size="large" />;
 
+
+
 export function App() {
+
   return (
+
     <QueryBuilder
+
       controlElements={{
+
         ...antdControlElements,
+
         addRuleAction: MyAntDActionElement,
+
         addGroupAction: MyAntDActionElement,
+
         cloneRuleAction: MyAntDActionElement,
+
         cloneGroupAction: MyAntDActionElement,
+
         lockRuleAction: MyAntDActionElement,
+
         lockGroupAction: MyAntDActionElement,
+
         removeRuleAction: MyAntDActionElement,
+
         removeGroupAction: MyAntDActionElement,
+
       }}
+
     />
+
   );
+
 }
 ```
 
@@ -386,64 +544,123 @@ To avoid rendering default components and render MUI components immediately inst
 
 ```
 import { createTheme, ThemeProvider } from '@mui/material/styles';
+
 import { QueryBuilderMaterial } from '@react-querybuilder/material';
+
 import { QueryBuilder } from 'react-querybuilder';
+
 import { defaultQuery, fields } from './constants';
+
 import CloseIcon from '@mui/icons-material/Close';
+
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
+
 import DragIndicator from '@mui/icons-material/DragIndicator';
+
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
+
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
+
 import LockIcon from '@mui/icons-material/Lock';
+
 import LockOpenIcon from '@mui/icons-material/LockOpen';
+
 import Button from '@mui/material/Button';
+
 import Checkbox from '@mui/material/Checkbox';
+
 import FormControl from '@mui/material/FormControl';
+
 import FormControlLabel from '@mui/material/FormControlLabel';
+
 import InputLabel from '@mui/material/InputLabel'; // (after 8.9.2)
+
 import ListSubheader from '@mui/material/ListSubheader';
+
 import MenuItem from '@mui/material/MenuItem';
+
 import Radio from '@mui/material/Radio';
+
 import RadioGroup from '@mui/material/RadioGroup';
+
 import Select from '@mui/material/Select';
+
 import Switch from '@mui/material/Switch';
+
 import TextareaAutosize from '@mui/material/TextareaAutosize';
+
 // (Use `Input` instead of `TextField` in versions lower than 7.7.1)
+
 import TextField from '@mui/material/TextField';
 
+
+
 const muiComponents = {
+
   Button,
+
   Checkbox,
+
   CloseIcon,
+
   ContentCopyIcon,
+
   DragIndicator,
+
   FormControl,
+
   FormControlLabel,
+
   InputLabel, // (after 8.9.2)
+
   KeyboardArrowDownIcon,
+
   KeyboardArrowUpIcon,
+
   ListSubheader,
+
   LockIcon,
+
   LockOpenIcon,
+
   MenuItem,
+
   Radio,
+
   RadioGroup,
+
   Select,
+
   Switch,
+
   TextareaAutosize,
+
   TextField, // (Use `Input` instead of `TextField` in versions lower than 7.7.1)
+
 };
+
+
 
 const muiTheme = createTheme();
 
+
+
 export function App() {
+
   return (
+
     <ThemeProvider theme={muiTheme}>
+
       <QueryBuilderMaterial muiComponents={muiComponents}>
+
         <QueryBuilder fields={fields} defaultQuery={defaultQuery} />
+
       </QueryBuilderMaterial>
+
     </ThemeProvider>
+
   );
+
 }
 ```
 
@@ -576,24 +793,43 @@ The default operator list is below.
 
 ```
 export const defaultOperators: DefaultOperators = [
+
   { name: '=', value: '=', label: '=' },
+
   { name: '!=', value: '!=', label: '!=' },
+
   { name: '<', value: '<', label: '<' },
+
   { name: '>', value: '>', label: '>' },
+
   { name: '<=', value: '<=', label: '<=' },
+
   { name: '>=', value: '>=', label: '>=' },
+
   { name: 'contains', value: 'contains', label: 'contains' },
+
   { name: 'beginsWith', value: 'beginsWith', label: 'begins with' },
+
   { name: 'endsWith', value: 'endsWith', label: 'ends with' },
+
   { name: 'doesNotContain', value: 'doesNotContain', label: 'does not contain' },
+
   { name: 'doesNotBeginWith', value: 'doesNotBeginWith', label: 'does not begin with' },
+
   { name: 'doesNotEndWith', value: 'doesNotEndWith', label: 'does not end with' },
+
   { name: 'null', value: 'null', label: 'is null' },
+
   { name: 'notNull', value: 'notNull', label: 'is not null' },
+
   { name: 'in', value: 'in', label: 'in' },
+
   { name: 'notIn', value: 'notIn', label: 'not in' },
+
   { name: 'between', value: 'between', label: 'between' },
+
   { name: 'notBetween', value: 'notBetween', label: 'not between' },
+
 ];
 ```
 
@@ -609,8 +845,11 @@ Array of combinators for RuleGroups. Default combinator list:
 
 ```
 export const defaultCombinators: DefaultCombinators = [
+
   { name: 'and', value: 'and', label: 'AND' } as const,
+
   { name: 'or', value: 'or', label: 'OR' } as const,
+
 ];
 ```
 
@@ -648,9 +887,13 @@ Example: Adding "bold" class to "+ Rule" buttons (with CSS rule `.bold { font-we
 
 ```
 function App() {
+
   return (
+
     <QueryBuilder controlClassnames={{ addRule: 'bold' }}>
+
   )
+
 }
 ```
 
@@ -834,13 +1077,21 @@ To [prevent adding new groups](/docs/tips/limit-groups.md), use `controlElements
 
 ```
 <RG extends RuleGroupTypeAny>(
+
   rule: RuleType,
+
   fromPath: Path,
+
   toPath: Path | 'up' | 'down',
+
   query: RG,
+
   nextQuery: RG,
+
   options: MoveOptions,
+
   context?: any
+
 ) => RG | boolean;
 ```
 
@@ -854,13 +1105,21 @@ Called before a rule is moved or shifted. Return:
 
 ```
 <RG extends RuleGroupTypeAny>(
+
   ruleGroup: RG,
+
   fromPath: Path,
+
   toPath: Path | 'up' | 'down',
+
   query: RG,
+
   nextQuery: RG,
+
   options: MoveOptions,
+
   context?: any
+
 ) => RG | boolean;
 ```
 
@@ -886,47 +1145,89 @@ All object keys and properties are optional. The `translations` object deep-merg
 
 ```
 export const defaultTranslations: BaseTranslationsFull = {
+
   fields: {
+
     title: 'Field',
+
     placeholderName: defaultPlaceholderFieldName,
+
     placeholderLabel: defaultPlaceholderFieldLabel,
+
     placeholderGroupLabel: defaultPlaceholderFieldGroupLabel,
+
   } as const,
+
   operators: {
+
     title: 'Operator',
+
     placeholderName: defaultPlaceholderOperatorName,
+
     placeholderLabel: defaultPlaceholderOperatorLabel,
+
     placeholderGroupLabel: defaultPlaceholderOperatorGroupLabel,
+
   } as const,
+
   values: {
+
     title: 'Values',
+
     placeholderName: defaultPlaceholderValueName,
+
     placeholderLabel: defaultPlaceholderValueLabel,
+
     placeholderGroupLabel: defaultPlaceholderValueGroupLabel,
+
   } as const,
+
   matchMode: { title: 'Match mode' } as const,
+
   matchThreshold: { title: 'Match threshold' } as const,
+
   value: { title: 'Value' } as const,
+
   removeRule: { label: '⨯', title: 'Remove rule' } as const,
+
   removeGroup: { label: '⨯', title: 'Remove group' } as const,
+
   addRule: { label: '+ Rule', title: 'Add rule' } as const,
+
   addGroup: { label: '+ Group', title: 'Add group' } as const,
+
   combinators: { title: 'Combinator' } as const,
+
   notToggle: { label: 'Not', title: 'Invert this group' } as const,
+
   cloneRule: { label: '⧉', title: 'Clone rule' } as const,
+
   cloneRuleGroup: { label: '⧉', title: 'Clone group' } as const,
+
   shiftActionUp: { label: '˄', title: 'Shift up' } as const,
+
   shiftActionDown: { label: '˅', title: 'Shift down' } as const,
+
   dragHandle: { label: '⁞⁞', title: 'Drag handle' } as const,
+
   lockRule: { label: '🔓', title: 'Lock rule' } as const,
+
   lockGroup: { label: '🔓', title: 'Lock group' } as const,
+
   lockRuleDisabled: { label: '🔒', title: 'Unlock rule' } as const,
+
   lockGroupDisabled: { label: '🔒', title: 'Unlock group' } as const,
+
   muteRule: { label: '🔊', title: 'Mute rule' } as const,
+
   muteGroup: { label: '🔊', title: 'Mute group' } as const,
+
   unmuteRule: { label: '🔇', title: 'Unmute rule' } as const,
+
   unmuteGroup: { label: '🔇', title: 'Unmute group' } as const,
+
   valueSourceSelector: { title: 'Value source' } as const,
+
 } satisfies BaseTranslationsFull;
 ```
 
@@ -1022,10 +1323,15 @@ For example, the default behavior for the "between" operator might produce this 
 
 ```
 {
+
   "field": "f1",
+
   "operator": "between",
+
   "value": "f2,f3",
+
   "valueSource": "field"
+
 }
 ```
 
@@ -1033,10 +1339,15 @@ When `listsAsArrays` is true, the rule's `value` will be an array:
 
 ```
 {
+
   "field": "f1",
+
   "operator": "between",
+
   "value": ["f2", "f3"],
+
   "valueSource": "field"
+
 }
 ```
 
@@ -1069,19 +1380,29 @@ When `true`, displays a [drag handle](/docs/components/draghandle.md) on the lef
 
 ```
 npm i react-querybuilder @react-querybuilder/dnd react-dnd react-dnd-html5-backend
+
 # OR yarn add / pnpm add / bun add
 ```
 
 ```
 import { QueryBuilderDnD } from '@react-querybuilder/dnd';
+
 import * as ReactDnD from 'react-dnd';
+
 import * as ReactDndHtml5Backend from 'react-dnd-html5-backend';
+
 import { QueryBuilder } from 'react-querybuilder';
 
+
+
 const App = () => (
+
   <QueryBuilderDnD dnd={{ ...ReactDnD, ...ReactDndHtml5Backend }}>
+
     <QueryBuilder />
+
   </QueryBuilderDnD>
+
 );
 ```
 
@@ -1147,11 +1468,17 @@ A standard query (`RuleGroupType`) might look like this:
 
 ```
 const query: RuleGroupType = {
+
   combinator: 'and',
+
   rules: [
+
     { field: 'f1', operator: '=', value: 'v1' },
+
     { field: 'f2', operator: '=', value: 'v2' },
+
   ],
+
 };
 ```
 
@@ -1159,11 +1486,17 @@ The same query using independent combinators would look like this:
 
 ```
 const query: RuleGroupTypeIC = {
+
   rules: [
+
     { field: 'f1', operator: '=', value: 'v1' },
+
     'and',
+
     { field: 'f2', operator: '=', value: 'v2' },
+
   ],
+
 };
 ```
 
@@ -1182,9 +1515,13 @@ The `controlElements` prop allows you to override default components with custom
 
 ```
 function App() {
+
   return (
+
     <QueryBuilder controlElements={{ valueEditor: CustomValueEditor }}>
+
   )
+
 }
 ```
 
@@ -1246,18 +1583,31 @@ For example, this:
 
 ```
 <QueryBuilder
+
   controlElements={{
+
     addGroupAction: MyAwesomeButton
+
     addRuleAction: MyAwesomeButton
+
     cloneGroupAction: MyAwesomeButton
+
     cloneRuleAction: MyAwesomeButton
+
     lockGroupAction: MyAwesomeButton
+
     lockRuleAction: MyAwesomeButton
+
     muteGroupAction: MyAwesomeButton
+
     muteRuleAction: MyAwesomeButton
+
     removeGroupAction: MyAwesomeButton
+
     removeRuleAction: MyAwesomeButton
+
   }}
+
 />
 ```
 
@@ -1781,12 +2131,19 @@ For example, this:
 
 ```
 <QueryBuilder
+
   controlElements={{
+
     combinatorSelector: MyAwesomeSelector
+
     fieldSelector: MyAwesomeSelector
+
     operatorSelector: MyAwesomeSelector
+
     valueSourceSelector: MyAwesomeSelector
+
   }}
+
 />
 ```
 
@@ -2038,7 +2395,9 @@ By default, React Query Builder facilitates comparing fields (typically database
 
 ```
 SELECT *
+
   FROM users
+
  WHERE lastName LIKE firstName || '%';
 ```
 
@@ -2052,9 +2411,13 @@ In the query builder above, the definition for the field used in the last rule i
 
 ```
 {
+
   "name": "field",
+
   "label": "field",
+
   "valueSources": ["field", "value"]
+
 }
 ```
 
@@ -2062,11 +2425,17 @@ The `defaultQuery` prop looks like this:
 
 ```
 {
+
   "combinator": "and",
+
   "rules": [
+
     // ...other rules...
+
     { "field": "field", "operator": "=", "value": "text", "valueSource": "field" }
+
   ]
+
 }
 ```
 
@@ -2088,17 +2457,29 @@ Here's an example. In the following field list, fields `f1`, `f2`, and `f3` shar
 
 ```
 const fields: Field[] = {
+
   {
+
     name: 'f1',
+
     label: 'f1',
+
     valueSources: ["field"],
+
     comparator: 'datatype',
+
     datatype: 'number'
+
   },
+
   { name: 'f2', label: 'f2', datatype: 'number' },
+
   { name: 'f3', label: 'f3', datatype: 'number' },
+
   { name: 'f4', label: 'f4', datatype: 'string' },
+
   { name: 'f5', label: 'f5', datatype: 'string' },
+
 }
 ```
 
@@ -2106,15 +2487,25 @@ The `comparator` property can also be a function that takes a `Field` object as 
 
 ```
 const fields: Field[] = {
+
   { name: 'f1',
+
     label: 'f1',
+
     valueSources: ["field"],
+
     comparator: f => f.datatype === 'number'
+
   },
+
   { name: 'f2', label: 'f2', datatype: 'number' },
+
   { name: 'f3', label: 'f3', datatype: 'number' },
+
   { name: 'f4', label: 'f4', datatype: 'string' },
+
   { name: 'f5', label: 'f5', datatype: 'string' },
+
 }
 ```
 
@@ -2153,8 +2544,11 @@ The documentation below assumes the use of the Day.js plugin. To use one of the 
 
 ```
 import { datetimeRuleProcessorSQL } from '@react-querybuilder/datetime/dayjs';
+
 // Other options:
+
 // import { datetimeRuleProcessorSQL } from '@react-querybuilder/datetime/date-fns';
+
 // import { datetimeRuleProcessorSQL } from '@react-querybuilder/datetime/luxon';
 ```
 
@@ -2175,21 +2569,37 @@ In the example below, the value in the "birthDate" rule matches the regular expr
 
 ```
 // Returns true if the value appears to be an ISO date-only string (YYYY-MM-DD)
+
 const isDateField = (rule, opts) => /^\d\d\d\d-\d\d-\d\d$/.test(rule.value);
 
+
+
 const query: RuleGroupType = {
+
   combinator: 'and',
+
   rules: [
+
     { field: 'birthDate', operator: '<', value: '1950-01-01' },
+
     { field: 'mathNotDate', operator: '=', value: '1950-1-1' },
+
   ],
+
 };
 
+
+
 formatQuery(query, {
+
   preset: 'postgresql',
+
   ruleProcessor: datetimeRuleProcessorSQL,
+
   context: { isDateField },
+
 });
+
 // `(birthDate < date'1950-01-01' and mathNotDate = '1950-1-1')`
 ```
 
@@ -2197,27 +2607,49 @@ In the next example, `isDateField` is an array of objects. If the field object (
 
 ```
 // Triggers date processing if the field has `datatype: "date"` _or_ `inputType: "datetime-local"`
+
 const isDateField = [{ datatype: 'date' }, { inputType: 'datetime-local' }];
 
+
+
 const fields: Field[] = [
+
   { name: 'birthDate', label: 'Birth Date', datatype: 'date' },
+
   { name: 'mathNotDate', label: 'Math, Not Date', datatype: 'number' },
+
 ];
 
+
+
 const query: RuleGroupType = {
+
   combinator: 'and',
+
   rules: [
+
     { field: 'birthDate', operator: '<', value: '1950-01-01' },
+
     { field: 'mathNotDate', operator: '=', value: '1950-1-1' },
+
   ],
+
 };
 
+
+
 formatQuery(query, {
+
   preset: 'postgresql',
+
   fields,
+
   ruleProcessor: datetimeRuleProcessorSQL,
+
   context: { isDateField },
+
 });
+
 // `(birthDate < date'1950-01-01' and mathNotDate = '1950-1-1')`
 ```
 
@@ -2232,9 +2664,14 @@ Since the `datetimeRuleProcessorMongoDBQuery` rule processor handles real date/t
 ```
 import { datetimeRuleProcessorMongoDBQuery } from '@react-querybuilder/datetime/dayjs';
 
+
+
 const mongodbQuery = formatQuery(query, {
+
   format: 'mongodb_query',
+
   ruleProcessor: datetimeRuleProcessorMongoDBQuery,
+
 });
 ```
 
@@ -2244,16 +2681,28 @@ The `datetimeRuleProcessorJsonLogic` rule processor produces custom JsonLogic op
 
 ```
 import { add_operation, apply } from 'json-logic-js';
+
 import { jsonLogicDateTimeOperations } from '@react-querybuilder/datetime/dayjs';
 
+
+
 for (const [op, func] of Object.entries(jsonLogicDateTimeOperations)) {
+
   add_operation(op, func);
+
 }
 
+
+
 const jsonLogic = formatQuery(query, {
+
   format: 'jsonlogic',
+
   ruleProcessor: datetimeRuleProcessorJsonLogic,
+
 });
+
+
 
 const results = data.filter(d => apply(jsonLogic, d));
 ```
@@ -2263,6 +2712,8 @@ const results = data.filter(d => apply(jsonLogic, d));
 ```
 import { datetimeRuleProcessorCEL } from '@react-querybuilder/datetime/dayjs';
 
+
+
 const cel = formatQuery(query, { format: 'cel', ruleProcessor: datetimeRuleProcessorCEL });
 ```
 
@@ -2271,9 +2722,14 @@ const cel = formatQuery(query, { format: 'cel', ruleProcessor: datetimeRuleProce
 ```
 import { datetimeRuleProcessorJSONata } from '@react-querybuilder/datetime/dayjs';
 
+
+
 const jsonata = formatQuery(query, {
+
   format: 'jsonata',
+
   ruleProcessor: datetimeRuleProcessorJSONata,
+
 });
 ```
 
@@ -2283,9 +2739,13 @@ The `datetimeRuleProcessorNL` formats date/time values using `Intl.DateTimeForma
 
 ```
 // For date-only values, e.g. "1969-01-01":
+
 new Intl.DateTimeFormat(undefined, { dateStyle: 'full' });
 
+
+
 // For date+time values, e.g. "1969-01-01T12:14:26.052Z":
+
 new Intl.DateTimeFormat(undefined, { dateStyle: 'full', timeStyle: 'long' });
 ```
 
@@ -2294,16 +2754,32 @@ To customize the output, use the `context` option. The `locales` property is pas
 ```
 import { datetimeRuleProcessorNL } from '@react-querybuilder/datetime/dayjs';
 
+
+
 const nl = formatQuery(query, {
+
   format: 'natural_language',
+
   ruleProcessor: datetimeRuleProcessorNL,
+
   context: {
+
     locales: 'en-GB',
+
     dateFormat: { dateStyle: 'full' },
+
     dateTimeFormat: { dateStyle: 'full', timeStyle: 'long' },
+
   },
+
 });
 ```
+
+<!-- -->
+
+<!-- -->
+
+<!-- -->
 
 ## Custom plugins[​](#custom-plugins "Direct link to Custom plugins")
 
@@ -2312,26 +2788,48 @@ If the official date/time processor plugins do not meet your requirements, you c
 ```
 type DateOrString = string | Date;
 
+
+
 interface RQBDateTimeLibraryAPI {
+
   /** Format a `Date` or ISO 8601 string with format `fmt` */
+
   format: (d: DateOrString, fmt: string) => string;
+
   /** `a` is after `b`. */
+
   isAfter: (a: DateOrString, b: DateOrString) => boolean;
+
   /** `a` is before `b`. */
+
   isBefore: (a: DateOrString, b: DateOrString) => boolean;
+
   /**
+
    * `a` evaluates to the same timestamp as `b`. If either `a` or `b` is an
+
    * ISO date-only string, they are the same date (time component is ignored).
+
    */
+
   isSame: (a: DateOrString, b: DateOrString) => boolean;
+
   /** `d` is, or evaluates to, a valid `Date` object */
+
   isValid: (d: DateOrString) => boolean;
+
   /** Convert a string to a `Date` object (returns a `Date` unchanged) */
+
   toDate: (d: DateOrString) => Date;
+
   /** 'YYYY-MM-DDTHH:mm:ss.SSSZ' format */
+
   toISOString: (d: DateOrString) => string;
+
   /** Format `Date` or ISO 8601 string in ISO date-only format ('YYYY-MM-DD') */
+
   toISOStringDateOnly: (d: DateOrString) => string;
+
 }
 ```
 
@@ -2339,6 +2837,8 @@ Most exports from the date/time library have a corresponding `get*` method that 
 
 ```
 const mySQLRuleProcessor = getDatetimeRuleProcessorSQL(myDateTimeLibraryAPI);
+
+
 
 const sql = formatQuery(query, { format: 'sql', ruleProcessor: mySQLRuleProcessor });
 ```
@@ -2381,15 +2881,25 @@ pnpm add react-querybuilder @react-querybuilder/dnd react-dnd react-dnd-html5-ba
 
 ```
 import { QueryBuilderDnD } from '@react-querybuilder/dnd';
+
 import * as ReactDnD from 'react-dnd';
+
 import * as ReactDndHtml5Backend from 'react-dnd-html5-backend';
+
 import * as ReactDndTouchBackend from 'react-dnd-touch-backend';
+
 import { QueryBuilder } from 'react-querybuilder';
 
+
+
 const App = () => (
+
   <QueryBuilderDnD dnd={{ ...ReactDnD, ...ReactDndHtml5Backend, ...ReactDndTouchBackend }}>
+
     <QueryBuilder />
+
   </QueryBuilderDnD>
+
 );
 ```
 
@@ -2547,24 +3057,43 @@ Non-TypeScript version
 
 ```
 import { useState } from 'react';
+
 import { QueryBuilder } from 'react-querybuilder';
+
 import 'react-querybuilder/dist/query-builder.css';
 
+
+
 const fields = [
+
   { name: 'firstName', label: 'First Name' },
+
   { name: 'lastName', label: 'Last Name' },
+
 ];
 
+
+
 export default () => {
+
   const [query, setQuery] = useState({
+
     combinator: 'and',
+
     rules: [
+
       { field: 'firstName', operator: '=', value: 'Steve' },
+
       { field: 'lastName', operator: '=', value: 'Vai' },
+
     ],
+
   });
 
+
+
   return <QueryBuilder fields={fields} query={query} onQueryChange={setQuery} />;
+
 };
 ```
 
@@ -2674,8 +3203,12 @@ The `RulesEngineBuilder` component provides a specialized interface for creating
 ```
 import { RulesEngineBuilder } from '@react-querybuilder/rules-engine';
 
+
+
 function App() {
+
   return <RulesEngineBuilder />;
+
 }
 ```
 
@@ -2685,30 +3218,55 @@ Using `RulesEngineBuilder` as an uncontrolled component by setting the `defaultR
 
 ```
 import { useState } from 'react';
+
 import { RulesEngineBuilder } from '@react-querybuilder/rules-engine';
+
 import type { RulesEngine } from '@react-querybuilder/rules-engine';
 
+
+
 function App() {
+
   const [rulesEngine, setRulesEngine] = useState<RulesEngine>({
+
     conditions: [],
+
     defaultConsequent: { type: 'default-action' },
+
   });
 
+
+
   return (
+
     <RulesEngineBuilder
+
       // Uncontrolled:
+
       defaultRulesEngine={rulesEngine}
+
       // Controlled:
+
       // rulesEngine={rulesEngine}
+
       onRulesEngineChange={setRulesEngine}
+
       consequentTypes={[
+
         { name: 'email-alert', label: 'Send Email' },
+
         { name: 'sms-alert', label: 'Send SMS' },
+
         { name: 'log-event', label: 'Log Event' },
+
         { name: 'default-action', label: 'Default Action' },
+
       ]}
+
     />
+
   );
+
 }
 ```
 
@@ -2718,14 +3276,23 @@ The rules engine package uses Redux for internal state management and requires t
 
 ```
 import { QueryBuilderStateProvider } from 'react-querybuilder';
+
 import { RulesEngineBuilder } from '@react-querybuilder/rules-engine';
 
+
+
 function App() {
+
   return (
+
     <QueryBuilderStateProvider>
+
       <RulesEngineBuilder />
+
     </QueryBuilderStateProvider>
+
   );
+
 }
 ```
 
@@ -2742,15 +3309,26 @@ In the render phase, access rules engine state using the `useRulesEngineBuilderR
 ```
 import { useRulesEngineBuilderRulesEngine } from '@react-querybuilder/rules-engine';
 
+
+
 function MyCustomComponent() {
+
   const rulesEngine = useRulesEngineBuilderRulesEngine();
 
+
+
   return (
+
     <div>
+
       <p>Number of conditions: {rulesEngine.conditions?.length ?? 0}</p>
+
       <p>Has default consequent: {!!rulesEngine.defaultConsequent}</p>
+
     </div>
+
   );
+
 }
 ```
 
@@ -2762,31 +3340,57 @@ The `formatRulesEngine` function converts rules engine objects into formats comp
 
 ```
 import { formatRulesEngine } from '@react-querybuilder/rules-engine';
+
 import { Engine } from 'json-rules-engine';
 
+
+
 const rulesEngine = {
+
   conditions: [
+
     {
+
       antecedent: {
+
         combinator: 'and',
+
         rules: [
+
           { field: 'temperature', operator: '>', value: 85 },
+
           { field: 'humidity', operator: '<', value: 40 },
+
         ],
+
       },
+
       consequent: { type: 'alert', message: 'High temperature detected' },
+
     },
+
   ],
+
   defaultConsequent: { type: 'monitor', action: 'continue-monitoring' },
+
 };
 
+
+
 // Convert to json-rules-engine format
+
 const jsonRules = formatRulesEngine(rulesEngine, 'json-rules-engine');
 
+
+
 // Create and run engine
+
 const engine = new Engine(jsonRules);
+
 engine.run({ temperature: 90, humidity: 35 }).then(events => {
+
   events.forEach(event => console.log(event.type, event.params));
+
 });
 ```
 
@@ -2796,19 +3400,33 @@ Extend export functionality with custom processors:
 
 ```
 import { formatRulesEngine } from '@react-querybuilder/rules-engine';
+
 import type { RulesEngineProcessor } from '@react-querybuilder/rules-engine';
 
+
+
 const customProcessor: RulesEngineProcessor<MyCustomFormat> = rulesEngine => ({
+
   // Transform to your custom format
+
   rules: rulesEngine.conditions.map(condition => ({
+
     when: condition.antecedent,
+
     then: condition.consequent,
+
   })),
+
   fallback: rulesEngine.defaultConsequent,
+
 });
 
+
+
 const customFormat = formatRulesEngine(rulesEngine, {
+
   rulesEngineProcessor: customProcessor,
+
 });
 ```
 
@@ -2820,22 +3438,39 @@ The rules engine includes specialized components for rules engine functionality:
 
 ```
 import { RulesEngineBuilder } from '@react-querybuilder/rules-engine';
+
 import type { ComponentsRE } from '@react-querybuilder/rules-engine';
 
+
+
 const customComponents: Partial<ComponentsRE> = {
+
   consequentSelector: ({ options, value, handleOnChange }) => (
+
     <select value={value} onChange={e => handleOnChange(e.target.value)}>
+
       {options.map(opt => (
+
         <option key={opt.name} value={opt.name}>
+
           {opt.label}
+
         </option>
+
       ))}
+
     </select>
+
   ),
+
 };
 
+
+
 function App() {
+
   return <RulesEngineBuilder components={customComponents} />;
+
 }
 ```
 
@@ -2846,23 +3481,42 @@ Pass standard `QueryBuilder` props for condition editing:
 ```
 import { RulesEngineBuilder } from '@react-querybuilder/rules-engine';
 
+
+
 function App() {
+
   return (
+
     <RulesEngineBuilder
+
       queryBuilderProps={{
+
         fields: [
+
           { name: 'temperature', label: 'Temperature', datatype: 'number' },
+
           { name: 'humidity', label: 'Humidity', datatype: 'number' },
+
           { name: 'location', label: 'Location', datatype: 'text' },
+
         ],
+
         operators: [
+
           { name: '>', label: 'greater than' },
+
           { name: '<', label: 'less than' },
+
           { name: '=', label: 'equals' },
+
         ],
+
       }}
+
     />
+
   );
+
 }
 ```
 
@@ -2874,12 +3528,19 @@ Define available consequence types for rules:
 
 ```
 <RulesEngineBuilder
+
   consequentTypes={[
+
     { name: 'email', label: 'Send Email' },
+
     { name: 'webhook', label: 'Call Webhook' },
+
     { name: 'database', label: 'Update Database' },
+
   ]}
+
   autoSelectConsequentType={true}
+
 />
 ```
 
@@ -2906,14 +3567,25 @@ Customize UI labels:
 ```
 import type { TranslationsRE } from '@react-querybuilder/rules-engine';
 
+
+
 const customTranslations: Partial<TranslationsRE> = {
+
   blockLabelIf: { label: 'When' },
+
   blockLabelElseIf: { label: 'Otherwise when' },
+
   blockLabelElse: { label: 'Otherwise' },
+
   blockLabelThen: { label: 'Do' },
+
   addCondition: { label: 'Add condition' },
+
   addConsequent: { label: 'Add action' },
+
 };
+
+
 
 <RulesEngineBuilder translations={customTranslations} />;
 ```
@@ -2924,19 +3596,33 @@ const customTranslations: Partial<TranslationsRE> = {
 
 `RulesEngineBuilder` adds specific CSS classes for styling (unless `suppressStandardClassnames` is set):
 
+<!-- -->
+
 ```
 .rulesEngineBuilder {}
+
 .rulesEngineBuilder-header {}
+
 .consequentBuilder {}
+
 .consequentBuilder-header {}
+
 .consequentBuilder-body {}
+
 .consequentBuilder-standalone {}
+
 .conditionBuilder {}
+
 .conditionBuilder-header {}
+
 .blockLabel {}
+
 .blockLabel-if {}
+
 .blockLabel-ifelse {}
+
 .blockLabel-else {}
+
 .blockLabel-then {}
 ```
 
@@ -2945,12 +3631,21 @@ const customTranslations: Partial<TranslationsRE> = {
 ```
 import type { ClassnamesRE } from '@react-querybuilder/rules-engine';
 
+
+
 const customClassnames: Partial<ClassnamesRE> = {
+
   rulesEngineBuilder: 'my-rules-engine',
+
   blockLabelIf: 'my-if-label',
+
   blockLabelThen: 'my-then-label',
+
   consequentBuilder: 'my-consequent-section',
+
 };
+
+
 
 <RulesEngineBuilder classnames={customClassnames} />;
 ```
@@ -2961,29 +3656,53 @@ const customClassnames: Partial<ClassnamesRE> = {
 
 ```
 import type {
+
   RulesEngine,
+
   RulesEngineAny,
+
   RECondition,
+
   Consequent,
+
   FormatRulesEngineOptions,
+
 } from '@react-querybuilder/rules-engine';
 
+
+
 // Basic rules engine structure
+
 const rulesEngine: RulesEngine = {
+
   conditions: [
+
     {
+
       antecedent: { combinator: 'and', rules: [] },
+
       consequent: { type: 'action', data: {} },
+
     },
+
   ],
+
   defaultConsequent: { type: 'default' },
+
 };
 
+
+
 // Custom consequent type
+
 interface MyConsequent extends Consequent {
+
   type: 'email' | 'sms' | 'webhook';
+
   recipient: string;
+
   message: string;
+
 }
 ```
 
@@ -2991,11 +3710,18 @@ interface MyConsequent extends Consequent {
 
 ```
 import type { RuleType } from 'react-querybuilder';
+
 import type { RulesEngine } from '@react-querybuilder/rules-engine';
 
+
+
 interface CustomRule extends RuleType {
+
   metadata?: Record<string, unknown>;
+
 }
+
+
 
 type CustomRulesEngine = RulesEngine<CustomRule, 'and' | 'or' | 'xor'>;
 ```
@@ -3008,22 +3734,39 @@ Manipulate rules engine structure programmatically:
 
 ```
 import {
+
   regenerateREIDs,
+
   prepareRulesEngine,
+
   isRulesEngine,
+
 } from '@react-querybuilder/rules-engine';
 
+
+
 // Regenerate IDs for all elements
+
 const withNewIds = regenerateREIDs(rulesEngine);
 
+
+
 // Recursively add `id` properties (only if necessary)
+
 const preparedRE = prepareRulesEngine(partialRulesEngine, {
+
   idGenerator: () => `${Math.random()}`, // override default of `crypto.randomUUID()`
+
 });
 
+
+
 // Type checking
+
 if (isRulesEngine(unknownObject)) {
+
   // Safe to use as rules engine
+
 }
 ```
 
@@ -3031,14 +3774,23 @@ if (isRulesEngine(unknownObject)) {
 
 ```
 <RulesEngineBuilder
+
   onAddCondition={(condition, parentPath, rulesEngine) => {
+
     console.log('Condition added:', condition);
+
     return condition; // Return modified condition or true to proceed
+
   }}
+
   onRemoveCondition={(condition, path, rulesEngine) => {
+
     console.log('Condition removed:', condition);
+
     return true; // Return true to proceed with removal
+
   }}
+
 />
 ```
 
@@ -3147,46 +3899,87 @@ Value list (fb1)betweenfield.rule-value-list-item (fb2).rule-value-list-item (fb
 
 ```
 export const standardClassnames = {
+
   queryBuilder: 'queryBuilder',
+
   ruleGroup: 'ruleGroup',
+
   header: 'ruleGroup-header',
+
   body: 'ruleGroup-body',
+
   combinators: 'ruleGroup-combinators',
+
   addRule: 'ruleGroup-addRule',
+
   addGroup: 'ruleGroup-addGroup',
+
   cloneRule: 'rule-cloneRule',
+
   cloneGroup: 'ruleGroup-cloneGroup',
+
   removeGroup: 'ruleGroup-remove',
+
   notToggle: 'ruleGroup-notToggle',
+
   rule: 'rule',
+
   fields: 'rule-fields',
+
   matchMode: 'rule-matchMode',
+
   matchThreshold: 'rule-matchThreshold',
+
   operators: 'rule-operators',
+
   value: 'rule-value',
+
   removeRule: 'rule-remove',
+
   betweenRules: 'betweenRules',
+
   valid: 'queryBuilder-valid',
+
   invalid: 'queryBuilder-invalid',
+
   shiftActions: 'shiftActions',
+
   dndDragging: 'dndDragging',
+
   dndOver: 'dndOver',
+
   dndCopy: 'dndCopy',
+
   dndGroup: 'dndGroup',
+
   dndDropNotAllowed: 'dndDropNotAllowed',
+
   dragHandle: 'queryBuilder-dragHandle',
+
   disabled: 'queryBuilder-disabled',
+
   muted: 'queryBuilder-muted',
+
   lockRule: 'rule-lock',
+
   lockGroup: 'ruleGroup-lock',
+
   muteRule: 'rule-mute',
+
   muteGroup: 'ruleGroup-mute',
+
   valueSource: 'rule-valueSource',
+
   valueListItem: 'rule-value-list-item',
+
   branches: 'queryBuilder-branches',
+
   justified: 'queryBuilder-justified',
+
   hasSubQuery: 'rule-hasSubQuery',
+
   loading: 'queryBuilder-loading',
+
 } as const;
 ```
 
@@ -3212,13 +4005,17 @@ For layout-only styles (structural properties like `flex-direction`, `gap`, alig
 
 ```
 @import 'react-querybuilder/dist/query-builder.css';
+
 /* OR, for layout only: */
+
 @import 'react-querybuilder/dist/query-builder-layout.css';
 ```
 
 ```
 @use 'react-querybuilder/dist/query-builder.scss';
+
 // OR, for layout only:
+
 @use 'react-querybuilder/dist/query-builder-layout.scss';
 ```
 
@@ -3237,23 +4034,37 @@ Default variables:
 
 ```
 :root {
+
   --rqb-spacing: 0.5rem;
+
   --rqb-border-width: 1px;
+
   --rqb-base-color: #004bb8;
+
   --rqb-background-color: #004bb833;
+
   --rqb-border-color: #8081a2;
+
   --rqb-border-style: solid;
+
   --rqb-border-radius: 0.25rem;
+
 }
 ```
 
 ```
 $rqb-spacing: 0.5rem;
+
 $rqb-border-width: 1px;
+
 $rqb-base-color: #004bb8;
+
 $rqb-background-color: #004bb833;
+
 $rqb-border-color: #8081a2;
+
 $rqb-border-style: solid;
+
 $rqb-border-radius: 0.25rem;
 ```
 
@@ -3265,16 +4076,24 @@ Example:
 ```
 @import 'react-querybuilder/dist/query-builder.css';
 
+
+
 :root {
+
   --rqb-spacing: 0.8rem; /* a little roomier than the default 0.5rem */
+
   --rqb-background-color: #ccc3; /* gray, semi-transparent background */
+
 }
 ```
 
 ```
 @use 'react-querybuilder/dist/query-builder' with (
+
   $rqb-spacing: 0.8rem, /* a little roomier than the default 0.5rem */
+
   $rqb-background-color: #ccc3 /* gray, semi-transparent background */
+
 );
 ```
 
@@ -3286,12 +4105,19 @@ SCSS allows you to customize the CSS variable prefix (`rqb-` by default) by sett
 
 ```
 @use 'react-querybuilder/dist/query-builder' with (
+
   $rqb-var-prefix: myprefix-,
+
   $rqb-spacing: 0.8rem
+
 );
 
+
+
 :root {
+
   --myprefix-background-color: #ccc3;
+
 }
 ```
 
@@ -3301,7 +4127,9 @@ To add branch lines to the left side of rule groups, add the `queryBuilder-branc
 
 ```
 <QueryBuilder
+
   controlClassnames={{ queryBuilder: 'queryBuilder-branches' }}
+
 />
 ```
 
@@ -3326,19 +4154,29 @@ The branch lines are colored red in the example above to stand out, but by defau
 
 ```
 :root {
+
   --rqb-branch-indent: var(--rqb-spacing);
+
   --rqb-branch-width: var(--rqb-border-width);
+
   --rqb-branch-color: var(--rqb-border-color);
+
   --rqb-branch-radius: var(--rqb-border-radius);
+
   --rqb-branch-style: var(--rqb-border-style);
+
 }
 ```
 
 ```
 $rqb-branch-indent: $rqb-spacing;
+
 $rqb-branch-width: $rqb-border-width;
+
 $rqb-branch-color: $rqb-border-color;
+
 $rqb-branch-radius: $rqb-border-radius;
+
 $rqb-branch-style: $rqb-border-style;
 ```
 
@@ -3350,7 +4188,9 @@ Justified layout styles augment the default styles by pushing "+ Rule", "+ Group
 
 ```
 <QueryBuilder
+
   controlClassnames={{ queryBuilder: 'queryBuilder-justified' }}
+
 />
 ```
 
@@ -3375,23 +4215,37 @@ When [drag-and-drop is enabled](/docs/dnd.md), these variables control styles fo
 
 ```
 :root {
+
   --rqb-dnd-drop-indicator-color: rebeccapurple;
+
   --rqb-dnd-drop-indicator-copy-color: #669933;
+
   --rqb-dnd-drop-indicator-style: dashed;
+
   --rqb-dnd-drop-indicator-width: 2px;
+
 }
 ```
 
 ```
 $rqb-dnd-drop-indicator-color: rebeccapurple;
+
 $rqb-dnd-drop-indicator-copy-color: #669933;
+
 $rqb-dnd-drop-indicator-style: dashed;
+
 $rqb-dnd-drop-indicator-width: 2px;
 
+
+
 // Deprecated variable names (still work)
+
 // $rqb-dnd-hover-border-bottom-color: rebeccapurple;
+
 // $rqb-dnd-hover-copy-border-bottom-color: #669933;
+
 // $rqb-dnd-hover-border-bottom-style: dashed;
+
 // $rqb-dnd-hover-border-bottom-width: 2px;
 ```
 
@@ -3415,17 +4269,30 @@ The example below (inspired by [issue #226](https://github.com/react-querybuilde
 
 ```
 import type { Field, RuleGroupType, RuleType } from 'react-querybuilder';
+
 import { transformQuery } from 'react-querybuilder';
 
+
+
 const fields: Field[] = [
+
   { name: 'description', label: 'Description', inputType: 'string' },
+
   { name: 'price', label: 'Price', inputType: 'number' },
+
 ];
 
+
+
 const ruleProcessor: RuleProcessor = (r, { fieldData }): RuleType & { inputType?: string } => ({
+
   ...r,
+
   inputType: fieldData?.inputType,
+
 });
+
+
 
 const result = transformQuery(query, { ruleProcessor });
 ```
@@ -3437,25 +4304,47 @@ This example (taken directly from [issue #226](https://github.com/react-querybui
 ```
 import type { Field, RuleGroupType, RuleType } from 'react-querybuilder';
 
+
+
 const fields: Field[] = [
+
   { name: 'description', label: 'Description', inputType: 'string' },
+
   { name: 'price', label: 'Price', inputType: 'number' },
+
 ];
 
+
+
 const processRule = (r: RuleType): RuleType & { inputType?: string } => ({
+
   ...r,
+
   inputType: fields.find(f => f.name === r.field)?.inputType,
+
 });
 
+
+
 const processGroup = (rg: RuleGroupType): RuleGroupType => ({
+
   ...rg,
+
   rules: rg.rules.map(r => {
+
     if ('field' in r) {
+
       return processRule(r);
+
     }
+
     return processGroup(r);
+
   }),
+
 });
+
+
 
 const result = processGroup(query);
 ```
@@ -3466,19 +4355,33 @@ To create a JSON string from a query object containing only specific properties,
 
 ```
 const query: RuleGroupType = {
+
   id: 'root',
+
   combinator: 'and',
+
   rules: [
+
     {
+
       field: 'firstName',
+
       operator: '=',
+
       value: 'Steve',
+
     },
+
   ],
+
 };
 
+
+
 // This omits all properties except those specified in the replacer array:
+
 console.log(JSON.stringify(query, ['rules', 'field', 'operator', 'value']));
+
 // '{"rules":[{"field":"firstName","operator":"=","value":"Steve"}]}'
 ```
 
@@ -3486,6 +4389,7 @@ Alternatively, the `formatQuery` function provides a convenient method to genera
 
 ```
 console.log(formatQuery(query, 'json_without_ids'));
+
 // '{"combinator":"and","rules":[{"field":"firstName","operator":"=","value":"Steve"}]}'
 ```
 
@@ -3676,30 +4580,56 @@ For more information about option list props, see [Working with option lists](/d
 ```
 import { type UseAsyncOptionListParams, useAsyncOptionList } from 'react-querybuilder/async';
 
+
+
 const useAsyncOptionListParams: UseAsyncOptionListParams<ValueSelectorProps> = {
+
   getCacheKey: 'field',
+
   loadOptionList: async (value, { ruleOrGroup }) => {
+
     const response = await fetch(`/api/operators?field=${ruleOrGroup.field}`);
+
     return response.json();
+
   },
+
 };
+
+
 
 // Step 1
+
 const AsyncOperatorSelector = (props: ValueSelectorProps) => {
+
   // Step 2
+
   const asyncProps = useAsyncOptionList(props, useAsyncOptionListParams);
 
+
+
   // Step 3
+
   return <props.schema.controls.valueSelector {...asyncProps} />;
+
 };
 
+
+
 const App = () => (
+
   <QueryBuilder
+
     controlElements={{
+
       // Step 4
+
       operatorSelector: AsyncOperatorSelector,
+
     }}
+
   />
+
 );
 ```
 
@@ -3709,8 +4639,11 @@ While you can explicitly render any selector or editor component...
 
 ```
 // For example:
+
 return <AntDValueSelector {...asyncProps} />;
+
 // or
+
 return <MaterialValueEditor {...asyncProps} />;
 ```
 
@@ -3718,7 +4651,9 @@ return <MaterialValueEditor {...asyncProps} />;
 
 ```
 return <props.schema.controls.valueSelector {...asyncProps} />;
+
 // or
+
 return <props.schema.controls.valueEditor {...asyncProps} />;
 ```
 
@@ -3738,20 +4673,35 @@ Function that returns a `Promise` for the [option list](/docs/tips/option-lists.
 
 ```
 const loadFieldOptions = async (value, { ruleOrGroup }) => {
+
   // Current selector value is available
+
   console.log('Current value:', value);
 
+
+
   // Rule or group context is available
+
   if (ruleOrGroup?.field === 'user') {
+
     return await fetch('/api/user-fields').then(r => r.json());
+
   }
 
+
+
   return await fetch('/api/default-fields').then(r => r.json());
+
 };
 
+
+
 const ValueSelectorAsync = (props: ValueSelectorProps) => {
+
   const asyncProps = useAsyncOptionList(props, { loadOptionList: loadFieldOptions });
+
   return <props.schema.controls.valueSelector {...asyncProps} />;
+
 };
 ```
 
@@ -3763,14 +4713,23 @@ Controls cache key generation. Can be a string, array of strings, or a function 
 
 ```
 // Cache by field value only
+
 const getCacheKey = 'field';
 
+
+
 // Or cache by operator value only
+
 const getCacheKey = 'operator';
 
+
+
 const ValueSelectorAsync = (props: ValueSelectorProps) => {
+
   const asyncProps = useAsyncOptionList(props, { getCacheKey, loadOptionList });
+
   return <props.schema.controls.valueSelector {...asyncProps} />;
+
 };
 ```
 
@@ -3778,11 +4737,17 @@ const ValueSelectorAsync = (props: ValueSelectorProps) => {
 
 ```
 // Cache by combination of field and operator
+
 const getCacheKey = ['field', 'operator'];
 
+
+
 const ValueSelectorAsync = (props: ValueSelectorProps) => {
+
   const asyncProps = useAsyncOptionList(props, { getCacheKey, loadOptionList });
+
   return <props.schema.controls.valueSelector {...asyncProps} />;
+
 };
 ```
 
@@ -3790,19 +4755,33 @@ const ValueSelectorAsync = (props: ValueSelectorProps) => {
 
 ```
 // `getCacheKey` receives the entire props object as its only parameter
+
 const getCacheKey = (props: ValueSelectorProps) => {
+
   const {
+
     rule,
+
     ruleGroup,
+
     schema: { qbId },
+
   } = props;
+
   // Using `qbId` will cache each query builder separately
+
   return `${qbid}-${rule?.field}-${rule?.operator}-${ruleGroup?.id}`;
+
 };
 
+
+
 const ValueSelectorAsync = (props: ValueSelectorProps) => {
+
   const asyncProps = useAsyncOptionList(props, { getCacheKey, loadOptionList });
+
   return <props.schema.controls.valueSelector {...asyncProps} />;
+
 };
 ```
 
@@ -3812,17 +4791,29 @@ Cache time-to-live in milliseconds. Defaults to `1_800_000` (30 minutes).
 
 ```
 // 30 minutes (default)
+
 const cacheTTL = 1_800_000;
 
+
+
 // 5 minutes:    m    s     ms
+
 const cacheTTL = 5 * 60 * 1000;
 
+
+
 // Disable caching (cache will be populated but immediately outdated)
+
 const cacheTTL = 0;
 
+
+
 const ValueSelectorAsync = (props: ValueSelectorProps) => {
+
   const asyncProps = useAsyncOptionList(props, { cacheTTL, loadOptionList });
+
   return <props.schema.controls.valueSelector {...asyncProps} />;
+
 };
 ```
 
@@ -3836,21 +4827,37 @@ In this example, `my-async-loading-class` will be added to the specific componen
 
 ```
 const ValueSelectorAsync = (props: ValueSelectorProps) => {
+
   const asyncProps = useAsyncOptionList(props, { ...otherParams, isLoading });
 
+
+
   return (
+
     <props.schema.controls.valueSelector
+
       {...asyncProps}
+
       className={`${asyncProp.className}${asyncProps.isLoading ? ' my-async-loading-class' : ''}`}
+
     />
+
   );
+
 };
 
+
+
 const App = () => (
+
   <QueryBuilder
+
     controlElements={{ valueSelector: ValueSelectorAsync }}
+
     controlClassnames={{ loading: 'common-async-loading-class' }}
+
   />
+
 );
 ```
 
@@ -3858,12 +4865,19 @@ To force a "loading" state, set the `isLoading` parameter to `true`:
 
 ```
 const ValueSelectorAsync = (props: ValueSelectorProps) => {
+
   // Assume this hook determines whether to force a "loading" state and returns a `boolean`:
+
   const isLoading = useIsLoading(props);
+
+
 
   const asyncProps = useAsyncOptionList(props, { ...otherParams, isLoading });
 
+
+
   return <props.schema.controls.valueSelector {...asyncProps} />;
+
 };
 ```
 
@@ -3875,24 +4889,43 @@ Load options in the value editor that depend on the selected field and operator.
 
 ```
 const ValueSelectorAsync = (props: ValueSelectorProps) => {
+
   const asyncProps = useAsyncOptionList(props, {
+
     loadOptionList: async (value, { ruleOrGroup }) => {
+
       const { field, operator } = ruleOrGroup as RuleType;
+
       return myValuesAPI({ field, operator });
+
     },
+
     getCacheKey: ['field', 'operator'],
+
   });
 
+
+
   return <props.schema.controls.valueSelector {...asyncProps} />;
+
 };
 
+
+
 // Assign the async value selector as `selectorComponent` to an otherwise
+
 // "pass-through" value editor component.
+
 const ValueEditorAsync = (props: ValueEditorProps) => (
+
   <ValueEditor {...props} selectorComponent={ValueSelectorAsync} />
+
 );
 
+
+
 // Assign the custom value editor in `controlElements`
+
 const App = () => <QueryBuilder controlElements={{ valueEditor: ValueEditorAsync }} />;
 ```
 
@@ -3902,15 +4935,25 @@ Load operators that depend on the selected field type:
 
 ```
 const ValueSelectorAsync = (props: ValueSelectorProps) => {
+
   const asyncProps = useAsyncOptionList(props, {
+
     loadOptionList: async (value, { ruleOrGroup }) => {
+
       const fieldType = props.fieldData.datatype; // custom field property
+
       return getOperatorsForType(fieldType);
+
     },
+
     getCacheKey: props => `operators-${props.fieldData.datatype}`,
+
   });
 
+
+
   return <props.schema.controls.valueSelector {...asyncProps} />;
+
 };
 ```
 
@@ -3920,26 +4963,47 @@ Create an auto-complete component by including the current value in the cache ke
 
 ```
 const AutoCompleteValueSelector = (props: ValueSelectorProps) => {
+
   const asyncProps = useAsyncOptionList(props, {
+
     loadOptionList: async (value, { ruleOrGroup }) => {
+
       if (!value || value.length < 2) return [];
 
+
+
       return fetch(`/api/autocomplete?q=${value}&field=${ruleOrGroup?.field}`).then(r => r.json());
+
     },
+
     getCacheKey: props => `autocomplete-${props.rule?.field}-${props.value}`,
+
   });
 
+
+
   // Rendering of the input and option list is left to this component
+
   // (see below for example usage of third-party auto-complete components)
+
   return <MyAutocompleteSelector {...asyncProps} />;
+
 };
 
+
+
 // Use the autocomplete selector as the selector for the value editor
+
 const ValueEditorWithAutocomplete = (props: ValueEditorProps) => (
+
   <ValueEditor {...props} selectorComponent={AutoCompleteValueSelector} />
+
 );
 
+
+
 // Assign the new value editor
+
 const App = () => <QueryBuilder controlElements={{ valueEditor: ValueEditorWithAutocomplete }} />;
 ```
 
@@ -3952,68 +5016,124 @@ Some of the [compatibility packages](/docs/compat.md) provide themed auto-comple
 ```
 import { Autocomplete, TextField } from '@mui/material';
 
+
+
 export const ValueEditorAutocompleteAsync = (props: ValueEditorProps) => {
+
   const { value, handleOnChange, values } = useAsyncOptionList(props, {
+
     getCacheKey,
+
     loadOptionList,
+
   });
 
+
+
   return (
+
     <Autocomplete
+
       inputValue={value}
+
       options={values ?? []}
+
       onInputChange={(_e, v) => handleOnChange(v)}
+
       disabled={props.disabled}
+
       renderInput={params => (
+
         <TextField {...params} label="Framework" placeholder="Start typing to load options..." />
+
       )}
+
     />
+
   );
+
 };
 ```
 
 ```
 import { Autocomplete } from '@mantine/core';
 
+
+
 export const ValueEditorAutocompleteAsync = (props: ValueEditorProps) => {
+
   const { value, handleOnChange, values } = useAsyncOptionList(props, {
+
     getCacheKey,
+
     loadOptionList,
+
   });
 
+
+
   return (
+
     <Autocomplete
+
       value={value ?? ''}
+
       data={values}
+
       onChange={handleOnChange}
+
       clearable
+
       disabled={props.disabled}
+
       placeholder="Start typing to load options..."
+
     />
+
   );
+
 };
 ```
 
 ```
 import { AutoComplete } from 'antd';
 
+
+
 export const ValueEditorAutocompleteAsync = (props: ValueEditorProps) => {
+
   const { value, handleOnChange, values } = useAsyncOptionList(props, {
+
     getCacheKey,
+
     loadOptionList,
+
   });
 
+
+
   return (
+
     <AutoComplete
+
       value={value ?? ''}
+
       style={style}
+
       options={values}
+
       onSearch={handleOnChange}
+
       onChange={handleOnChange}
+
       disabled={props.disabled}
+
       placeholder="Start typing to load options..."
+
     />
+
   );
+
 };
 ```
 
@@ -4023,21 +5143,38 @@ This code can be used to mock an API call for the compatibility examples above.
 
 ```
 // prettier-ignore
+
 const words = [ "React", "Angular", "Vue", "Svelte", "Next.js", "Nuxt.js", "Gatsby", "TypeScript", "JavaScript", "Python", "Java", "C#", "Go", "Rust", "Node.js", "Express", "Fastify", "Koa", "Hapi", "NestJS", "MongoDB", "PostgreSQL", "MySQL", "Redis", "SQLite", "Docker", "Kubernetes", "AWS", "Azure", "GCP"];
 
+
+
 // Simulate async data loading
+
 const loadOptionList = async (value: string | undefined): Promise<string[]> => {
+
   // Simulate network delay
+
   await new Promise(resolve => setTimeout(resolve, 500));
 
+
+
   // Filter based on input value if provided
+
   if (value && value.length > 0) {
+
     return words.filter(word => word.toLowerCase().includes(value.toLowerCase()));
+
   }
 
+
+
   // Otherwise return no results
+
   return [];
+
 };
+
+
 
 const getCacheKey = ({ value }: ValueEditorProps) => value;
 ```
@@ -4050,15 +5187,25 @@ Internal error handling:
 
 ```
 const loadOptionList = async (value, { ruleOrGroup }) => {
+
   try {
+
     const response = await fetch('/api/options');
+
     if (!response.ok) throw new Error('Failed to load options');
+
     return response.json();
+
   } catch (error) {
+
     // Log the error and return fallback options
+
     console.error('Failed to load options:', error);
+
     return [{ name: 'error', value: 'error', label: 'Error loading options' }];
+
   }
+
 };
 ```
 
@@ -4066,15 +5213,25 @@ Promise rejection detection:
 
 ```
 const AsyncOperatorSelector = (props: ValueSelectorProps) => {
+
   const asyncProps = useAsyncOptionList(props, useAsyncOptionListParams);
 
+
+
   // If `errors` is truthy, the promise was rejected
+
   if (asyncProps.errors) {
+
     const fallbackOptions = [{ name: 'error', value: 'error', label: 'Error loading options' }];
+
     return <props.schema.controls.valueSelector {...asyncProps} options={fallbackOptions} />;
+
   }
 
+
+
   return <props.schema.controls.valueSelector {...asyncProps} />;
+
 };
 ```
 
@@ -4088,9 +5245,13 @@ const AsyncOperatorSelector = (props: ValueSelectorProps) => {
 
 ```
 // ❌ Bad: includes own value (unless auto-complete)
+
 getCacheKey: props => `${props.rule?.field}-${props.value}`;
 
+
+
 // ✅ Good: context-dependent without own value
+
 getCacheKey: props => `operators-${props.rule?.field}`;
 ```
 
@@ -4119,23 +5280,41 @@ App.jsx
 
 ```
 const App = () => {
+
   // Other stuff ...
 
+
+
   const CustomValueEditor = props => {
+
     // Custom logic here ...
+
     return <input />;
+
   };
 
+
+
   return (
+
     <QueryBuilder
+
       fields={fields}
+
       query={query}
+
       handleOnChange={q => setQuery(q)}
+
       controlElements={{
+
         valueEditor: CustomValueEditor,
+
       }}
+
     />
+
   );
+
 };
 ```
 
@@ -4145,23 +5324,41 @@ App.jsx
 
 ```
 const CustomValueEditor = props => {
+
   // Custom logic here ...
+
   return <input />;
+
 };
 
+
+
 const App = () => {
+
   // Other stuff ...
 
+
+
   return (
+
     <QueryBuilder
+
       fields={fields}
+
       query={query}
+
       handleOnChange={q => setQuery(q)}
+
       controlElements={{
+
         valueEditor: CustomValueEditor,
+
       }}
+
     />
+
   );
+
 };
 ```
 
@@ -4171,26 +5368,47 @@ App.jsx
 
 ```
 const CustomValueEditor = props => {
+
   // Custom logic here ...
+
   return <input />;
+
 };
 
+
+
 const App = () => {
+
   // Other stuff ...
 
+
+
   return (
+
     <QueryBuilder
+
       fields={fields}
+
       query={query}
+
       handleOnChange={q => setQuery(q)}
+
       controlElements={{
+
         // Don't do this:
+
         valueEditor: props => <CustomValueEditor {...props} />,
+
         // Do this instead:
+
         // valueEditor: CustomValueEditor,
+
       }}
+
     />
+
   );
+
 };
 ```
 
@@ -4211,10 +5429,15 @@ This code generates a SQL string with numbered bind variable placeholders from "
 
 ```
 let i = 0;
+
 const fq = formatQuery(query, 'parameterized');
+
 const fqWithNumberedParams = {
+
   ...fq,
+
   sql: fq.sql.replaceAll('?', () => `$${++i}`),
+
 };
 ```
 
@@ -4222,8 +5445,11 @@ If `formatQuery(query, "parameterized")` returns this object:
 
 ```
 {
+
   "sql": "(firstName = ? and lastName = ?)",
+
   "params": ["Steve", "Vai"]
+
 }
 ```
 
@@ -4231,8 +5457,11 @@ The code above transforms it into:
 
 ```
 {
+
   "sql": "(firstName = $1 and lastName = $2)",
+
   "params": ["Steve", "Vai"]
+
 }
 ```
 
@@ -4251,29 +5480,53 @@ This example creates a custom value editor using the [`react-datepicker`](https:
 
 ```
 // fields.ts
+
 import { Field } from 'react-querybuilder';
 
+
+
 export const fields: Field[] = [
+
   {
+
     name: 'name',
+
     label: 'Name',
+
     operators: [
+
       { name: '=', label: 'is' },
+
       { name: 'beginsWith', label: 'begins with' },
+
     ],
+
   },
+
   {
+
     name: 'dateOfBirth',
+
     label: 'Date of Birth',
+
     operators: [{ name: '=', label: 'is' }],
+
     datatype: 'date',
+
   },
+
   {
+
     name: 'dateRange',
+
     label: 'Date Range',
+
     operators: [{ name: 'between', label: 'is between' }],
+
     datatype: 'dateRange',
+
   },
+
 ];
 ```
 
@@ -4287,44 +5540,83 @@ We use the [`date-fns`](https://date-fns.org/) library for date parsing and form
 
 ```
 // CustomValueEditor.tsx
+
 import { format, parse } from 'date-fns';
+
 import DatePicker from 'react-datepicker';
+
 import 'react-datepicker/dist/react-datepicker.css';
+
 import { ValueEditor, ValueEditorProps } from 'react-querybuilder';
+
+
 
 const dateFormat = 'yyyy-MM-dd';
 
+
+
 export const CustomValueEditor = (props: ValueEditorProps) => {
+
   if (props.fieldData.datatype === 'date') {
+
     return (
+
       <div>
+
         <DatePicker
+
           dateFormat={dateFormat}
+
           selected={!props.value ? null : parse(props.value, dateFormat, new Date())}
+
           onChange={(d: Date) => props.handleOnChange(d ? format(d, dateFormat) : null)}
+
         />
+
       </div>
+
     );
+
   } else if (props.fieldData.datatype === 'dateRange') {
+
     const [startDate, endDate] = props.value.split(',');
+
     return (
+
       <div>
+
         <DatePicker
+
           selectsRange
+
           dateFormat={dateFormat}
+
           startDate={!startDate ? null : parse(startDate, dateFormat, new Date())}
+
           endDate={!endDate ? null : parse(endDate, dateFormat, new Date())}
+
           onChange={(update: [Date, Date]) => {
+
             const [s, e] = update;
+
             props.handleOnChange(
+
               [!s ? '' : format(s, dateFormat), !e ? '' : format(e, dateFormat)].join(',')
+
             );
+
           }}
+
         />
+
       </div>
+
     );
+
   }
+
   return <ValueEditor {...props} />;
+
 };
 ```
 
@@ -4334,12 +5626,15 @@ If you're using one of the [compatibility packages](/docs/compat.md), you probab
 
 ```
 -import { ValueEditor, ValueEditorProps } from 'react-querybuilder';
+
 +import { AntDValueEditor } from '@react-querybuilder/antd';
+
 +import { ValueEditorProps } from 'react-querybuilder';
 ```
 
 ```
 -  return <ValueEditor {...props} />;
+
 +  return <AntDValueEditor {...props} />;
 ```
 
@@ -4347,20 +5642,35 @@ Configure the `QueryBuilder` component to use the custom value editor through th
 
 ```
 // App.tsx
+
 import { useState } from 'react';
+
 import { CustomValueEditor } from './CustomValueEditor';
+
 import { fields } from './fields';
 
+
+
 export default function App() {
+
   const [query, setQuery] = useState({ combinator: 'and', rules: [] });
+
   return (
+
     <QueryBuilder
+
       fields={fields}
+
       query={query}
+
       onQueryChange={setQuery}
+
       controlElements={{ valueEditor: CustomValueEditor }}
+
     />
+
   );
+
 }
 ```
 
@@ -4531,12 +5841,19 @@ The simplest approach is hiding the "+ Group" button entirely. Set the `addGroup
 
 ```
 <QueryBuilder
+
   fields={fields}
+
   query={query}
+
   onQueryChange={setQuery}
+
   controlElements={{
+
     addGroupAction: null,
+
   }}
+
 />
 ```
 
@@ -4544,7 +5861,9 @@ Alternatively, hide the button using CSS with the default `ruleGroup-addGroup` c
 
 ```
 .ruleGroup-addGroup {
+
   display: none;
+
 }
 ```
 
@@ -4560,12 +5879,19 @@ To allow groups only at the top level (hiding the button in sub-groups), conditi
 
 ```
 <QueryBuilder
+
   fields={fields}
+
   query={query}
+
   onQueryChange={setQuery}
+
   controlElements={{
+
     addGroupAction: props => (props.level === 0 ? <ActionElement {...props} /> : null),
+
   }}
+
 />
 ```
 
@@ -4573,7 +5899,9 @@ The CSS equivalent uses descendant selectors:
 
 ```
 .ruleGroup .ruleGroup .ruleGroup-addGroup {
+
   display: none;
+
 }
 ```
 
@@ -4597,10 +5925,15 @@ This approach alone may confuse users since the "+ Group" button appears clickab
 
 ```
 <QueryBuilder
+
   fields={fields}
+
   query={query}
+
   onQueryChange={setQuery}
+
   onAddGroup={() => false}
+
 />
 ```
 
@@ -4610,6 +5943,46 @@ This approach alone may confuse users since the "+ Group" button appears clickab
 # Managing fields
 
 The [`fields`](/docs/components/querybuilder.md#fields) array forms the foundation of React Query Builder configuration, defining which data fields users can include in a query.
+
+<!-- -->
+
+<!-- -->
+
+<!-- -->
+
+<!-- -->
+
+<!-- -->
+
+<!-- -->
+
+<!-- -->
+
+<!-- -->
+
+<!-- -->
+
+<!-- -->
+
+<!-- -->
+
+<!-- -->
+
+<!-- -->
+
+<!-- -->
+
+<!-- -->
+
+<!-- -->
+
+<!-- -->
+
+<!-- -->
+
+<!-- -->
+
+<!-- -->
 
 tip
 
@@ -4635,22 +6008,39 @@ The following examples demonstrate database-specific queries to extract field in
 
 ```
 SELECT json_agg(
+
     json_build_object(
+
       'name', column_name,
+
       'value', column_name,
+
       'label', column_name,
+
       'datatype', data_type || CASE WHEN data_type LIKE '%char%' THEN '(' || character_maximum_length || ')' END,
+
       'defaultValue', column_default::text,
+
       'inputType', CASE
+
         WHEN data_type LIKE '%char%' OR data_type = 'text' THEN 'text'
+
         WHEN data_type IN ('integer', 'bigint', 'smallint', 'decimal', 'numeric', 'real', 'double precision') THEN 'number'
+
         WHEN data_type = 'date' THEN 'date'
+
         WHEN data_type LIKE 'timestamp%' THEN 'datetime-local'
+
         WHEN data_type LIKE 'time%' THEN 'time'
+
       END
+
     ) ORDER BY ordinal_position
+
   ) AS fields
+
 FROM information_schema.columns
+
 WHERE table_name = 'my_table';
 ```
 
@@ -4658,22 +6048,39 @@ WHERE table_name = 'my_table';
 
 ```
 SELECT JSON_ARRAYAGG(
+
     JSON_OBJECT(
+
       'name', COLUMN_NAME,
+
       'value', COLUMN_NAME,
+
       'label', COLUMN_NAME,
+
       'datatype', DATA_TYPE,
+
       'defaultValue', CAST(column_default AS CHAR),
+
       'inputType', CASE
+
         WHEN DATA_TYPE LIKE '%char%' OR DATA_TYPE = 'text' THEN 'text'
+
         WHEN DATA_TYPE IN ('int', 'bigint', 'smallint', 'decimal', 'dec', 'fixed', 'numeric', 'float', 'double', 'double precision') THEN 'number'
+
         WHEN DATA_TYPE = 'date' THEN 'date'
+
         WHEN DATA_TYPE = 'time' THEN 'time'
+
         WHEN DATA_TYPE IN ('datetime', 'timestamp') THEN 'datetime-local'
+
       END
+
     )
+
   ) AS fields
+
 FROM INFORMATION_SCHEMA.COLUMNS
+
 WHERE TABLE_NAME = 'my_table';
 ```
 
@@ -4681,25 +6088,45 @@ WHERE TABLE_NAME = 'my_table';
 
 ```
 SELECT json_group_array(
+
       json_object(
+
         'name', name,
+
         'value', name,
+
         'label', name,
+
         'datatype', type,
+
         'defaultValue', dflt_value,
+
         'inputType', CASE
+
           WHEN UPPER(type) LIKE '%INT%' OR UPPER(type) LIKE '%REAL%' OR UPPER(type) LIKE '%FLOA%' OR UPPER(type) LIKE '%DOUB%' THEN 'number'
+
         END,
+
         'affinity', CASE -- See https://sqlite.org/datatype3.html#type_affinity
+
           WHEN UPPER(type) LIKE '%INT%' THEN 'INTEGER'
+
           WHEN UPPER(type) LIKE '%CHAR%' OR UPPER(type) LIKE '%CLOB%' OR UPPER(type) LIKE '%TEXT%' THEN 'TEXT'
+
           WHEN UPPER(type) LIKE '%BLOB%' OR type IS NULL THEN 'BLOB'
+
           WHEN UPPER(type) LIKE '%REAL%' OR UPPER(type) LIKE '%FLOA%' OR UPPER(type) LIKE '%DOUB%' THEN 'REAL'
+
           ELSE 'NUMERIC'
+
         END
+
       )
+
     ) fields
+
   FROM pragma_table_info('my_table')
+
  ORDER BY cid;
 ```
 
@@ -4707,23 +6134,41 @@ SELECT json_group_array(
 
 ```
 SELECT (
+
   SELECT
+
     COLUMN_NAME AS [name],
+
     COLUMN_NAME AS [value],
+
     COLUMN_NAME AS [label],
+
     CAST(COLUMN_DEFAULT AS CHAR) AS [defaultValue],
+
     CASE WHEN DATA_TYPE LIKE '%CHAR%' THEN CONCAT(DATA_TYPE, '(', CAST(ROUND(CHARACTER_MAXIMUM_LENGTH, 0) AS int), ')') ELSE DATA_TYPE END AS [datatype],
+
     CASE
+
       WHEN DATA_TYPE IN ('char', 'varchar', 'text', 'nchar', 'nvarchar', 'ntext') THEN 'text'
+
       WHEN DATA_TYPE IN ('tinyint', 'smallint', 'int', 'bigint', 'bit', 'decimal', 'numeric', 'money', 'smallmoney', 'float', 'real') THEN 'number'
+
       WHEN DATA_TYPE = 'date' THEN 'date'
+
       WHEN DATA_TYPE = 'time' THEN 'time'
+
       WHEN DATA_TYPE LIKE '%datetime%' THEN 'datetime-local'
+
     END AS [inputType]
+
     FROM INFORMATION_SCHEMA.COLUMNS
+
    WHERE TABLE_NAME='my_table'
+
    ORDER BY ORDINAL_POSITION
+
      FOR JSON AUTO
+
 ) AS [fields];
 ```
 
@@ -4731,22 +6176,39 @@ SELECT (
 
 ```
 SELECT json_arrayagg(
+
     json_object(
+
       'name' VALUE column_name,
+
       'value' VALUE column_name,
+
       'label' VALUE column_name,
+
       'datatype' VALUE data_type || CASE WHEN data_type LIKE '%CHAR%' THEN '(' || data_length || ')' END,
+
       -- 'defaultValue' is omitted in this example because ALL_TAB_COLS.DATA_DEFAULT
+
       -- is type LONG which is difficult to convert to text without custom functions.
+
       'inputType' VALUE CASE
+
         WHEN data_type LIKE '%CHAR%' THEN 'text'
+
         WHEN data_type IN ('NUMBER', 'NUMERIC', 'FLOAT', 'DECIMAL', 'DEC', 'INTEGER', 'INT', 'SMALLINT') THEN 'number'
+
         WHEN data_type = 'DATE' THEN 'date'
+
         WHEN data_type = 'TIMESTAMP' THEN 'datetime-local'
+
       END
+
     ) ORDER BY column_id
+
   ) fields
+
   FROM all_tab_cols
+
  WHERE table_name = 'my_table';
 ```
 
@@ -4930,6 +6392,8 @@ Starting with version 7, all `QueryBuilder` props, components, and derived value
 
 Prevent unstable references by defining static props (objects, arrays, functions) outside the component render function. This typically applies to the `fields` array and `onQueryChange` callback. For props that must be created within the component, use `useMemo` or `useCallback` for memoization. Most importantly, avoid defining non-primitive props inline within JSX.
 
+<!-- -->
+
 * ✓ DO define variables that will remain unchanged outside the component if possible.
 
 * ✓ DO memoize objects, arrays, and other values that must be created and/or calculated within the component with `useMemo`.
@@ -4957,42 +6421,79 @@ These patterns negatively impact `QueryBuilder` performance:
 
 ```
 function App() {
+
   const { t } = useTranslation(); // (<-- third-party i18n library)
+
   // ⚠ Even though this `useState` call only sets the initial `query` value once, the object
+
   // itself is still created on every render. This doesn't affect the stability of the reference,
+
   // but it's probably a good idea to define the object outside the component anyway.
+
   const [query, setQuery] = useState({ combinator: 'and', rules: [] });
 
+
+
   // ❌ This function is not memoized and will get recreated on each render.
+
   const getOperators = (field: Field) => t(defaultOperators);
 
+
+
   return (
+
     <QueryBuilder
+
       // ⚠ As a controlled component with potential for updates (not disabled), an unstable
+
       // reference to `query` is unavoidable. This is generally not a problem, but using
+
       // `defaultQuery` instead of `query` could avoid the issue entirely.
+
       query={query}
+
       //
+
       // ❌ Inline function definition. Also see note below about `useState`/`useReducer`.
+
       onQueryChange={q => setQuery(q)}
+
       //
+
       // ❌ Inline definition of an array that doesn't change over time.
+
       fields={[
+
         { name: 'firstName', label: 'First Name' },
+
         { name: 'lastName', label: 'Last Name' },
+
       ]}
+
       //
+
       // This function is not defined inline in the JSX, but it does not have a stable
+
       // reference since it's recreated on each render (see its declaration above).
+
       getOperators={getOperators}
+
       //
+
       controlElements={{
+
         // ❌ Component function is defined inline and will be recreated during each render.
+
         // This can also cause bugs like "input loses focus after each keystroke."
+
         actionElement: props => <button onClick={props.handleOnClick}>{props.label}</button>,
+
       }}
+
     />
+
   );
+
 }
 ```
 
@@ -5004,59 +6505,113 @@ Use these patterns to optimize `QueryBuilder` performance:
 
 ```
 // ✅ Fields array that never changes defined outside the component.
+
 const fields: Field[] = [
+
   { name: 'firstName', label: 'First Name' },
+
   { name: 'lastName', label: 'Last Name' },
+
 ];
 
+
+
 // ✅ Custom subcomponent defined outside the main component render function.
+
 const MyActionElement = (props: ActionProps) => (
+
   <button onClick={props.handleOnClick}>{props.label}</button>
+
 );
 
+
+
 // ✅ Default query, which is only access once, defined outside the component.
+
 const defaultQuery: RuleGroupType = { combinator: 'and', rules: [] };
 
+
+
 function App() {
+
   const { t } = useTranslation(); // (<-- third-party i18n library)
+
   // ✅ `useState` parameter (the initial value of `query`) defined outside the component.
+
   const [query, setQuery] = useState(defaultQuery);
 
+
+
   // ✅ Function defined inside the component memoized with `useCallback`. Since `t`
+
   // _probably_ has a stable reference, this function will rarely, if ever, be recreated.
+
   const getOperators = useCallback((field: Field) => t(defaultOperators), [t]);
 
+
+
   return (
+
     <QueryBuilder
+
       // ✅ The value passed to `defaultQuery` is only used once, so the stability of
+
       // its reference is unimportant.
+
       defaultQuery={query}
+
       //
+
       // ✅ `useState` setters and `useReducer` dispatchers always have stable references.
+
       onQueryChange={setQuery}
+
       //
+
       // ✅ `fields` array defined outside the component.
+
       fields={fields}
+
       //
+
       // ✅ Function memoized with `useCallback`.
+
       getOperators={getOperators}
+
       //
+
       // See "Exceptions" section above regarding the following props.
+
       controlElements={{
+
         // ✅ Subcomponent defined outside the current component.
+
         actionElement: MyActionElement,
+
       }}
+
       // ✅ `translations` is memoized down to the sub-property level.
+
       translations={{
+
         addGroup: {
+
           label: 'Add Group',
+
         },
+
         addRule: {
+
           label: 'Add Rule',
+
         },
+
       }}
+
     />
+
   );
+
 }
 ```
 
@@ -5084,6 +6639,7 @@ You may have found this page after seeing a TypeScript error message similar to 
 
 ```
 Property 'name' does not exist on type 'FullOption<string> | OptionGroup<FullOption<string>>'.
+
   Property 'name' does not exist on type 'OptionGroup<FullOption<string>>'. ts(2339)
 ```
 
@@ -5091,8 +6647,11 @@ This typically occurs when treating option list elements as guaranteed `Option` 
 
 ```
 const ListAllOptionNames = (props: ValueSelectorProps) => {
+
   return <div>{props.options.map(opt => opt.name).join(', ')}</div>;
+
   //                                        ^^^^ error
+
 };
 ```
 
@@ -5106,8 +6665,11 @@ As an example, consider this `fields` array:
 
 ```
 const fields: Field[] = [
+
   { name: 'firstName', label: 'First Name' },
+
   { name: 'lastName', label: 'Last Name' },
+
 ];
 ```
 
@@ -5115,16 +6677,27 @@ When this array is assigned to the [`fields` prop](/docs/components/querybuilder
 
 ```
 const MyFieldSelector = (props: FieldSelectorProps) => {
+
   console.log(props.options); // =>
+
   // [
+
   //   { name: 'firstName', value: 'firstName', label: 'First Name' },
+
   //   { name: 'lastName', value: 'lastName', label: 'Last Name' }],
+
   // ]
+
   return <ValueSelector {...props} />;
+
 };
 
+
+
 const App = () => (
+
   <QueryBuilder fields={fields} controlElements={{ fieldSelector: MyFieldSelector }} />
+
 );
 ```
 
@@ -5136,8 +6709,11 @@ Several approaches can handle this ambiguity. One option is casting option list 
 
 ```
 const MyComponent(props: ValueSelectorProps) => {
+
   return <div>{(props.options as Option[]).map(opt => opt.name).join(', ')}</div>;
+
   //                          ^^^^^^^^^^^ avoids TypeScript error; may have issues during execution
+
 };
 ```
 
@@ -5149,10 +6725,15 @@ A better solution uses the [`isOptionGroupArray`](#isoptiongrouparray) type guar
 
 ```
 const MyComponent(props: ValueSelectorProps) => {
+
   if (isOptionGroupArray(props.options)) {
+
     return <div>{props.options.flatMap(og => og.options).map(opt => opt.name).join(', ')}</div>;
+
   }
+
   return <div>{(props.options).map(opt => opt.name).join(', ')}</div>;
+
 };
 ```
 
@@ -5172,21 +6753,37 @@ Retrieves the complete option object from an option list using the given identif
 
 ```
 getOption(
+
   [
+
     { name: 'firstName', label: 'First Name' },
+
     { name: 'lastName', label: 'Last Name' },
+
   ],
+
   'lastName'
+
 );
+
 // => { name: 'lastName', label: 'Last Name' }
 
+
+
 getOption(
+
   [
+
     { label: 'First', options: [{ name: 'firstName', label: 'First Name' }] },
+
     { label: 'Last', options: [{ name: 'lastName', label: 'Last Name' }] },
+
   ],
+
   'lastName'
+
 );
+
 // => { name: 'lastName', label: 'Last Name' }
 ```
 
@@ -5204,15 +6801,25 @@ Returns the identifier value (`name` or `value`) of the first `Option` in the li
 
 ```
 getFirstOption([
+
   { name: 'firstName', label: 'First Name' },
+
   { name: 'lastName', label: 'Last Name' },
+
 ]);
+
 // => 'firstName'
 
+
+
 getFirstOption([
+
   { label: 'First', options: [{ name: 'firstName', label: 'First Name' }] },
+
   { label: 'Last', options: [{ name: 'lastName', label: 'Last Name' }] },
+
 ]);
+
 // => 'firstName'
 ```
 
@@ -5232,11 +6839,17 @@ Some of the [compatibility packages](/docs/compat.md) implement their own `toOpt
 
 ```
 const MyComponent(props: ValueSelectorProps) => {
+
   return (
+
     <select value={props.value} onChange={e => props.handleOnChange(e.target.value)}>
+
       {toOptions(props.options)}
+
     </select>
+
   )
+
 }
 ```
 
@@ -5246,17 +6859,29 @@ Examples
 
 ```
 toOptions([
+
   { value: 'firstName', label: 'First Name' },
+
   { value: 'lastName', label: 'Last Name' },
+
 ]);
+
 // yields (approximately):
+
 [
+
   <option key={'firstName'} value={'firstName'}>
+
     First Name
+
   </option>,
+
   <option key={'lastName'} value={'lastName'}>
+
     Last Name
+
   </option>,
+
 ];
 ```
 
@@ -5264,21 +6889,37 @@ toOptions([
 
 ```
 toOptions([
+
   { label: 'First', options: [{ value: 'firstName', label: 'First Name' }] },
+
   { label: 'Last', options: [{ value: 'lastName', label: 'Last Name' }] },
+
 ]);
+
 // yields (approximately):
+
 [
+
   <optgroup key={'First'} label={'First'}>
+
     <option key={'firstName'} value={'firstName'}>
+
       First Name
+
     </option>
+
   </optgroup>,
+
   <optgroup key={'Last'} label={'Last'}>
+
     <option key={'lastName'} value={'lastName'}>
+
       Last Name
+
     </option>
+
   </optgroup>,
+
 ];
 ```
 
@@ -5302,15 +6943,25 @@ Examples
 
 ```
 isOptionGroupArray([
+
   { value: 'firstName', label: 'First Name' },
+
   { value: 'lastName', label: 'Last Name' },
+
 ]);
+
 // => false
 
+
+
 isOptionGroupArray([
+
   { label: 'First', options: [{ value: 'firstName', label: 'First Name' }] },
+
   { label: 'Last', options: [{ value: 'lastName', label: 'Last Name' }] },
+
 ]);
+
 // => true
 ```
 
@@ -5336,7 +6987,9 @@ Option list props also accept `string[]`. Each string becomes an option with `na
 
 ```
 // These are equivalent:
+
 <QueryBuilder combinators={['and', 'or']} />
+
 <QueryBuilder combinators={[{ name: 'and', label: 'and' }, { name: 'or', label: 'or' }]} />
 ```
 
@@ -5363,26 +7016,47 @@ This example query shows the `path` for each rule and group with explanatory com
 
 ```
 // [] (the root group)
+
 const query: RuleGroupType = {
+
   combinator: 'and',
+
   rules: [
+
     // [0] (the first, aka zeroth, element in the root rules array)
+
     { field: 'f1', operator: '=', value: 'v1' },
+
     // [1] (the second element in the root rules array is a sub-group)
+
     {
+
       combinator: 'or',
+
       rules: [
+
         // [1, 0] (the first element within the rules array
+
         //         of the group occupying the second position
+
         //         in the root rules array)
+
         { field: 'f2', operator: '=', value: 'v2' },
+
         // [1, 1] (the second element within the rules array
+
         //         of the group occupying the second position
+
         //         in the root rules array)
+
         { field: 'f3', operator: '=', value: 'v3' },
+
       ],
+
     },
+
   ],
+
 };
 ```
 
@@ -5482,15 +7156,25 @@ CSS
 
 ```
 .queryBuilder .ruleGroup-addGroup + button.ruleGroup-cloneGroup,
+
 .queryBuilder .ruleGroup-addGroup + button.ruleGroup-lock,
+
 .queryBuilder .ruleGroup-addGroup + button.ruleGroup-remove,
+
 .queryBuilder .rule-operators     + button.rule-cloneRule,
+
 .queryBuilder .rule-operators     + button.rule-lock,
+
 .queryBuilder .rule-operators     + button.rule-remove,
+
 .queryBuilder .rule-value         + button.rule-cloneRule,
+
 .queryBuilder .rule-value         + button.rule-lock,
+
 .queryBuilder .rule-value         + button.rule-remove {
+
   margin-left: auto !important;
+
 }
 ```
 
@@ -5522,13 +7206,21 @@ CSS
 
 ```
 .ruleGroup-body {
+
   /* Override the default flex layout */
+
   display: grid !important;
+
   /* Allow the left-hand column (the rule/subgroup) to expand as needed */
+
   /* Collapse the right-hand column (the combinator) to the width of the content */
+
   grid-template-columns: auto min-content;
+
   /* Keep the combinator aligned with the bottom of the rule/subgroup */
+
   align-items: end;
+
 }
 ```
 
@@ -5562,19 +7254,33 @@ CSS
 
 ```
 .ruleGroup-body {
+
   /* Override the default flex layout */
+
   display: grid !important;
+
   /* Allow the right-hand column (the rule/subgroup) to expand as needed */
+
   /* Collapse the left-hand column (the combinator) to the width of the content */
+
   grid-template-columns: min-content auto;
+
   /* Keep the combinator aligned with the top of the rule/subgroup */
+
   align-items: start;
+
 }
 
+
+
 /* Indent the first rule/subgroup since it has no preceding combinator */
+
 .ruleGroup-body > .rule:first-child:not(:only-child),
+
 .ruleGroup-body > .ruleGroup:first-child:not(:only-child) {
+
   grid-column-start: 2;
+
 }
 ```
 
@@ -5795,33 +7501,61 @@ The `matchModes` property accepts several formats:
 
 ```
 const fields: Field[] = [
+
   {
+
     name: 'nestedStringArray',
+
     label: 'Nested String Array',
+
     // Enable all match modes with default labels
+
     matchModes: true,
+
   },
+
   {
+
     name: 'nestedNumberArray',
+
     label: 'Nested Number Array',
+
     // Enable specific match modes with custom labels
+
     matchModes: [
+
       { name: 'all', label: 'Every' },
+
       { name: 'none', label: 'Not one' },
+
       { name: 'some', label: 'Several' },
+
     ],
+
   },
+
   {
+
     name: 'nestedObjectArray',
+
     label: 'Nested Object Array',
+
     // Enable specific match modes with default labels
+
     matchModes: ['all', 'none', 'some'],
+
     // Define properties of objects in the nested array
+
     subproperties: [
+
       { name: 'firstName', label: 'First Name' },
+
       { name: 'lastName', label: 'Last Name' },
+
     ],
+
   },
+
 ];
 ```
 
@@ -5831,22 +7565,39 @@ Configure match modes dynamically using the `getMatchModes` prop at the query bu
 
 ```
 const getMatchModes = (field: string, misc: { fieldData: Field }) => {
+
   // Return true to enable all match modes for any field
+
   if (field === 'flexibleArray') return true;
 
+
+
   // Return specific match modes based on field type
+
   if (misc.fieldData.datatype === 'array') {
+
     return ['all', 'some', 'none'];
+
   }
 
+
+
   // Return false or undefined to disable subqueries for this field
+
   return false;
+
 };
 
+
+
 <QueryBuilder
+
   fields={fields}
+
   getMatchModes={getMatchModes}
+
   // ... other props
+
 />;
 ```
 
@@ -5856,36 +7607,67 @@ The `getSubQueryBuilderProps` prop customizes individual subquery builder config
 
 ```
 const getSubQueryBuilderProps = (field: string, misc: { fieldData: Field }) => {
+
   // Return props that should override the parent query builder's configuration
+
   if (field === 'nestedObjectArray') {
+
     return {
+
       fields: misc.fieldData.subproperties || [],
+
       operators: [
+
         { name: '=', label: 'equals' },
+
         { name: 'contains', label: 'contains' },
+
         { name: 'beginsWith', label: 'begins with' },
+
       ],
+
       // Disable certain features for subqueries
+
       showCloneButtons: false,
+
       showLockButtons: false,
+
     };
+
   }
+
+
 
   // For primitive arrays, don't show field selector
+
   if (field === 'nestedStringArray') {
+
     return {
+
       fields: [{ name: '', label: '' }],
+
       autoSelectField: true,
+
     };
+
   }
 
+
+
   return {};
+
 };
 
+
+
 <QueryBuilder
+
   fields={fields}
+
   getSubQueryBuilderProps={getSubQueryBuilderProps}
+
   // ... other props
+
 />;
 ```
 
@@ -5916,30 +7698,55 @@ Subqueries store as nested `RuleGroupType` objects in the rule's `value` propert
 
 ```
 const exampleQuery: RuleGroupType = {
+
   combinator: 'and',
+
   rules: [
+
     {
+
       field: 'nestedStringArray',
+
       operator: '=', // Ignored when match is present
+
       match: { mode: 'atMost', threshold: 2 },
+
       value: {
+
         combinator: 'and',
+
         rules: [{ field: '', operator: 'contains', value: 'abc' }],
+
       },
+
     },
+
     {
+
       field: 'nestedObjectArray',
+
       operator: '=',
+
       match: { mode: 'all' },
+
       value: {
+
         combinator: 'and',
+
         rules: [
+
           { field: 'firstName', operator: 'beginsWith', value: 'S' },
+
           { field: 'lastName', operator: 'doesNotEndWith', value: 's' },
+
         ],
+
       },
+
     },
+
   ],
+
 };
 ```
 
@@ -5990,21 +7797,37 @@ The **[API documentation](/api)** is generated from source code and provides com
 
 ```
 interface Field {
+
   id?: string; // The field identifier (if not provided, `name` will be used)
+
   name: string; // The field name (REQUIRED)
+
   label: string; // The field label (REQUIRED)
+
   operators?: OptionList<Operator>[]; // Array of operators (if not provided, `getOperators()` will be used)
+
   valueEditorType?: ValueEditorType; // Value editor type for this field (if not provided, `getValueEditorType()` will be used)
+
   inputType?: string | null; // @type attribute for the <input /> rendered by ValueEditor, e.g. 'text', 'number', or 'date' (if not provided, `getInputType()` will be used)
+
   values?: OptionList; // Array of value options, applicable when valueEditorType is 'select', 'radio', or 'multiselect' (if not provided, `getValues()` will be used)
+
   defaultOperator?: string; // Default operator for this field (if not provided, `getDefaultOperator()` will be used)
+
   defaultValue?: any; // Default value for this field (if not provided, `getDefaultValue()` will be used)
+
   placeholder?: string; // Placeholder text for the value editor when this field is selected
+
   validator?: RuleValidator; // Validation function for rules that specify this field
+
   valueSources?: ValueSources | ((operator: string) => ValueSources); // List of allowed value sources (must contain "value", "field", or both)
+
   comparator?: string | ((f: Field, operator: string) => boolean); // Determines which (other) fields to include in the list when the rule's valueSource is "field"
+
   className?: Classname; // Assigned to rules where this field is selected
+
   separator?: ReactNode; // Rendered between multiple value editors, e.g. when the operator is "between" or "notBetween"
+
 }
 ```
 
@@ -6020,34 +7843,65 @@ Notes:
 ```
 type Path = number[];
 
+
+
 type RuleType = {
+
   path?: Path;
+
   id?: string;
+
   disabled?: boolean;
+
   field: string;
+
   operator: string;
+
   value: any;
+
   valueSource?: ValueSource;
+
 };
+
+
 
 type RuleGroupType = {
+
   path?: Path;
+
   id?: string;
+
   disabled?: boolean;
+
   combinator: string;
+
   rules: (RuleType | RuleGroupType)[];
+
   not?: boolean;
+
 };
+
+
 
 type RuleGroupTypeIC = {
+
   path?: Path;
+
   id?: string;
+
   disabled?: boolean;
+
   rules: (RuleType | RuleGroupTypeIC | string)[]; // see note below
+
   not?: boolean;
+
 };
 
+
+
 type RuleGroupTypeAny = RuleGroupType | RuleGroupTypeIC;
+
+
 
 type RuleOrGroupArray = RuleGroupType['rules'] | RuleGroupTypeIC['rules'];
 ```
@@ -6064,7 +7918,9 @@ For example, the following would be invalid because the first element in the `ru
 
 ```
 const ruleGroupInvalid: RuleGroupTypeIC = {
+
   rules: ['and', { field: 'firstName', operator: '=', value: 'Steve' }],
+
 };
 ```
 
@@ -6072,17 +7928,29 @@ We can resolve this by either removing the first element or inserting another ru
 
 ```
 const ruleGroupValid1: RuleGroupTypeIC = {
+
   rules: [{ field: 'firstName', operator: '=', value: 'Steve' }],
+
 };
+
+
 
 // OR
 
+
+
 const ruleGroupValid2: RuleGroupTypeIC = {
+
   rules: [
+
     { field: 'lastName', operator: '=', value: 'Vai' },
+
     'and',
+
     { field: 'firstName', operator: '=', value: 'Steve' },
+
   ],
+
 };
 ```
 
@@ -6090,67 +7958,130 @@ const ruleGroupValid2: RuleGroupTypeIC = {
 
 ```
 type ExportFormat =
+
   | 'json'
+
   | 'sql'
+
   | 'json_without_ids'
+
   | 'parameterized'
+
   | 'parameterized_named'
+
   | 'mongodb'
+
   | 'mongodb_query'
+
   | 'cel'
+
   | 'jsonlogic'
+
   | 'jsonata'
+
   | 'ldap'
+
   | 'elasticsearch'
+
   | 'spel'
+
   | 'natural_language';
 
+
+
 interface FormatQueryOptions {
+
   format?: ExportFormat;
+
   valueProcessor?: ValueProcessor;
+
   ruleProcessor?: RuleProcessor;
+
   quoteFieldNamesWith?: string | [string, string];
+
   fieldIdentifierSeparator?: string;
+
   quoteValuesWith?: string;
+
   validator?: QueryValidator;
+
   fields?: OptionList<Field>;
+
   getOperators?: (
+
     field: string,
+
     misc: { fieldData: FullField }
+
   ) => FlexibleOptionList<FullOperator> | null;
+
   fallbackExpression?: string;
+
   paramPrefix?: string;
+
   paramsKeepPrefix?: boolean;
+
   numberedParams?: boolean;
+
   parseNumbers?: ParseNumberMethod;
+
   placeholderFieldName?: string;
+
   placeholderOperatorName?: string;
+
   concatOperator?: string;
+
   preset?: SQLPreset;
+
   context?: Record<string, any>;
+
 }
+
+
 
 type RuleProcessor = (rule: RuleType, options?: ValueProcessorOptions) => any;
 
+
+
 type ValueProcessor = (field: string, operator: string, value: any) => string;
 
+
+
 interface ValueProcessorOptions extends FormatQueryOptions {
+
   escapeQuotes?: boolean;
+
   fieldData?: Field;
+
   fieldParamNames?: Record<string, string[]>;
+
   getNextNamedParam?: (field: string) => string;
+
   wrapValueWith?: [string, string];
+
 }
+
+
 
 interface ParameterizedSQL {
+
   sql: string;
+
   params: any[];
+
 }
 
+
+
 interface ParameterizedNamedSQL {
+
   sql: string;
+
   params: { [p: string]: any };
+
 }
+
+
 
 type ParseNumberMethod = boolean | 'enhanced' | 'native' | 'strict';
 ```
@@ -6159,31 +8090,57 @@ type ParseNumberMethod = boolean | 'enhanced' | 'native' | 'strict';
 
 ```
 interface ParserCommonOptions {
+
   fields?: OptionList<Field>[] | Record<string, Field>;
+
   getValueSources?: (field: string, operator: string) => ValueSources;
+
   listsAsArrays?: boolean;
+
   independentCombinators?: boolean;
+
 }
+
+
 
 interface ParseSQLOptions extends ParserCommonOptions {
+
   paramPrefix?: string;
+
   params?: any[] | Record<string, any>;
+
 }
 
+
+
 interface ParseCELOptions extends ParserCommonOptions {
+
   customExpressionHandler?: (expr: CELExpression) => RuleType | RuleGroupType | null;
+
 }
+
+
 
 type ParseSpELOptions = ParserCommonOptions;
 
+
+
 type ParseJsonLogicOptions = ParserCommonOptions;
 
+
+
 interface ParseMongoDbOptions extends ParserCommonOptions {
+
   preventOperatorNegation?: boolean;
+
   additionalOperators?: Record<
+
     string,
+
     (operator: string, value: any, otherOptions: ParserCommonOptions) => RuleType | RuleGroupType
+
   >;
+
 }
 ```
 
@@ -6191,15 +8148,26 @@ interface ParseMongoDbOptions extends ParserCommonOptions {
 
 ```
 interface ValidationResult {
+
   valid: boolean;
+
   reasons?: any[];
+
 }
+
+
 
 interface ValidationMap {
+
   [id: string]: boolean | ValidationResult;
+
 }
 
+
+
 type QueryValidator = (query: RuleGroupTypeAny) => boolean | ValidationMap;
+
+
 
 type RuleValidator = (rule: RuleType) => boolean | ValidationResult;
 ```
@@ -6210,25 +8178,45 @@ type RuleValidator = (rule: RuleType) => boolean | ValidationResult;
 
 ```
 interface Option {
+
   name: string;
+
   label: string;
+
   [x: string]: any;
+
 }
 
+
+
 interface OptionGroup {
+
   label: string;
+
   options: Option[];
+
 }
+
+
 
 type OptionList = Option[] | OptionGroup[];
 
+
+
 interface Combinator extends Option {
+
   className?: Classname; // Assigned to groups where this combinator is selected
+
 }
 
+
+
 interface Operator extends Option {
+
   arity?: number | 'unary' | 'binary' | 'ternary';
+
   className?: Classname; // Assigned to rules where this operator is selected
+
 }
 ```
 
@@ -6238,18 +8226,32 @@ See [`ValueEditor` component documentation here](/docs/components/valueeditor.md
 
 ```
 type ValueEditorType =
+
   | 'text'
+
   | 'select'
+
   | 'checkbox'
+
   | 'radio'
+
   | 'textarea'
+
   | 'multiselect'
+
   | 'date'
+
   | 'datetime-local'
+
   | 'time'
+
   | null;
 
+
+
 type ValueSource = 'value' | 'field';
+
+
 
 type ValueSources = ['value'] | ['value', 'field'] | ['field', 'value'] | ['field'];
 ```
@@ -6258,51 +8260,97 @@ type ValueSources = ['value'] | ['value', 'field'] | ['field', 'value'] | ['fiel
 
 ```
 interface Schema {
+
   qbId: string;
+
   fields: OptionList<Field>;
+
   fieldMap: Record<string, Field>;
+
   classNames: Classnames;
+
   combinators: OptionList<Combinator>;
+
   controls: Controls;
+
   createRule(): RuleType;
+
   createRuleGroup(): RuleGroupTypeAny;
+
   dispatchQuery(query: RuleGroupTypeAny): void;
+
   getQuery(): RuleGroupTypeAny | undefined;
+
   getOperators(field: string): OptionList<Operator>;
+
   getValueEditorType(field: string, operator: string): ValueEditorType;
+
   getValueEditorSeparator(field: string, operator: string): ReactNode;
+
   getValueSources(field: string, operator: string): ValueSources;
+
   getInputType(field: string, operator: string): string | null;
+
   getValues(field: string, operator: string): OptionList;
+
   getRuleClassname(rule: RuleType): Classname;
+
   getRuleGroupClassname(ruleGroup: RuleGroupTypeAny): Classname;
+
   showCombinatorsBetweenRules: boolean;
+
   showNotToggle: boolean;
+
   showShiftActions: boolean;
+
   showCloneButtons: boolean;
+
   showLockButtons: boolean;
+
   autoSelectField: boolean;
+
   autoSelectOperator: boolean;
+
   addRuleToNewGroups: boolean;
+
   enableDragAndDrop: boolean;
+
   validationMap: ValidationMap;
+
   independentCombinators: boolean;
+
   listsAsArrays: boolean;
+
   parseNumbers: ParseNumbersMethod;
+
   disabledPaths: Path[];
+
 }
 
+
+
 interface QueryActions {
+
   onGroupAdd(group: RuleGroupTypeAny, parentPath: Path, context?: any): void;
+
   onGroupRemove(path: Path): void;
+
   onPropChange(
+
     prop: Exclude<keyof RuleType | keyof RuleGroupType, 'id' | 'path'>,
+
     value: any,
+
     path: Path
+
   ): void;
+
   onRuleAdd(rule: RuleType, parentPath: Path, context?: any): void;
+
   onRuleRemove(path: Path): void;
+
   moveRule(oldPath: Path, newPath: Path, clone?: boolean): void;
+
 }
 ```
 
@@ -6317,8 +8365,11 @@ Use the `formatQuery` function to export queries in various formats. The functio
 
 ```
 function formatQuery(
+
   query: RuleGroupTypeAny,
+
   options?: ExportFormat | FormatQueryOptions
+
 ): string | ParameterizedSQL | ParameterizedNamedSQL | RQBJsonLogic | Record<string, any>;
 ```
 
@@ -6357,23 +8408,41 @@ The following sections use this example `query`:
 
 ```
 const query: RuleGroupType = {
+
   id: 'root',
+
   combinator: 'and',
+
   not: false,
+
   rules: [
+
     {
+
       id: 'rule1',
+
       field: 'firstName',
+
       operator: '=',
+
       value: 'Steve',
+
     },
+
     {
+
       id: 'rule2',
+
       field: 'lastName',
+
       operator: '=',
+
       value: 'Vai',
+
     },
+
   ],
+
 };
 ```
 
@@ -6391,8 +8460,11 @@ For example, replacing the default "between" operator with `{ name: "b/w", label
 
 ```
 {
+
   "combinator": "and",
+
   "rules": [{ "field": "someNumber", "operator": "b/w", "value": "12,14" }]
+
 }
 ```
 
@@ -6400,11 +8472,17 @@ Transform it using `transformQuery` with `operatorMap`:
 
 ```
 const newQuery = transformQuery(query, { operatorMap: { 'b/w': 'between' } });
+
 /*
+
 {
+
   "combinator": "and",
+
   "rules": [{ "field": "someNumber", "operator": "between", "value": "12,14" }]
+
 }
+
 */
 ```
 
@@ -6418,7 +8496,9 @@ Export the internal query representation (from `onQueryChange` callback) as form
 
 ```
 formatQuery(query);
+
 // or
+
 formatQuery(query, 'json');
 ```
 
@@ -6426,23 +8506,41 @@ Output is multi-line JSON with 2-space indentation:
 
 ```
 `{
+
   "id": "root",
+
   "combinator": "and",
+
   "not": false,
+
   "rules": [
+
     {
+
       "id": "rule1",
+
       "field": "firstName",
+
       "value": "Steve",
+
       "operator": "="
+
     },
+
     {
+
       "id": "rule2",
+
       "field": "lastName",
+
       "value": "Vai",
+
       "operator": "="
+
     }
+
   ]
+
 }`;
 ```
 
@@ -6486,8 +8584,11 @@ Output (JSON object):
 
 ```
 {
+
   "sql": "(firstName = ? and lastName = ?)",
+
   "params": ["Steve", "Vai"]
+
 }
 ```
 
@@ -6503,11 +8604,17 @@ Output (JSON object):
 
 ```
 {
+
   "sql": "(firstName = :firstName_1 and lastName = :lastName_1)",
+
   "params": {
+
     "firstName_1": "Steve",
+
     "lastName_1": "Vai"
+
   }
+
 }
 ```
 
@@ -6524,8 +8631,13 @@ Generate objects for Prisma ORM `where` properties using the "prisma" format:
 ```
 const where = formatQuery(query, 'prisma');
 
+
+
 console.log(where);
+
 // { AND: [{ firstName: 'Steve' }, { lastName: 'Vai' }] }
+
+
 
 const users = await prisma.users.findMany({ where });
 ```
@@ -6538,8 +8650,11 @@ Generate functions for Drizzle's [relational queries API](https://orm.drizzle.te
 
 ```
 const where = formatQuery(query, 'drizzle');
+
 // typeof where === 'function'
+
 // where.length === 2
+
 const results = db.query.users.findMany({ where });
 ```
 
@@ -6550,8 +8665,13 @@ For Drizzle's [query builder API](https://orm.drizzle.team/docs/select), pass ta
 ```
 import { getOperators } from 'drizzle-orm';
 
+
+
 const whereFn = formatQuery(query, 'drizzle');
+
 const whereObj = whereFn(table, getOperators());
+
+
 
 const query = db.select().from(table).where(whereObj);
 ```
@@ -6563,12 +8683,20 @@ Query builder API objects work with other Drizzle operators, letting you add con
 ```
 import { and, ne, getOperators } from 'drizzle-orm';
 
+
+
 // Conditions from the React Query Builder query object:
+
 const whereFn = formatQuery(query, 'drizzle');
+
 const whereObj = whereFn(table, getOperators());
 
+
+
 // All conditions from the original query object _and_ `id != 123`:
+
 const augmentedWhere = and(whereObj, ne(table.id, 123));
+
 const query = db.select().from(table).where(augmentedWhere);
 ```
 
@@ -6580,29 +8708,53 @@ First, generate a [rule group processor](#rule-group-processor) by passing a Dri
 
 ```
 import { generateDrizzleRuleGroupProcessor } from '@react-querybuilder/drizzle';
+
 import { sqliteTable, text } from 'drizzle-orm/sqlite-core';
+
 import { formatQuery } from 'react-querybuilder';
+
+
 
 const db = drizzle(process.env.DB_FILE_NAME!);
 
+
+
 const table = sqliteTable('musicians', {
+
   firstName: text(),
+
   lastName: text(),
+
 });
+
+
 
 const ruleGroupProcessor = generateDrizzleRuleGroupProcessor(table);
 
+
+
 // Tip: `format` is not required when `ruleGroupProcessor` is provided
+
 const where = formatQuery(query, { ruleGroupProcessor });
 
+
+
 const query = db.select().from(table).where(where);
+
 console.log(query.toSQL());
+
 // {
+
 //   sql: 'select "firstName", "lastName" from "musicians" where ("musicians"."firstName" = ? and "musicians"."lastName" = ?)',
+
 //   params: ['Steve', 'Vai']
+
 // }
 
+
+
 console.log(query.all());
+
 // [{ firstName: 'Steve', lastName: 'Vai' }]
 ```
 
@@ -6616,10 +8768,16 @@ Generate objects for Sequelize `findAll` `where` properties using the "sequelize
 
 ```
 import { col, fn, Op } from 'sequelize';
+
 const where = formatQuery(query, {
+
   format: 'sequelize',
+
   context: { sequelizeOperators: Op, sequelizeCol: col, sequelizeFn: fn },
+
 });
+
+
 
 const users = await Users.findAll({ where });
 ```
@@ -6692,11 +8850,18 @@ Loop through `jsonLogicAdditionalOperators` entries for future-proof registratio
 
 ```
 import { add_operation, apply } from 'json-logic-js';
+
 import { jsonLogicAdditionalOperators } from 'react-querybuilder';
 
+
+
 for (const [op, func] of Object.entries(jsonLogicAdditionalOperators)) {
+
   add_operation(op, func);
+
 }
+
+
 
 apply({ startsWith: [{ var: 'firstName' }, 'Stev'] }, data);
 ```
@@ -6737,12 +8902,19 @@ For more control, implement a custom rule processor (example below lacks error c
 
 ```
 const customRuleProcessor: RuleProcessor = (rule, options) => {
+
   // `datatype` is a non-standard property of the field, used for this example only.
+
   // Replace this condition with your own logic to determine if the value is a date.
+
   if (options?.fieldData?.datatype === 'date') {
+
     return `$toMillis(${rule.field}) ${rule.operator} $toMillis("${rule.value}")`;
+
   }
+
   return defaultRuleProcessorJSONata(rule, options);
+
 };
 ```
 
@@ -6768,14 +8940,23 @@ Generate natural language queries using "natural\_language" format. Use `getOper
 
 ```
 formatQuery(query, {
+
   format: 'natural_language',
+
   parseNumbers: true,
+
   getOperators: () => defaultOperators,
+
   fields: [
+
     { value: 'firstName', label: 'First Name' },
+
     { value: 'lastName', label: 'Last Name' },
+
     { value: 'age', label: 'Age' },
+
   ],
+
 });
 ```
 
@@ -6799,17 +8980,29 @@ Render values as numbers instead of quoted strings using `parseNumbers: true`. S
 
 ```
 const query = {
+
   rules: [{ field: 'age', operator: 'between', value: [30, 20] }],
+
 };
 
+
+
 formatQuery(query, { format: 'sql', parseNumbers: true });
+
 /*
+
 "(age between 20 and 30)"
+
 */
 
+
+
 formatQuery(query, { format: 'sql', parseNumbers: true, preserveValueOrder: true });
+
 /*
+
 "(age between 30 and 20)"
+
 */
 ```
 
@@ -6848,33 +9041,61 @@ Use the appropriate default rule processor as a fallback so your custom processo
 
 ```
 const query: RuleGroupType = {
+
   combinator: 'and',
+
   not: false,
+
   rules: [
+
     { field: 'firstName', operator: 'has', value: 'S' },
+
     //        non-standard operator ^^^^^
+
     { field: 'lastName', operator: '=', value: 'Vai' },
+
   ],
+
 };
+
+
 
 const customRuleProcessor: RuleProcessor = (rule, options) => {
+
   // The "has" operator is not handled by the default processor
+
   if (rule.operator === 'has') {
+
     return { in: [rule.value, { var: rule.field }] };
+
   }
 
+
+
   // Defer to the default processor for all other operators
+
   return defaultRuleProcessorJsonLogic(rule, options);
+
 };
 
+
+
 formatQuery(query, { format: 'jsonlogic', ruleProcessor: customRuleProcessor });
+
 /*
+
 {
+
   and: [
+
     { in: ["S", { var: "firstName" }] },
+
     { "==": [{ var: "lastName" }, "Vai"] }
+
   ]
+
 }
+
 */
 ```
 
@@ -6883,18 +9104,32 @@ This SQL example (using Oracle syntax) demonstrates the generation of a case-ins
 ```
 // `query` is the same as in the previous example
 
+
+
 const customRuleProcessor: RuleProcessor = (rule, options) => {
+
   if (rule.operator === 'has') {
+
     return `UPPER(${rule.field}) LIKE UPPER('%${rule.value}%')`;
+
   }
 
+
+
   return defaultRuleProcessorSQL(rule, options);
+
 };
 
+
+
 formatQuery(query, { format: 'sql', ruleProcessor: customRuleProcessor });
+
 /*
+
 "(UPPER(firstName) LIKE UPPER('%S%') and lastName = 'Vai')"
+
  ^------------custom--------------^ ^------default-----^
+
 */
 ```
 
@@ -6904,29 +9139,53 @@ The "parameterized" and "parameterized\_named" formats require rule processors t
 
 ```
 const customRuleProcessor: RuleProcessor = (rule, options) => {
+
   if (rule.operator === 'has') {
+
     // TIP: `getNextNamedParam` can be called multiple times in case your SQL
+
     // requires multiple unique parameters (e.g., in a "between" condition).
+
     // Each call will generate a new name.
+
     const paramName = options.getNextNamedParam!(rule.field);
+
     return {
+
       sql: `UPPER(${rule.field}) LIKE UPPER('%' || ${options.paramPrefix}${paramName} || '%')`,
+
       params: { [paramName]: rule.value },
+
     };
+
   }
+
+
 
   return defaultRuleProcessorSQLParameterized(rule, options);
+
 };
 
+
+
 formatQuery(query, { format: 'parameterized_named', ruleProcessor: customRuleProcessor });
+
 /*
+
 {
+
   sql: "(UPPER(firstName) LIKE UPPER('%' || :firstName_1 || '%') and lastName = :lastName_1)",
+
   params: {
+
     firstName_1: "S",
+
     lastName_1: "Vai"
+
   }
+
 }
+
 */
 ```
 
@@ -6941,18 +9200,32 @@ For all formats except "sql", `valueProcessor` is a synonym for `ruleProcessor`.
 ```
 // `query` is the same as in the previous example
 
+
+
 const customValueProcessor: ValueProcessorByRule = (rule, options) => {
+
   if (rule.operator === 'has') {
+
     return `'%${rule.value}%'`;
+
   }
 
+
+
   return defaultValueProcessorByRule(rule, options);
+
 };
 
+
+
 formatQuery(query, { format: 'sql', valueProcessor: customValueProcessor });
+
 /*
+
 "(firstName like '%S%' and lastName = 'Vai')"
+
  ^---default---^ ^---^-custom  ^--default--^
+
 */
 ```
 
@@ -6974,26 +9247,47 @@ This legacy behavior is documented for completeness but not recommended.
 
 ```
 const query: RuleGroupType = {
+
   combinator: 'and',
+
   not: false,
+
   rules: [
+
     { field: 'instrument', operator: 'in', value: ['Guitar', 'Vocals'] },
+
     { field: 'lastName', operator: '=', value: 'Vai' },
+
   ],
+
 };
+
+
 
 const customValueProcessor = (field, operator, value) => {
+
   if (operator === 'in') {
+
     // Assuming `value` is an array, such as from a multi-select
+
     return `(${value.map(v => `'${v.trim()}'`).join(',')})`;
+
   }
 
+
+
   return defaultValueProcessor(field, operator, value);
+
 };
 
+
+
 formatQuery(query, { format: 'sql', valueProcessor: customValueProcessor });
+
 /*
+
 "(instrument in ('Guitar','Vocals') and lastName = 'Vai')"
+
 */
 ```
 
@@ -7014,12 +9308,19 @@ Default value processors using the legacy signature are available for some query
 
 ```
 formatQuery(query, {
+
   format: 'sql',
+
   // Convert all operators to uppercase
+
   operatorProcessor: (rule, options) => defaultOperatorProcessorSQL(rule, options).toUpperCase(),
+
 });
+
 /*
+
 "(firstName LIKE 'Stev%' and lastName IN ('Vai', 'Vaughan'))"
+
 */
 ```
 
@@ -7029,13 +9330,21 @@ Some database engines wrap field names in backticks (`` ` ``) or square brackets
 
 ```
 formatQuery(query, { format: 'sql', quoteFieldNamesWith: '`' });
+
 /*
+
 "(`firstName` = 'Steve' and `lastName` = 'Vai')"
+
 */
 
+
+
 formatQuery(query, { format: 'sql', quoteFieldNamesWith: ['[', ']'] });
+
 /*
+
 "([firstName] = 'Steve' and [lastName] = 'Vai')"
+
 */
 ```
 
@@ -7047,12 +9356,19 @@ In this example, assume the field names are `musicians.firstName` and `musicians
 
 ```
 formatQuery(query, {
+
   format: 'sql',
+
   quoteFieldNamesWith: ['[', ']'],
+
   fieldIdentifierSeparator: '.',
+
 });
+
 /*
+
 "([musicians].[firstName] = 'Steve' and [musicians].[lastName] = 'Vai')"
+
 */
 ```
 
@@ -7062,8 +9378,11 @@ Some database engines can accept string literals in double quotes (`"`). This ca
 
 ```
 formatQuery(query, { format: 'sql', quoteValuesWith: '"' });
+
 /*
+
 "(firstName = "Steve" and lastName = "Vai")"
+
 */
 ```
 
@@ -7073,12 +9392,19 @@ If the "parameterized\_named" format is used, configure the parameter prefix use
 
 ```
 const p = formatQuery(query, {
+
   format: 'parameterized_named',
+
   paramPrefix: '$',
+
 });
+
 /*
+
 p.sql === "(firstName = $firstName_1 and lastName = $lastName_1)"
+
 //                     ^^^                         ^^^
+
 */
 ```
 
@@ -7092,12 +9418,19 @@ For "parameterized" format, parameter placeholders in generated SQL are "?" by d
 
 ```
 const p = formatQuery(query, {
+
   format: 'parameterized',
+
   paramPrefix: '$',
+
   numberedParams: true,
+
 });
+
 /*
+
 p.sql === "(firstName = $1 and lastName = $2)"
+
 */
 ```
 
@@ -7113,21 +9446,37 @@ If the value is `"CONCAT"` (case-insensitive), the `CONCAT` function is used. (N
 
 ```
 const query = {
+
   combinator: 'and',
+
   rules: [
+
     { field: 'firstName', operator: '=', value: 'Kris' },
+
     { field: 'lastName', operator: 'beginswith', value: 'firstName', valueSource: 'field' },
+
   ],
+
 };
 
+
+
 formatQuery(query, { format: 'sql', concatOperator: '+' });
+
 /*
+
 "(firstName = 'Kris' and lastName like firstName + '%')"
+
 */
 
+
+
 formatQuery(query, { format: 'sql', concatOperator: 'CONCAT' });
+
 /*
+
 "(firstName = 'Kris' and lastName like CONCAT(firstName, '%'))"
+
 */
 ```
 
@@ -7152,10 +9501,15 @@ If `preset` is from `sqlDialectPresets`, it only applies if `format` is undefine
 ```                                                                                                                   |
 | `'mssql'`      | ```
 {
+
   "quoteFieldNamesWith": ["[", "]"],
+
   "concatOperator": "+",
+
   "fieldIdentifierSeparator": ".",
+
   "paramPrefix": "@"
+
 }
 ``` |
 | `'mysql'`      | ```
@@ -7169,16 +9523,27 @@ Examples:
 
 ```
 formatQuery(query, { format: 'parameterized', preset: 'postgresql' });
+
 /*
+
 {
+
   sql: `("firstName" like $1 and "lastName" in ($2, $3))`,
+
   params: ['Stev%', 'Vai', 'Vaughan']
+
 }
+
 */
 
+
+
 formatQuery(query, { format: 'sql', preset: 'mssql' });
+
 /*
+
 "([musicians].[firstName] = 'Kris' and [musicians].[lastName] like [musicians].[firstName] + '%')"
+
 */
 ```
 
@@ -7207,14 +9572,23 @@ When a rule's `valueSource` property is "field", no parameters are generated.
 
 ```
 const pf = formatQuery(
+
   {
+
     combinator: 'and',
+
     rules: [
+
       { field: 'firstName', operator: '=', value: 'lastName', valueSource: 'field' },
+
       { field: 'firstName', operator: 'beginsWith', value: 'middleName', valueSource: 'field' },
+
     ],
+
   },
+
   'parameterized_named'
+
 );
 ```
 
@@ -7222,8 +9596,11 @@ Output (JSON object):
 
 ```
 {
+
   "sql": "(firstName = lastName and firstName like middleName || '%')",
+
   "params": {}
+
 }
 ```
 
@@ -7241,9 +9618,13 @@ Based on [constituent word order](https://en.wikipedia.org/wiki/Word_order#Const
 
 ```
 formatQuery(query, {
+
   format: 'natural_language',
+
   wordOrder: 'SOV',
+
 });
+
 // `First Name 'Steve' is`
 ```
 
@@ -7257,21 +9638,37 @@ For example, when a group has a `not: true` property, but the `combinator` is so
 
 ```
 formatQuery(query, {
+
   format: 'natural_language',
+
   translations: {
+
     groupSuffix: 'is def the truth',
+
     groupSuffix_not: 'is so not true',
+
   },
+
 });
+
 // Given the following query:
+
 // const query = {
+
 //   rules: [
+
 //     { rules: [{ field: 'firstName', operator: '=', value: 'Steve' }] },
+
 //     'and',
+
 //     { not: true, rules: [{ field: 'firstName', operator: '=', value: 'Vai' }] },
+
 //   ]
+
 // };
+
 // ...potential output could be:
+
 // `(First Name is 'Steve') is def the truth, and (Last Name is 'Vai') is so not true`
 ```
 
@@ -7283,12 +9680,19 @@ When `not` is falsy but the `combinator` is `"xor"`, `groupSuffix_xor` will be u
 
 ```
 formatQuery(query, {
+
   format: 'natural_language',
+
   operatorMap: {
+
     '=': 'is most assuredly',
+
     '!=': ['is not', 'differs from'],
+
   },
+
 });
+
 // `First Name is most assuredly 'Steve', and Last Name differs from First Name`
 ```
 
@@ -7321,28 +9725,51 @@ Use the appropriate default rule group processor as a fallback so your custom pr
 
 ```
 const query: RuleGroupType = {
+
   combinator: 'and',
+
   not: false,
+
   rules: [
+
     { combinator: 'and', rules: [] },
+
     // empty rules array ^^^^^^^^^
+
     { field: 'firstName', operator: 'beginsWith', value: 'S' },
+
   ],
+
 };
+
+
 
 const customRuleGroupProcessor: RuleGroupProcessor<string> = (ruleGroup, options) => {
+
   if (ruleGroup.rules.length === 0) {
+
     // Normally, empty rule groups are ignored, but here they evaluate to false
+
     return '(1 = 0)';
+
   }
 
+
+
   // Defer to the default rule group processor for all other operators
+
   return defaultRuleGroupProcessorSQL(ruleGroup, options);
+
 };
 
+
+
 formatQuery(query, { ruleGroupProcessor: customRuleGroupProcessor });
+
 /*
+
 "((1 = 0) and firstName LIKE 'S%')"
+
 */
 ```
 
@@ -7354,43 +9781,81 @@ Example:
 
 ```
 const query: RuleGroupType = {
+
   id: 'root',
+
   rules: [
+
     { id: 'r1', field: 'firstName', value: '', operator: '=' },
+
     { id: 'r2', field: 'lastName', value: 'Vai', operator: '=' },
+
   ],
+
   combinator: 'and',
+
   not: false,
+
 };
 
+
+
 // Example 1
+
 // Query is invalid based on the validator function
+
 formatQuery(query, {
+
   format: 'sql',
+
   validator: () => false,
+
 });
+
 /*
+
 "(1 = 1)" <-- see `fallbackExpression` option
+
 */
+
+
 
 // Example 2
+
 // Rule "r1" is invalid based on the validation map
+
 formatQuery(query, {
+
   format: 'sql',
+
   validator: () => ({ r1: false }),
+
 });
+
 /*
+
 "(lastName = 'Vai')" <-- skipped `firstName` rule with `id === 'r1'`
+
 */
 
+
+
 // Example 3
+
 // Rule "r1" is invalid based on the field validator for `firstName`
+
 formatQuery(query, {
+
   format: 'sql',
+
   fields: [{ name: 'firstName', validator: () => false }],
+
 });
+
 /*
+
 "(lastName = 'Vai')" <-- skipped `firstName` rule because field validator returned `false`
+
 */
 ```
 
@@ -7400,14 +9865,23 @@ Rules and groups with the `muted` property set to `true` are excluded from outpu
 
 ```
 const query: RuleGroupType = {
+
   combinator: 'and',
+
   rules: [
+
     { field: 'firstName', operator: '=', value: 'Steve' },
+
     { field: 'lastName', operator: '=', value: 'Vai', muted: true },
+
   ],
+
 };
 
+
+
 formatQuery(query, 'sql');
+
 // "(firstName = 'Steve')" - lastName rule is excluded
 ```
 
@@ -7415,21 +9889,37 @@ When a group is muted, it's replaced with the [fallback expression](#fallback-ex
 
 ```
 const query: RuleGroupType = {
+
   combinator: 'and',
+
   rules: [
+
     { field: 'firstName', operator: '=', value: 'Steve' },
+
     {
+
       combinator: 'or',
+
       rules: [
+
         { field: 'lastName', operator: '=', value: 'Vai' },
+
         { field: 'instrument', operator: '=', value: 'Guitar' },
+
       ],
+
       muted: true,
+
     },
+
   ],
+
 };
 
+
+
 formatQuery(query, 'sql');
+
 // "(firstName = 'Steve' and (1 = 1))" - muted group becomes fallback
 ```
 
@@ -7441,12 +9931,16 @@ Enable mute functionality in the UI by setting [`showMuteButtons`](/docs/compone
 
 To minimize invalid syntax, `formatQuery` performs basic validation for "in", "notIn", "between", and "notBetween" operators for all formats except "json" and "json\_without\_ids", even without specified validator functions or field validators.
 
+<!-- -->
+
 * Rules with "in" or "notIn" operators are invalid if the `value` is neither an array with at least one element (`value.length > 0`) nor a non-empty string.
 * Rules with "between" or "notBetween" operators are invalid if the `value` is neither an array with at least two elements (`value.length >= 2`) nor a string with at least one comma not at the first or last position (`value.split(',').length >= 2`, and neither element is empty).
 * Rules where `field`, `operator`, or `value` match their respective placeholder are invalid:
   ```
   field === placeholderFieldName ||
+
     operator === placeholderOperatorName ||
+
     (placeholderValueName !== undefined && value === placeholderValueName)
   ```
 
@@ -7495,12 +9989,19 @@ Example:
 
 ```
 const CustomValueEditor = (props: ValueEditorProps) => {
+
   const fullQuery = useQueryBuilderSelector(getQuerySelectorById(props.schema.qbId));
+
   // Here you can use utilities like `findPath(getParentPath(props.path), fullQuery)`.
+
   // This allows you to, for example, inspect the parent group of the current rule.
+
   // You can then count sibling rules, check for unique `field` selections, etc.
+
   // That information can be used for validation, information to the user, or
+
   // anything else in your render function.
+
 };
 ```
 
@@ -7518,7 +10019,9 @@ Called by the [`Rule`](/docs/components/rule.md) component. See [source code](ht
 
 ```
 function useRule(props: RuleProps): {
+
   // See source code for returned properties
+
 };
 ```
 
@@ -7528,7 +10031,9 @@ Called by the [`RuleGroup`](/docs/components/rulegroup.md) component. See [sourc
 
 ```
 function useRuleGroup(props: RuleGroupProps): {
+
   // See source code for returned properties
+
 };
 ```
 
@@ -7538,10 +10043,15 @@ Called by the [`ValueEditor`](/docs/components/valueeditor.md) component. Accept
 
 ```
 function useValueEditor(props: ValueEditorProps): {
+
   valueAsArray: any[];
+
   multiValueHandler: (val: string, idx: number) => void;
+
   parseNumberMethod: ParseNumberMethod;
+
   valueListItemClassName: string;
+
 };
 ```
 
@@ -7561,10 +10071,15 @@ Called by the [`ValueSelector`](/docs/components/valueselector.md) component. Re
 
 ```
 function useValueSelector(
+
   props: Pick<ValueSelectorProps, 'handleOnChange' | 'listsAsArrays' | 'multiple' | 'value'>
+
 ): {
+
   onChange: (v: string | string[]) => void;
+
   val?: string | any[];
+
 };
 ```
 
@@ -7574,8 +10089,11 @@ Used by the [`ValueSelector`](/docs/components/valueselector.md) component. Retu
 
 ```
 function useSelectElementChangeHandler(props: {
+
   multiple?: boolean;
+
   onChange: (v: string | string[]) => void;
+
 }): (e: ChangeEvent<HTMLSelectElement>) => void;
 ```
 
@@ -7585,12 +10103,19 @@ Used by the [`ShiftActions`](/docs/components/shiftactions.md) component. Genera
 
 ```
 function useShiftActions(
+
   props: { path: Path } & Pick<Schema, 'combinators' | 'dispatchQuery' | 'getQuery'>
+
 ): {
+
   shiftDown: () => void;
+
   shiftDownDisabled: boolean;
+
   shiftUp: () => void;
+
   shiftUpDisabled: boolean;
+
 };
 ```
 
@@ -7600,7 +10125,9 @@ Used by the default [`Rule`](/docs/components/rule.md) and [`RuleGroup`](/docs/c
 
 ```
 function useStopEventPropagation(
+
   method: (event: React.MouseEvent, context: any) => void
+
 ): (event: React.MouseEvent, context: any) => void;
 ```
 
@@ -7626,20 +10153,35 @@ This hook is unlikely to be necessary unless you're reimplementing the *entire* 
 
 ```
 function useQueryBuilderSetup(props: QueryBuilderProps): {
+
   qbId: qbId.current;
+
   rqbContext: ReturnType<typeof useMergedContext>;
+
   fields: OptionList<Field>;
+
   fieldMap: Record<string, Field>;
+
   combinators: OptionList<Combinator>;
+
   getOperatorsMain: (field: string) => OptionList<Operator>;
+
   getRuleDefaultOperator: (field: string) => string;
+
   getValueEditorTypeMain: (field: string, operator: string) => ValueEditorType;
+
   getValueSourcesMain: (field: string, operator: string) => ValueSources;
+
   getValuesMain: (field: string, operator: string) => OptionList;
+
   getRuleDefaultValue: (rule: RuleType) => any;
+
   getInputTypeMain: (field: string, operator: string) => string;
+
   createRule: () => RuleType;
+
   createRuleGroup: () => RuleGroupTypeAny;
+
 };
 ```
 
@@ -7655,20 +10197,35 @@ This hook is unlikely to be necessary unless you're reimplementing the *entire* 
 
 ```
 function useQueryBuilderSchema(
+
   props: QueryBuilderProps,
+
   setup: ReturnType<typeof useQueryBuilderSetup>
+
 ): QueryBuilderProps & {
+
   actions: QueryActions;
+
   rootGroup: RuleGroupTypeAny;
+
   rootGroupDisabled: RuleGroupTypeAny;
+
   queryDisabled: boolean;
+
   rqbContext: ReturnType<typeof useMergedContext>;
+
   schema: Schema;
+
   translations: TranslationsFull;
+
   wrapperClassName: string;
+
   dndEnabledAttr: 'enabled' | 'disabled';
+
   inlineCombinatorsAttr: 'enabled' | 'disabled';
+
   combinatorPropObject: Pick<RuleGroupProps, 'combinator'>;
+
 };
 ```
 
@@ -7681,19 +10238,35 @@ Augments a `ValueSelectorProps` or `ValueEditorProps` object with [async option 
 ```
 import { type UseAsyncOptionListParams, useAsyncOptionList } from 'react-querybuilder';
 
+
+
 const useAsyncOptionListParams: UseAsyncOptionListParams = {
+
   getCacheKey: 'field',
+
   loadOptionList: async (value, { ruleOrGroup }) => {
+
     const response = await fetch(`/api/operators?field=${ruleOrGroup.field}`);
+
     return response.json();
+
   },
+
 };
+
+
 
 const AsyncOperatorSelector = (props: ValueSelectorProps) => {
+
   const asyncProps = useAsyncOptionList(props, useAsyncOptionListParams);
 
+
+
   return <props.schema.controls.valueSelector {...asyncProps} />;
+
 };
+
+
 
 const App = () => <QueryBuilder controlElements={{ operatorSelector: AsyncOperatorSelector }} />;
 ```
@@ -7765,18 +10338,31 @@ Since `parse*` functions are used less frequently and rarely together, they were
 
 ```
  // Version 6 only
+
 -import { parseCEL } from "react-querybuilder"
+
 -import { parseJsonLogic } from "react-querybuilder"
+
 -import { parseMongoDB } from "react-querybuilder"
+
 -import { parseSQL } from "react-querybuilder"
 
+
+
  // Version 6 or 7
+
 +import { parseCEL } from "react-querybuilder/parseCEL"
+
 +import { parseJsonLogic } from "react-querybuilder/parseJsonLogic"
+
 +import { parseMongoDB } from "react-querybuilder/parseMongoDB"
+
 +import { parseSQL } from "react-querybuilder/parseSQL"
+
  // (New in version 7)
+
 +import { parseSpEL } from "react-querybuilder/parseSpEL"
+
 +import { parseJSONata } from "react-querybuilder/parseJSONata"
 ```
 
@@ -7786,6 +10372,8 @@ These functions were available as separate exports in version 6 (along with [`fo
 
 ```
 import { parseSQL } from 'react-querybuilder/parseSQL';
+
+
 
 function parseSQL(sql: string, options?: ParseSQLOptions): RuleGroupTypeAny;
 ```
@@ -7808,17 +10396,30 @@ All these statements produce the same result:
 ```
 parseSQL(`SELECT * FROM t WHERE firstName = 'Steve' AND lastName = 'Vai'`);
 
+
+
 parseSQL(`SELECT * FROM t WHERE firstName = ? AND lastName = ?`, {
+
   params: ['Steve', 'Vai'],
+
 });
+
+
 
 parseSQL(`SELECT * FROM t WHERE firstName = :p1 AND lastName = :p2`, {
+
   params: { p1: 'Steve', p2: 'Vai' },
+
 });
 
+
+
 parseSQL(`SELECT * FROM t WHERE firstName = $p1 AND lastName = $p2`, {
+
   params: { p1: 'Steve', p2: 'Vai' },
+
   paramPrefix: '$',
+
 });
 ```
 
@@ -7826,19 +10427,33 @@ Output (`RuleGroupType`):
 
 ```
 {
+
   "combinator": "and",
+
   "rules": [
+
     {
+
       "field": "firstName",
+
       "operator": "=",
+
       "value": "Steve"
+
     },
+
     {
+
       "field": "lastName",
+
       "operator": "=",
+
       "value": "Vai"
+
     }
+
   ]
+
 }
 ```
 
@@ -7849,15 +10464,26 @@ Since v5.0, `parseSQL` detects `XOR` operators and converts them to rule groups 
 ```
 import { defaultCombinatorsExtended, parseSQL, QueryBuilder } from 'react-querybuilder';
 
+
+
 const query = parseSQL(`SELECT * FROM tbl WHERE a = 'b' XOR c = 'd';`);
 
+
+
 const App = () => {
+
   return (
+
     <QueryBuilder
+
       query={query}
+
       combinators={defaultCombinatorsExtended}
+
     />
+
   );
+
 };
 ```
 
@@ -7866,9 +10492,14 @@ const App = () => {
 ```
 import { parseMongoDB } from 'react-querybuilder/parseMongoDB';
 
+
+
 function parseMongoDB(
+
   mongoDbQuery: string | Record<string, any>,
+
   options?: ParseMongoDbOptions
+
 ): RuleGroupTypeAny;
 ```
 
@@ -7880,7 +10511,9 @@ Click the "Import MongoDB" button in [the demo](/demo) to try it out.
 
 ```
 parseMongoDB(`{ "firstName": "Steve", "lastName": { $eq: "Vai" } }`);
+
 // OR
+
 parseMongoDB({ firstName: 'Steve', lastName: { $eq: 'Vai' } });
 ```
 
@@ -7888,19 +10521,33 @@ Output (`RuleGroupType`):
 
 ```
 {
+
   "combinator": "and",
+
   "rules": [
+
     {
+
       "field": "firstName",
+
       "operator": "=",
+
       "value": "Steve"
+
     },
+
     {
+
       "field": "lastName",
+
       "operator": "=",
+
       "value": "Vai"
+
     }
+
   ]
+
 }
 ```
 
@@ -7912,18 +10559,31 @@ Example:
 
 ```
 parseMongoDB(
+
   {
+
     $myCustomOp: ['Vai', 'Vaughan'],
+
   },
+
   {
+
     additionalOperators: {
+
       $myCustomOp: (_op, val) => ({
+
         field: 'lastName',
+
         operator: 'in',
+
         value: val,
+
       }),
+
     },
+
   }
+
 );
 ```
 
@@ -7931,14 +10591,23 @@ Output (`RuleGroupType`):
 
 ```
 {
+
   "combinator": "and",
+
   "rules": [
+
     {
+
       "field": "lastName",
+
       "operator": "in",
+
       "value": ["Vai", "Vaughan"]
+
     }
+
   ]
+
 }
 ```
 
@@ -7951,9 +10620,14 @@ Valid MongoDB query strings may not strictly conform to JSON. To handle extended
 ```
 import { parseJsonLogic } from 'react-querybuilder/parseJsonLogic';
 
+
+
 function parseJsonLogic(
+
   jsonLogic: string | JsonLogic,
+
   options?: ParseJsonLogicOptions
+
 ): RuleGroupTypeAny;
 ```
 
@@ -7965,11 +10639,17 @@ Click the "Import JsonLogic" button in [the demo](/demo) to try it out.
 
 ```
 parseJsonLogic(
+
   `{ "and": [{ "===": [{ "var": "firstName" }, "Steve"] }, { "===": [{ "var": "lastName" }, "Vai"] }] }`
+
 );
+
 // OR
+
 parseJsonLogic({
+
   and: [{ '===': [{ var: 'firstName' }, 'Steve'] }, { '===': [{ var: 'lastName' }, 'Vai'] }],
+
 });
 ```
 
@@ -7977,19 +10657,33 @@ Output (`RuleGroupType`):
 
 ```
 {
+
   "combinator": "and",
+
   "rules": [
+
     {
+
       "field": "firstName",
+
       "operator": "=",
+
       "value": "Steve"
+
     },
+
     {
+
       "field": "lastName",
+
       "operator": "=",
+
       "value": "Vai"
+
     }
+
   ]
+
 }
 ```
 
@@ -8007,12 +10701,19 @@ This example uses a custom "regex" operation to produce a rule with the "contain
 
 ```
 parseJsonLogic(
+
   { regex: [{ var: 'firstName' }, /^Stev/] },
+
   {
+
     jsonLogicOperations: {
+
       regex: val => ({ field: val[0].var, operator: 'contains', value: val[1].source }),
+
     },
+
   }
+
 );
 ```
 
@@ -8020,14 +10721,23 @@ Output (`RuleGroupType`):
 
 ```
 {
+
   "combinator": "and",
+
   "rules": [
+
     {
+
       "field": "firstName",
+
       "operator": "contains",
+
       "value": "^Stev"
+
     }
+
   ]
+
 }
 ```
 
@@ -8035,6 +10745,8 @@ Output (`RuleGroupType`):
 
 ```
 import { parseSpEL } from 'react-querybuilder/parseSpEL';
+
+
 
 function parseSpEL(spelQuery: string, options?: ParseSpELOptions): RuleGroupTypeAny;
 ```
@@ -8053,19 +10765,33 @@ Output (`RuleGroupType`):
 
 ```
 {
+
   "combinator": "and",
+
   "rules": [
+
     {
+
       "field": "firstName",
+
       "operator": "=",
+
       "value": "Steve"
+
     },
+
     {
+
       "field": "lastName",
+
       "operator": "=",
+
       "value": "Vai"
+
     }
+
   ]
+
 }
 ```
 
@@ -8073,6 +10799,8 @@ Output (`RuleGroupType`):
 
 ```
 import { parseCEL } from 'react-querybuilder/parseCEL';
+
+
 
 function parseCEL(celQuery: string, options?: ParseCELOptions): RuleGroupTypeAny;
 ```
@@ -8091,19 +10819,33 @@ Output (`RuleGroupType`):
 
 ```
 {
+
   "combinator": "and",
+
   "rules": [
+
     {
+
       "field": "firstName",
+
       "operator": "=",
+
       "value": "Steve"
+
     },
+
     {
+
       "field": "lastName",
+
       "operator": "=",
+
       "value": "Vai"
+
     }
+
   ]
+
 }
 ```
 
@@ -8115,11 +10857,17 @@ Example:
 
 ```
 parseCEL('opted_in_at.isBirthday(-1)', {
+
   customExpressionHandler: expr => ({
+
     field: expr.left.value,
+
     operator: expr.right.value,
+
     value: expr.list.value[0].value,
+
   }),
+
 });
 ```
 
@@ -8127,14 +10875,23 @@ Output (`RuleGroupType`):
 
 ```
 {
+
   "combinator": "and",
+
   "rules": [
+
     {
+
       "field": "opted_in_at",
+
       "operator": "isBirthday",
+
       "value": -1
+
     }
+
   ]
+
 }
 ```
 
@@ -8144,6 +10901,8 @@ To assist with processing the AST fragments, all types, type guard functions, an
 
 ```
 import { parseJSONata } from 'react-querybuilder/parseJSONata';
+
+
 
 function parseJSONata(jsonataQuery: string, options?: ParseJSONataOptions): RuleGroupTypeAny;
 ```
@@ -8162,19 +10921,33 @@ Output (`RuleGroupType`):
 
 ```
 {
+
   "combinator": "and",
+
   "rules": [
+
     {
+
       "field": "firstName",
+
       "operator": "=",
+
       "value": "Steve"
+
     },
+
     {
+
       "field": "lastName",
+
       "operator": "in",
+
       "value": ["Vai", "Vaughan"]
+
     }
+
   ]
+
 }
 ```
 
@@ -8188,7 +10961,9 @@ To generate arrays instead of comma-separated strings for "in"- and "between"-ty
 
 ```
 parseSQL(`SELECT * FROM t WHERE lastName IN ('Vai', 'Vaughan') AND age BETWEEN 20 AND 100`, {
+
   listsAsArrays: true;
+
 });
 ```
 
@@ -8196,19 +10971,33 @@ Output:
 
 ```
 {
+
   "combinator": "and",
+
   "rules": [
+
     {
+
       "field": "lastName",
+
       "operator": "in",
+
       "value": ["Vai", "Vaughan"]
+
     },
+
     {
+
       "field": "age",
+
       "operator": "between",
+
       "value": [20, 100]
+
     }
+
   ]
+
 }
 ```
 
@@ -8218,7 +11007,9 @@ When `independentCombinators` is `true`, `parse*` functions output queries with 
 
 ```
 parseSQL(`SELECT * FROM t WHERE firstName = 'Steve' AND lastName = 'Vai'`, {
+
   independentCombinators: true,
+
 });
 ```
 
@@ -8226,19 +11017,33 @@ Output (`RuleGroupTypeIC`):
 
 ```
 {
+
   "rules": [
+
     {
+
       "field": "firstName",
+
       "operator": "=",
+
       "value": "Steve"
+
     },
+
     "and",
+
     {
+
       "field": "lastName",
+
       "operator": "=",
+
       "value": "Vai"
+
     }
+
   ]
+
 }
 ```
 
@@ -8250,11 +11055,17 @@ For such rules to be valid, one of these must be an array including "field": (1)
 
 ```
 parseSQL(`SELECT * FROM t WHERE firstName = lastName`, {
+
   fields: [
+
     { name: 'firstName', label: 'First Name', valueSources: ['value', 'field'] },
+
     { name: 'lastName', label: 'Last Name', valueSources: () => ['value', 'field'] },
+
   ],
+
   getValueSources: () => ['value', 'field'],
+
 });
 ```
 
@@ -8262,15 +11073,25 @@ Output:
 
 ```
 {
+
   "combinator": "and",
+
   "rules": [
+
     {
+
       "field": "firstName",
+
       "operator": "=",
+
       "value": "lastName",
+
       "valueSource": "field"
+
     }
+
   ]
+
 }
 ```
 
@@ -8286,8 +11107,11 @@ note
 
 ```
 // 1 is a scalar value and `iq` is a field name
+
 parseSQL(`SELECT * FROM tbl WHERE age between 1 and iq`);
+
 // List contains a mix of scalar values and field names
+
 parseSQL(`SELECT * FROM tbl WHERE firstName IN (lastName, 'Steve', 'Stevie')`);
 ```
 
@@ -8295,12 +11119,19 @@ parseSQL(`SELECT * FROM tbl WHERE firstName IN (lastName, 'Steve', 'Stevie')`);
 
 ```
 // Both are field names
+
 parseSQL(`SELECT * FROM tbl WHERE age between numChildren and iq`);
+
 // Both are scalar values
+
 parseSQL(`SELECT * FROM tbl WHERE age between 26 and 52`);
+
 // All items are field names
+
 parseSQL(`SELECT * FROM tbl WHERE firstName IN (lastName, middleName)`);
+
 // All items are scalar values
+
 parseSQL(`SELECT * FROM tbl WHERE firstName IN ('Steve', 'Stevie')`);
 ```
 
@@ -8336,7 +11167,9 @@ See the [test suite](https://github.com/react-querybuilder/react-querybuilder/bl
 
 ```
 function defaultValidator(query: RuleGroupTypeAny): {
+
   [id: string]: { valid: boolean; reasons?: string[] };
+
 };
 ```
 
@@ -8369,7 +11202,9 @@ function findID(id: string, query: RuleGroupTypeAny): RuleType | RuleGroupTypeAn
 
 ```
 function convertQuery(query: RuleGroupType): RuleGroupTypeIC;
+
 // OR
+
 function convertQuery(query: RuleGroupTypeIC): RuleGroupType;
 ```
 
@@ -8393,23 +11228,41 @@ AddOptions
 
 ```
 export interface AddOptions {
+
   /**
+
    * If the query extends `RuleGroupTypeIC` (i.e. the query has independent
+
    * combinators), then the first combinator in this list will be inserted
+
    * before the new rule/group if the parent group is not empty. This option
+
    * is overridden by `combinatorPreceding`.
+
    */
+
   combinators?: OptionList;
+
   /**
+
    * If the query extends `RuleGroupTypeIC` (i.e. the query has independent
+
    * combinators), then this combinator will be inserted before the new rule/group
+
    * if the parent group is not empty. This option will supersede `combinators`.
+
    */
+
   combinatorPreceding?: string;
+
   /**
+
    * ID generator.
+
    */
+
   idGenerator?: () => string;
+
 }
 ```
 
@@ -8431,33 +11284,61 @@ UpdateOptions
 
 ```
 export interface UpdateOptions {
+
   /**
+
    * When updating the `field` of a rule, the rule's `operator`, `value`, and `valueSource`
+
    * will be reset to their respective defaults. Defaults to `true`.
+
    */
+
   resetOnFieldChange?: boolean;
+
   /**
+
    * When updating the `operator` of a rule, the rule's `value` and `valueSource`
+
    * will be reset to their respective defaults. Defaults to `false`.
+
    */
+
   resetOnOperatorChange?: boolean;
+
   /**
+
    * Determines the default operator name for a given field.
+
    */
+
   getRuleDefaultOperator?: (field: string) => string;
+
   /**
+
    * Determines the valid value sources for a given field and operator.
+
    */
+
   getValueSources?: (field: string, operator: string) => ValueSources | ValueSourceFlexibleOptions;
+
   /**
+
    * Gets the default value for a given rule, in case the value needs to be reset.
+
    */
+
   // oxlint-disable-next-line typescript/no-explicit-any
+
   getRuleDefaultValue?: (rule: RuleType) => any;
+
   /**
+
    * Determines the valid match modes for a given field.
+
    */
+
   getMatchModes?: (field: string) => MatchModeOptions;
+
 }
 ```
 
@@ -8473,20 +11354,35 @@ MoveOptions
 
 ```
 export interface MoveOptions {
+
   /**
+
    * When `true`, the source rule/group will not be removed from its original path.
+
    */
+
   clone?: boolean;
+
   /**
+
    * If the query extends `RuleGroupTypeIC` (i.e. the query is using independent
+
    * combinators), then the first combinator in this list will be inserted before
+
    * the rule/group if necessary.
+
    */
+
   combinators?: OptionList;
+
   /**
+
    * ID generator.
+
    */
+
   idGenerator?: () => string;
+
 }
 ```
 
@@ -8502,37 +11398,69 @@ InsertOptions
 
 ```
 export interface InsertOptions {
+
   /**
+
    * If the query extends `RuleGroupTypeIC` (i.e. the query has independent
+
    * combinators), then the first combinator in this list will be inserted
+
    * before the new rule/group if the parent group is not empty. This option
+
    * is overridden by `combinatorPreceding`.
+
    */
+
   combinators?: OptionList;
+
   /**
+
    * If the query extends `RuleGroupTypeIC` (i.e. the query has independent
+
    * combinators), then this combinator will be inserted before the new rule/group
+
    * if the parent group is not empty and the new rule/group is not the first in the
+
    * group (`path.at(-1) > 0`). This option will supersede `combinators`.
+
    */
+
   combinatorPreceding?: string;
+
   /**
+
    * If the query extends `RuleGroupTypeIC` (i.e. the query has independent
+
    * combinators), then this combinator will be inserted after the new rule/group
+
    * if the parent group is not empty and the new rule/group is the first in the
+
    * group (`path.at(-1) === 0`). This option will supersede `combinators`.
+
    */
+
   combinatorSucceeding?: string;
+
   /**
+
    * ID generator.
+
    *
+
    * @default generateID
+
    */
+
   idGenerator?: () => string;
+
   /**
+
    * When `true`, the new rule/group will replace the rule/group at `path`.
+
    */
+
   replace?: boolean;
+
 }
 ```
 
@@ -8548,20 +11476,35 @@ GroupOptions
 
 ```
 export interface GroupOptions {
+
   /**
+
    * When `true`, the source rule/group will not be removed from its original path.
+
    */
+
   clone?: boolean;
+
   /**
+
    * If the query extends `RuleGroupTypeIC` (i.e. the query is using independent
+
    * combinators), then the first combinator in this list will be inserted between
+
    * the two rules/groups.
+
    */
+
   combinators?: OptionList;
+
   /**
+
    * ID generator.
+
    */
+
   idGenerator?: () => string;
+
 }
 ```
 
@@ -8587,21 +11530,37 @@ HTML `<input>` controls store values as strings (even for `type="number"`), but 
 
 ```
 const query: RuleGroupType = {
+
   combinator: 'and',
+
   not: false,
+
   rules: [
+
     { field: 'digits', operator: '=', value: '20' },
+
     { field: 'age', operator: 'between', value: '26, 52' },
+
     { field: 'lastName', operator: '=', value: 'Vai' },
+
   ],
+
 };
 
+
+
 // Default configuration - all values are strings:
+
 formatQuery(query, { format: 'sql' });
+
 // "(digits = '20' and age between '26' and '52' and lastName = 'Vai')"
 
+
+
 // `parseNumbers: true` - numeric strings converted to actual numbers:
+
 formatQuery(query, { format: 'sql', parseNumbers: true });
+
 // "(digits = 20 and age between 26 and 52 and lastName = 'Vai')"
 ```
 
@@ -8613,18 +11572,31 @@ Each of the following expressions evaluates to `true`:
 
 ```
 // Everything after the '3' is ignored by `parseFloat`
+
 parseFloat('000123abcdef') === 123;
 
+
+
 // `value` contains non-numeric characters, so remains as-is
+
 formatQuery(
+
   { rules: [{ field: 'f', operator: '=', value: '000123abcdef' }] },
+
   { format: 'sql', parseNumbers: true }
+
 ) === "(f = '000123abcdef')";
 
+
+
 // `value` is wholly numeric (after trimming whitespace) so it gets converted to a number
+
 formatQuery(
+
   { rules: [{ field: 'f', operator: '=', value: '  000123  ' }] },
+
   { format: 'sql', parseNumbers: true }
+
 ) === '(f = 123)';
 ```
 
@@ -8669,13 +11641,22 @@ To mark an entire query as valid or invalid, return a `boolean` value from the `
 ```
 import { QueryBuilder, RuleGroupType } from 'react-querybuilder';
 
+
+
 /**
+
  * This function returns false (indicating "invalid") when no rules are present.
+
  */
+
 const validator = (q: RuleGroupType) => q.rules.length > 0;
 
+
+
 const App = () => {
+
   return <QueryBuilder validator={validator} />;
+
 };
 ```
 
@@ -8684,30 +11665,56 @@ The alternate return value from a query-level validator is a validation map—an
 ```
 import { QueryBuilder, RuleGroupType, ValidationMap } from 'react-querybuilder';
 
+
+
 /**
+
  * This function returns a validation map. A real validator function would
+
  * have logic to determine which rules are valid/invalid and why, but
+
  * this function is simplified for brevity.
+
  */
+
 const validator: QueryValidator = (q): ValidationMap => ({
+
   r1: true, // valid rule
+
   r2: false, // invalid rule
+
   r3: { valid: true, reasons: ['awesome rule'] }, // valid rule
+
   r4: { valid: false, reasons: ['lame rule'] }, // invalid rule
+
 });
 
+
+
 const query: RuleGroupType = {
+
   combinator: 'and',
+
   rules: [
+
     { id: 'r1', field: 'field1', operator: '=', value: 'Value 1' },
+
     { id: 'r2', field: 'field2', operator: '=', value: 'Value 2' },
+
     { id: 'r3', field: 'field3', operator: '=', value: 'Value 3' },
+
     { id: 'r4', field: 'field4', operator: '=', value: 'Value 4' },
+
   ],
+
 };
 
+
+
 const App = () => {
+
   return <QueryBuilder query={query} validator={validator} />;
+
 };
 ```
 
@@ -8719,40 +11726,75 @@ In the following configuration, any rule that specifies `field2` as the field (e
 
 ```
 import {
+
   Field,
+
   QueryBuilder,
+
   RuleGroupType,
+
   RuleValidator,
+
   ValidationResult,
+
 } from 'react-querybuilder';
 
+
+
 /**
+
  * This function returns a validation result.
+
  */
+
 const validator: RuleValidator = (q): ValidationResult => ({
+
   valid: false,
+
   reasons: ['this field is always invalid'],
+
 });
 
+
+
 const fields: Field[] = [
+
   { name: 'field1', label: 'Field 1' },
+
   { name: 'field2', label: 'Field 2', validator },
+
   { name: 'field3', label: 'Field 3' },
+
   { name: 'field4', label: 'Field 4' },
+
 ];
 
+
+
 const query: RuleGroupType = {
+
   combinator: 'and',
+
   rules: [
+
     { field: 'field1', operator: '=', value: 'Value 1' },
+
     { field: 'field2', operator: '=', value: 'Value 2' },
+
     { field: 'field3', operator: '=', value: 'Value 3' },
+
     { field: 'field4', operator: '=', value: 'Value 4' },
+
   ],
+
 };
 
+
+
 const App = () => {
+
   return <QueryBuilder query={query} fields={fields} />;
+
 };
 ```
 

@@ -78,24 +78,43 @@ The default operator list is below.
 
 ```
 export const defaultOperators: DefaultOperators = [
+
   { name: '=', value: '=', label: '=' },
+
   { name: '!=', value: '!=', label: '!=' },
+
   { name: '<', value: '<', label: '<' },
+
   { name: '>', value: '>', label: '>' },
+
   { name: '<=', value: '<=', label: '<=' },
+
   { name: '>=', value: '>=', label: '>=' },
+
   { name: 'contains', value: 'contains', label: 'contains' },
+
   { name: 'beginsWith', value: 'beginsWith', label: 'begins with' },
+
   { name: 'endsWith', value: 'endsWith', label: 'ends with' },
+
   { name: 'doesNotContain', value: 'doesNotContain', label: 'does not contain' },
+
   { name: 'doesNotBeginWith', value: 'doesNotBeginWith', label: 'does not begin with' },
+
   { name: 'doesNotEndWith', value: 'doesNotEndWith', label: 'does not end with' },
+
   { name: 'null', value: 'null', label: 'is null' },
+
   { name: 'notNull', value: 'notNull', label: 'is not null' },
+
   { name: 'in', value: 'in', label: 'in' },
+
   { name: 'notIn', value: 'notIn', label: 'not in' },
+
   { name: 'between', value: 'between', label: 'between' },
+
   { name: 'notBetween', value: 'notBetween', label: 'not between' },
+
 ];
 ```
 
@@ -111,8 +130,11 @@ Array of combinators for RuleGroups. Default combinator list:
 
 ```
 export const defaultCombinators: DefaultCombinators = [
+
   { name: 'and', value: 'and', label: 'AND' } as const,
+
   { name: 'or', value: 'or', label: 'OR' } as const,
+
 ];
 ```
 
@@ -150,9 +172,13 @@ Example: Adding "bold" class to "+ Rule" buttons (with CSS rule `.bold { font-we
 
 ```
 function App() {
+
   return (
+
     <QueryBuilder controlClassnames={{ addRule: 'bold' }}>
+
   )
+
 }
 ```
 
@@ -336,13 +362,21 @@ To [prevent adding new groups](/docs/tips/limit-groups.md), use `controlElements
 
 ```
 <RG extends RuleGroupTypeAny>(
+
   rule: RuleType,
+
   fromPath: Path,
+
   toPath: Path | 'up' | 'down',
+
   query: RG,
+
   nextQuery: RG,
+
   options: MoveOptions,
+
   context?: any
+
 ) => RG | boolean;
 ```
 
@@ -356,13 +390,21 @@ Called before a rule is moved or shifted. Return:
 
 ```
 <RG extends RuleGroupTypeAny>(
+
   ruleGroup: RG,
+
   fromPath: Path,
+
   toPath: Path | 'up' | 'down',
+
   query: RG,
+
   nextQuery: RG,
+
   options: MoveOptions,
+
   context?: any
+
 ) => RG | boolean;
 ```
 
@@ -388,47 +430,89 @@ All object keys and properties are optional. The `translations` object deep-merg
 
 ```
 export const defaultTranslations: BaseTranslationsFull = {
+
   fields: {
+
     title: 'Field',
+
     placeholderName: defaultPlaceholderFieldName,
+
     placeholderLabel: defaultPlaceholderFieldLabel,
+
     placeholderGroupLabel: defaultPlaceholderFieldGroupLabel,
+
   } as const,
+
   operators: {
+
     title: 'Operator',
+
     placeholderName: defaultPlaceholderOperatorName,
+
     placeholderLabel: defaultPlaceholderOperatorLabel,
+
     placeholderGroupLabel: defaultPlaceholderOperatorGroupLabel,
+
   } as const,
+
   values: {
+
     title: 'Values',
+
     placeholderName: defaultPlaceholderValueName,
+
     placeholderLabel: defaultPlaceholderValueLabel,
+
     placeholderGroupLabel: defaultPlaceholderValueGroupLabel,
+
   } as const,
+
   matchMode: { title: 'Match mode' } as const,
+
   matchThreshold: { title: 'Match threshold' } as const,
+
   value: { title: 'Value' } as const,
+
   removeRule: { label: '⨯', title: 'Remove rule' } as const,
+
   removeGroup: { label: '⨯', title: 'Remove group' } as const,
+
   addRule: { label: '+ Rule', title: 'Add rule' } as const,
+
   addGroup: { label: '+ Group', title: 'Add group' } as const,
+
   combinators: { title: 'Combinator' } as const,
+
   notToggle: { label: 'Not', title: 'Invert this group' } as const,
+
   cloneRule: { label: '⧉', title: 'Clone rule' } as const,
+
   cloneRuleGroup: { label: '⧉', title: 'Clone group' } as const,
+
   shiftActionUp: { label: '˄', title: 'Shift up' } as const,
+
   shiftActionDown: { label: '˅', title: 'Shift down' } as const,
+
   dragHandle: { label: '⁞⁞', title: 'Drag handle' } as const,
+
   lockRule: { label: '🔓', title: 'Lock rule' } as const,
+
   lockGroup: { label: '🔓', title: 'Lock group' } as const,
+
   lockRuleDisabled: { label: '🔒', title: 'Unlock rule' } as const,
+
   lockGroupDisabled: { label: '🔒', title: 'Unlock group' } as const,
+
   muteRule: { label: '🔊', title: 'Mute rule' } as const,
+
   muteGroup: { label: '🔊', title: 'Mute group' } as const,
+
   unmuteRule: { label: '🔇', title: 'Unmute rule' } as const,
+
   unmuteGroup: { label: '🔇', title: 'Unmute group' } as const,
+
   valueSourceSelector: { title: 'Value source' } as const,
+
 } satisfies BaseTranslationsFull;
 ```
 
@@ -524,10 +608,15 @@ For example, the default behavior for the "between" operator might produce this 
 
 ```
 {
+
   "field": "f1",
+
   "operator": "between",
+
   "value": "f2,f3",
+
   "valueSource": "field"
+
 }
 ```
 
@@ -535,10 +624,15 @@ When `listsAsArrays` is true, the rule's `value` will be an array:
 
 ```
 {
+
   "field": "f1",
+
   "operator": "between",
+
   "value": ["f2", "f3"],
+
   "valueSource": "field"
+
 }
 ```
 
@@ -571,19 +665,29 @@ When `true`, displays a [drag handle](/docs/components/draghandle.md) on the lef
 
 ```
 npm i react-querybuilder @react-querybuilder/dnd react-dnd react-dnd-html5-backend
+
 # OR yarn add / pnpm add / bun add
 ```
 
 ```
 import { QueryBuilderDnD } from '@react-querybuilder/dnd';
+
 import * as ReactDnD from 'react-dnd';
+
 import * as ReactDndHtml5Backend from 'react-dnd-html5-backend';
+
 import { QueryBuilder } from 'react-querybuilder';
 
+
+
 const App = () => (
+
   <QueryBuilderDnD dnd={{ ...ReactDnD, ...ReactDndHtml5Backend }}>
+
     <QueryBuilder />
+
   </QueryBuilderDnD>
+
 );
 ```
 
@@ -649,11 +753,17 @@ A standard query (`RuleGroupType`) might look like this:
 
 ```
 const query: RuleGroupType = {
+
   combinator: 'and',
+
   rules: [
+
     { field: 'f1', operator: '=', value: 'v1' },
+
     { field: 'f2', operator: '=', value: 'v2' },
+
   ],
+
 };
 ```
 
@@ -661,11 +771,17 @@ The same query using independent combinators would look like this:
 
 ```
 const query: RuleGroupTypeIC = {
+
   rules: [
+
     { field: 'f1', operator: '=', value: 'v1' },
+
     'and',
+
     { field: 'f2', operator: '=', value: 'v2' },
+
   ],
+
 };
 ```
 

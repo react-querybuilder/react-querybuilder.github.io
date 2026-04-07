@@ -12,21 +12,37 @@ The **[API documentation](/api)** is generated from source code and provides com
 
 ```
 interface Field {
+
   id?: string; // The field identifier (if not provided, `name` will be used)
+
   name: string; // The field name (REQUIRED)
+
   label: string; // The field label (REQUIRED)
+
   operators?: OptionList<Operator>[]; // Array of operators (if not provided, `getOperators()` will be used)
+
   valueEditorType?: ValueEditorType; // Value editor type for this field (if not provided, `getValueEditorType()` will be used)
+
   inputType?: string | null; // @type attribute for the <input /> rendered by ValueEditor, e.g. 'text', 'number', or 'date' (if not provided, `getInputType()` will be used)
+
   values?: OptionList; // Array of value options, applicable when valueEditorType is 'select', 'radio', or 'multiselect' (if not provided, `getValues()` will be used)
+
   defaultOperator?: string; // Default operator for this field (if not provided, `getDefaultOperator()` will be used)
+
   defaultValue?: any; // Default value for this field (if not provided, `getDefaultValue()` will be used)
+
   placeholder?: string; // Placeholder text for the value editor when this field is selected
+
   validator?: RuleValidator; // Validation function for rules that specify this field
+
   valueSources?: ValueSources | ((operator: string) => ValueSources); // List of allowed value sources (must contain "value", "field", or both)
+
   comparator?: string | ((f: Field, operator: string) => boolean); // Determines which (other) fields to include in the list when the rule's valueSource is "field"
+
   className?: Classname; // Assigned to rules where this field is selected
+
   separator?: ReactNode; // Rendered between multiple value editors, e.g. when the operator is "between" or "notBetween"
+
 }
 ```
 
@@ -42,34 +58,65 @@ Notes:
 ```
 type Path = number[];
 
+
+
 type RuleType = {
+
   path?: Path;
+
   id?: string;
+
   disabled?: boolean;
+
   field: string;
+
   operator: string;
+
   value: any;
+
   valueSource?: ValueSource;
+
 };
+
+
 
 type RuleGroupType = {
+
   path?: Path;
+
   id?: string;
+
   disabled?: boolean;
+
   combinator: string;
+
   rules: (RuleType | RuleGroupType)[];
+
   not?: boolean;
+
 };
+
+
 
 type RuleGroupTypeIC = {
+
   path?: Path;
+
   id?: string;
+
   disabled?: boolean;
+
   rules: (RuleType | RuleGroupTypeIC | string)[]; // see note below
+
   not?: boolean;
+
 };
 
+
+
 type RuleGroupTypeAny = RuleGroupType | RuleGroupTypeIC;
+
+
 
 type RuleOrGroupArray = RuleGroupType['rules'] | RuleGroupTypeIC['rules'];
 ```
@@ -86,7 +133,9 @@ For example, the following would be invalid because the first element in the `ru
 
 ```
 const ruleGroupInvalid: RuleGroupTypeIC = {
+
   rules: ['and', { field: 'firstName', operator: '=', value: 'Steve' }],
+
 };
 ```
 
@@ -94,17 +143,29 @@ We can resolve this by either removing the first element or inserting another ru
 
 ```
 const ruleGroupValid1: RuleGroupTypeIC = {
+
   rules: [{ field: 'firstName', operator: '=', value: 'Steve' }],
+
 };
+
+
 
 // OR
 
+
+
 const ruleGroupValid2: RuleGroupTypeIC = {
+
   rules: [
+
     { field: 'lastName', operator: '=', value: 'Vai' },
+
     'and',
+
     { field: 'firstName', operator: '=', value: 'Steve' },
+
   ],
+
 };
 ```
 
@@ -112,67 +173,130 @@ const ruleGroupValid2: RuleGroupTypeIC = {
 
 ```
 type ExportFormat =
+
   | 'json'
+
   | 'sql'
+
   | 'json_without_ids'
+
   | 'parameterized'
+
   | 'parameterized_named'
+
   | 'mongodb'
+
   | 'mongodb_query'
+
   | 'cel'
+
   | 'jsonlogic'
+
   | 'jsonata'
+
   | 'ldap'
+
   | 'elasticsearch'
+
   | 'spel'
+
   | 'natural_language';
 
+
+
 interface FormatQueryOptions {
+
   format?: ExportFormat;
+
   valueProcessor?: ValueProcessor;
+
   ruleProcessor?: RuleProcessor;
+
   quoteFieldNamesWith?: string | [string, string];
+
   fieldIdentifierSeparator?: string;
+
   quoteValuesWith?: string;
+
   validator?: QueryValidator;
+
   fields?: OptionList<Field>;
+
   getOperators?: (
+
     field: string,
+
     misc: { fieldData: FullField }
+
   ) => FlexibleOptionList<FullOperator> | null;
+
   fallbackExpression?: string;
+
   paramPrefix?: string;
+
   paramsKeepPrefix?: boolean;
+
   numberedParams?: boolean;
+
   parseNumbers?: ParseNumberMethod;
+
   placeholderFieldName?: string;
+
   placeholderOperatorName?: string;
+
   concatOperator?: string;
+
   preset?: SQLPreset;
+
   context?: Record<string, any>;
+
 }
+
+
 
 type RuleProcessor = (rule: RuleType, options?: ValueProcessorOptions) => any;
 
+
+
 type ValueProcessor = (field: string, operator: string, value: any) => string;
 
+
+
 interface ValueProcessorOptions extends FormatQueryOptions {
+
   escapeQuotes?: boolean;
+
   fieldData?: Field;
+
   fieldParamNames?: Record<string, string[]>;
+
   getNextNamedParam?: (field: string) => string;
+
   wrapValueWith?: [string, string];
+
 }
+
+
 
 interface ParameterizedSQL {
+
   sql: string;
+
   params: any[];
+
 }
 
+
+
 interface ParameterizedNamedSQL {
+
   sql: string;
+
   params: { [p: string]: any };
+
 }
+
+
 
 type ParseNumberMethod = boolean | 'enhanced' | 'native' | 'strict';
 ```
@@ -181,31 +305,57 @@ type ParseNumberMethod = boolean | 'enhanced' | 'native' | 'strict';
 
 ```
 interface ParserCommonOptions {
+
   fields?: OptionList<Field>[] | Record<string, Field>;
+
   getValueSources?: (field: string, operator: string) => ValueSources;
+
   listsAsArrays?: boolean;
+
   independentCombinators?: boolean;
+
 }
+
+
 
 interface ParseSQLOptions extends ParserCommonOptions {
+
   paramPrefix?: string;
+
   params?: any[] | Record<string, any>;
+
 }
 
+
+
 interface ParseCELOptions extends ParserCommonOptions {
+
   customExpressionHandler?: (expr: CELExpression) => RuleType | RuleGroupType | null;
+
 }
+
+
 
 type ParseSpELOptions = ParserCommonOptions;
 
+
+
 type ParseJsonLogicOptions = ParserCommonOptions;
 
+
+
 interface ParseMongoDbOptions extends ParserCommonOptions {
+
   preventOperatorNegation?: boolean;
+
   additionalOperators?: Record<
+
     string,
+
     (operator: string, value: any, otherOptions: ParserCommonOptions) => RuleType | RuleGroupType
+
   >;
+
 }
 ```
 
@@ -213,15 +363,26 @@ interface ParseMongoDbOptions extends ParserCommonOptions {
 
 ```
 interface ValidationResult {
+
   valid: boolean;
+
   reasons?: any[];
+
 }
+
+
 
 interface ValidationMap {
+
   [id: string]: boolean | ValidationResult;
+
 }
 
+
+
 type QueryValidator = (query: RuleGroupTypeAny) => boolean | ValidationMap;
+
+
 
 type RuleValidator = (rule: RuleType) => boolean | ValidationResult;
 ```
@@ -232,25 +393,45 @@ type RuleValidator = (rule: RuleType) => boolean | ValidationResult;
 
 ```
 interface Option {
+
   name: string;
+
   label: string;
+
   [x: string]: any;
+
 }
 
+
+
 interface OptionGroup {
+
   label: string;
+
   options: Option[];
+
 }
+
+
 
 type OptionList = Option[] | OptionGroup[];
 
+
+
 interface Combinator extends Option {
+
   className?: Classname; // Assigned to groups where this combinator is selected
+
 }
 
+
+
 interface Operator extends Option {
+
   arity?: number | 'unary' | 'binary' | 'ternary';
+
   className?: Classname; // Assigned to rules where this operator is selected
+
 }
 ```
 
@@ -260,18 +441,32 @@ See [`ValueEditor` component documentation here](/docs/components/valueeditor.md
 
 ```
 type ValueEditorType =
+
   | 'text'
+
   | 'select'
+
   | 'checkbox'
+
   | 'radio'
+
   | 'textarea'
+
   | 'multiselect'
+
   | 'date'
+
   | 'datetime-local'
+
   | 'time'
+
   | null;
 
+
+
 type ValueSource = 'value' | 'field';
+
+
 
 type ValueSources = ['value'] | ['value', 'field'] | ['field', 'value'] | ['field'];
 ```
@@ -280,50 +475,96 @@ type ValueSources = ['value'] | ['value', 'field'] | ['field', 'value'] | ['fiel
 
 ```
 interface Schema {
+
   qbId: string;
+
   fields: OptionList<Field>;
+
   fieldMap: Record<string, Field>;
+
   classNames: Classnames;
+
   combinators: OptionList<Combinator>;
+
   controls: Controls;
+
   createRule(): RuleType;
+
   createRuleGroup(): RuleGroupTypeAny;
+
   dispatchQuery(query: RuleGroupTypeAny): void;
+
   getQuery(): RuleGroupTypeAny | undefined;
+
   getOperators(field: string): OptionList<Operator>;
+
   getValueEditorType(field: string, operator: string): ValueEditorType;
+
   getValueEditorSeparator(field: string, operator: string): ReactNode;
+
   getValueSources(field: string, operator: string): ValueSources;
+
   getInputType(field: string, operator: string): string | null;
+
   getValues(field: string, operator: string): OptionList;
+
   getRuleClassname(rule: RuleType): Classname;
+
   getRuleGroupClassname(ruleGroup: RuleGroupTypeAny): Classname;
+
   showCombinatorsBetweenRules: boolean;
+
   showNotToggle: boolean;
+
   showShiftActions: boolean;
+
   showCloneButtons: boolean;
+
   showLockButtons: boolean;
+
   autoSelectField: boolean;
+
   autoSelectOperator: boolean;
+
   addRuleToNewGroups: boolean;
+
   enableDragAndDrop: boolean;
+
   validationMap: ValidationMap;
+
   independentCombinators: boolean;
+
   listsAsArrays: boolean;
+
   parseNumbers: ParseNumbersMethod;
+
   disabledPaths: Path[];
+
 }
 
+
+
 interface QueryActions {
+
   onGroupAdd(group: RuleGroupTypeAny, parentPath: Path, context?: any): void;
+
   onGroupRemove(path: Path): void;
+
   onPropChange(
+
     prop: Exclude<keyof RuleType | keyof RuleGroupType, 'id' | 'path'>,
+
     value: any,
+
     path: Path
+
   ): void;
+
   onRuleAdd(rule: RuleType, parentPath: Path, context?: any): void;
+
   onRuleRemove(path: Path): void;
+
   moveRule(oldPath: Path, newPath: Path, clone?: boolean): void;
+
 }
 ```

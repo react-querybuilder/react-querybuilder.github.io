@@ -10,15 +10,25 @@ CSS
 
 ```
 .queryBuilder .ruleGroup-addGroup + button.ruleGroup-cloneGroup,
+
 .queryBuilder .ruleGroup-addGroup + button.ruleGroup-lock,
+
 .queryBuilder .ruleGroup-addGroup + button.ruleGroup-remove,
+
 .queryBuilder .rule-operators     + button.rule-cloneRule,
+
 .queryBuilder .rule-operators     + button.rule-lock,
+
 .queryBuilder .rule-operators     + button.rule-remove,
+
 .queryBuilder .rule-value         + button.rule-cloneRule,
+
 .queryBuilder .rule-value         + button.rule-lock,
+
 .queryBuilder .rule-value         + button.rule-remove {
+
   margin-left: auto !important;
+
 }
 ```
 
@@ -50,13 +60,21 @@ CSS
 
 ```
 .ruleGroup-body {
+
   /* Override the default flex layout */
+
   display: grid !important;
+
   /* Allow the left-hand column (the rule/subgroup) to expand as needed */
+
   /* Collapse the right-hand column (the combinator) to the width of the content */
+
   grid-template-columns: auto min-content;
+
   /* Keep the combinator aligned with the bottom of the rule/subgroup */
+
   align-items: end;
+
 }
 ```
 
@@ -90,19 +108,33 @@ CSS
 
 ```
 .ruleGroup-body {
+
   /* Override the default flex layout */
+
   display: grid !important;
+
   /* Allow the right-hand column (the rule/subgroup) to expand as needed */
+
   /* Collapse the left-hand column (the combinator) to the width of the content */
+
   grid-template-columns: min-content auto;
+
   /* Keep the combinator aligned with the top of the rule/subgroup */
+
   align-items: start;
+
 }
 
+
+
 /* Indent the first rule/subgroup since it has no preceding combinator */
+
 .ruleGroup-body > .rule:first-child:not(:only-child),
+
 .ruleGroup-body > .ruleGroup:first-child:not(:only-child) {
+
   grid-column-start: 2;
+
 }
 ```
 

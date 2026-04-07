@@ -19,6 +19,7 @@ You may have found this page after seeing a TypeScript error message similar to 
 
 ```
 Property 'name' does not exist on type 'FullOption<string> | OptionGroup<FullOption<string>>'.
+
   Property 'name' does not exist on type 'OptionGroup<FullOption<string>>'. ts(2339)
 ```
 
@@ -26,8 +27,11 @@ This typically occurs when treating option list elements as guaranteed `Option` 
 
 ```
 const ListAllOptionNames = (props: ValueSelectorProps) => {
+
   return <div>{props.options.map(opt => opt.name).join(', ')}</div>;
+
   //                                        ^^^^ error
+
 };
 ```
 
@@ -41,8 +45,11 @@ As an example, consider this `fields` array:
 
 ```
 const fields: Field[] = [
+
   { name: 'firstName', label: 'First Name' },
+
   { name: 'lastName', label: 'Last Name' },
+
 ];
 ```
 
@@ -50,16 +57,27 @@ When this array is assigned to the [`fields` prop](/docs/components/querybuilder
 
 ```
 const MyFieldSelector = (props: FieldSelectorProps) => {
+
   console.log(props.options); // =>
+
   // [
+
   //   { name: 'firstName', value: 'firstName', label: 'First Name' },
+
   //   { name: 'lastName', value: 'lastName', label: 'Last Name' }],
+
   // ]
+
   return <ValueSelector {...props} />;
+
 };
 
+
+
 const App = () => (
+
   <QueryBuilder fields={fields} controlElements={{ fieldSelector: MyFieldSelector }} />
+
 );
 ```
 
@@ -71,8 +89,11 @@ Several approaches can handle this ambiguity. One option is casting option list 
 
 ```
 const MyComponent(props: ValueSelectorProps) => {
+
   return <div>{(props.options as Option[]).map(opt => opt.name).join(', ')}</div>;
+
   //                          ^^^^^^^^^^^ avoids TypeScript error; may have issues during execution
+
 };
 ```
 
@@ -84,10 +105,15 @@ A better solution uses the [`isOptionGroupArray`](#isoptiongrouparray) type guar
 
 ```
 const MyComponent(props: ValueSelectorProps) => {
+
   if (isOptionGroupArray(props.options)) {
+
     return <div>{props.options.flatMap(og => og.options).map(opt => opt.name).join(', ')}</div>;
+
   }
+
   return <div>{(props.options).map(opt => opt.name).join(', ')}</div>;
+
 };
 ```
 
@@ -107,21 +133,37 @@ Retrieves the complete option object from an option list using the given identif
 
 ```
 getOption(
+
   [
+
     { name: 'firstName', label: 'First Name' },
+
     { name: 'lastName', label: 'Last Name' },
+
   ],
+
   'lastName'
+
 );
+
 // => { name: 'lastName', label: 'Last Name' }
 
+
+
 getOption(
+
   [
+
     { label: 'First', options: [{ name: 'firstName', label: 'First Name' }] },
+
     { label: 'Last', options: [{ name: 'lastName', label: 'Last Name' }] },
+
   ],
+
   'lastName'
+
 );
+
 // => { name: 'lastName', label: 'Last Name' }
 ```
 
@@ -139,15 +181,25 @@ Returns the identifier value (`name` or `value`) of the first `Option` in the li
 
 ```
 getFirstOption([
+
   { name: 'firstName', label: 'First Name' },
+
   { name: 'lastName', label: 'Last Name' },
+
 ]);
+
 // => 'firstName'
 
+
+
 getFirstOption([
+
   { label: 'First', options: [{ name: 'firstName', label: 'First Name' }] },
+
   { label: 'Last', options: [{ name: 'lastName', label: 'Last Name' }] },
+
 ]);
+
 // => 'firstName'
 ```
 
@@ -167,11 +219,17 @@ Some of the [compatibility packages](/docs/compat.md) implement their own `toOpt
 
 ```
 const MyComponent(props: ValueSelectorProps) => {
+
   return (
+
     <select value={props.value} onChange={e => props.handleOnChange(e.target.value)}>
+
       {toOptions(props.options)}
+
     </select>
+
   )
+
 }
 ```
 
@@ -181,17 +239,29 @@ Examples
 
 ```
 toOptions([
+
   { value: 'firstName', label: 'First Name' },
+
   { value: 'lastName', label: 'Last Name' },
+
 ]);
+
 // yields (approximately):
+
 [
+
   <option key={'firstName'} value={'firstName'}>
+
     First Name
+
   </option>,
+
   <option key={'lastName'} value={'lastName'}>
+
     Last Name
+
   </option>,
+
 ];
 ```
 
@@ -199,21 +269,37 @@ toOptions([
 
 ```
 toOptions([
+
   { label: 'First', options: [{ value: 'firstName', label: 'First Name' }] },
+
   { label: 'Last', options: [{ value: 'lastName', label: 'Last Name' }] },
+
 ]);
+
 // yields (approximately):
+
 [
+
   <optgroup key={'First'} label={'First'}>
+
     <option key={'firstName'} value={'firstName'}>
+
       First Name
+
     </option>
+
   </optgroup>,
+
   <optgroup key={'Last'} label={'Last'}>
+
     <option key={'lastName'} value={'lastName'}>
+
       Last Name
+
     </option>
+
   </optgroup>,
+
 ];
 ```
 
@@ -237,15 +323,25 @@ Examples
 
 ```
 isOptionGroupArray([
+
   { value: 'firstName', label: 'First Name' },
+
   { value: 'lastName', label: 'Last Name' },
+
 ]);
+
 // => false
 
+
+
 isOptionGroupArray([
+
   { label: 'First', options: [{ value: 'firstName', label: 'First Name' }] },
+
   { label: 'Last', options: [{ value: 'lastName', label: 'Last Name' }] },
+
 ]);
+
 // => true
 ```
 
@@ -271,7 +367,9 @@ Option list props also accept `string[]`. Each string becomes an option with `na
 
 ```
 // These are equivalent:
+
 <QueryBuilder combinators={['and', 'or']} />
+
 <QueryBuilder combinators={[{ name: 'and', label: 'and' }, { name: 'or', label: 'or' }]} />
 ```
 

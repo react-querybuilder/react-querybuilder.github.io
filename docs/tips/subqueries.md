@@ -50,33 +50,61 @@ The `matchModes` property accepts several formats:
 
 ```
 const fields: Field[] = [
+
   {
+
     name: 'nestedStringArray',
+
     label: 'Nested String Array',
+
     // Enable all match modes with default labels
+
     matchModes: true,
+
   },
+
   {
+
     name: 'nestedNumberArray',
+
     label: 'Nested Number Array',
+
     // Enable specific match modes with custom labels
+
     matchModes: [
+
       { name: 'all', label: 'Every' },
+
       { name: 'none', label: 'Not one' },
+
       { name: 'some', label: 'Several' },
+
     ],
+
   },
+
   {
+
     name: 'nestedObjectArray',
+
     label: 'Nested Object Array',
+
     // Enable specific match modes with default labels
+
     matchModes: ['all', 'none', 'some'],
+
     // Define properties of objects in the nested array
+
     subproperties: [
+
       { name: 'firstName', label: 'First Name' },
+
       { name: 'lastName', label: 'Last Name' },
+
     ],
+
   },
+
 ];
 ```
 
@@ -86,22 +114,39 @@ Configure match modes dynamically using the `getMatchModes` prop at the query bu
 
 ```
 const getMatchModes = (field: string, misc: { fieldData: Field }) => {
+
   // Return true to enable all match modes for any field
+
   if (field === 'flexibleArray') return true;
 
+
+
   // Return specific match modes based on field type
+
   if (misc.fieldData.datatype === 'array') {
+
     return ['all', 'some', 'none'];
+
   }
 
+
+
   // Return false or undefined to disable subqueries for this field
+
   return false;
+
 };
 
+
+
 <QueryBuilder
+
   fields={fields}
+
   getMatchModes={getMatchModes}
+
   // ... other props
+
 />;
 ```
 
@@ -111,36 +156,67 @@ The `getSubQueryBuilderProps` prop customizes individual subquery builder config
 
 ```
 const getSubQueryBuilderProps = (field: string, misc: { fieldData: Field }) => {
+
   // Return props that should override the parent query builder's configuration
+
   if (field === 'nestedObjectArray') {
+
     return {
+
       fields: misc.fieldData.subproperties || [],
+
       operators: [
+
         { name: '=', label: 'equals' },
+
         { name: 'contains', label: 'contains' },
+
         { name: 'beginsWith', label: 'begins with' },
+
       ],
+
       // Disable certain features for subqueries
+
       showCloneButtons: false,
+
       showLockButtons: false,
+
     };
+
   }
+
+
 
   // For primitive arrays, don't show field selector
+
   if (field === 'nestedStringArray') {
+
     return {
+
       fields: [{ name: '', label: '' }],
+
       autoSelectField: true,
+
     };
+
   }
 
+
+
   return {};
+
 };
 
+
+
 <QueryBuilder
+
   fields={fields}
+
   getSubQueryBuilderProps={getSubQueryBuilderProps}
+
   // ... other props
+
 />;
 ```
 
@@ -171,30 +247,55 @@ Subqueries store as nested `RuleGroupType` objects in the rule's `value` propert
 
 ```
 const exampleQuery: RuleGroupType = {
+
   combinator: 'and',
+
   rules: [
+
     {
+
       field: 'nestedStringArray',
+
       operator: '=', // Ignored when match is present
+
       match: { mode: 'atMost', threshold: 2 },
+
       value: {
+
         combinator: 'and',
+
         rules: [{ field: '', operator: 'contains', value: 'abc' }],
+
       },
+
     },
+
     {
+
       field: 'nestedObjectArray',
+
       operator: '=',
+
       match: { mode: 'all' },
+
       value: {
+
         combinator: 'and',
+
         rules: [
+
           { field: 'firstName', operator: 'beginsWith', value: 'S' },
+
           { field: 'lastName', operator: 'doesNotEndWith', value: 's' },
+
         ],
+
       },
+
     },
+
   ],
+
 };
 ```
 

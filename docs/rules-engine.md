@@ -56,8 +56,12 @@ The `RulesEngineBuilder` component provides a specialized interface for creating
 ```
 import { RulesEngineBuilder } from '@react-querybuilder/rules-engine';
 
+
+
 function App() {
+
   return <RulesEngineBuilder />;
+
 }
 ```
 
@@ -67,30 +71,55 @@ Using `RulesEngineBuilder` as an uncontrolled component by setting the `defaultR
 
 ```
 import { useState } from 'react';
+
 import { RulesEngineBuilder } from '@react-querybuilder/rules-engine';
+
 import type { RulesEngine } from '@react-querybuilder/rules-engine';
 
+
+
 function App() {
+
   const [rulesEngine, setRulesEngine] = useState<RulesEngine>({
+
     conditions: [],
+
     defaultConsequent: { type: 'default-action' },
+
   });
 
+
+
   return (
+
     <RulesEngineBuilder
+
       // Uncontrolled:
+
       defaultRulesEngine={rulesEngine}
+
       // Controlled:
+
       // rulesEngine={rulesEngine}
+
       onRulesEngineChange={setRulesEngine}
+
       consequentTypes={[
+
         { name: 'email-alert', label: 'Send Email' },
+
         { name: 'sms-alert', label: 'Send SMS' },
+
         { name: 'log-event', label: 'Log Event' },
+
         { name: 'default-action', label: 'Default Action' },
+
       ]}
+
     />
+
   );
+
 }
 ```
 
@@ -100,14 +129,23 @@ The rules engine package uses Redux for internal state management and requires t
 
 ```
 import { QueryBuilderStateProvider } from 'react-querybuilder';
+
 import { RulesEngineBuilder } from '@react-querybuilder/rules-engine';
 
+
+
 function App() {
+
   return (
+
     <QueryBuilderStateProvider>
+
       <RulesEngineBuilder />
+
     </QueryBuilderStateProvider>
+
   );
+
 }
 ```
 
@@ -124,15 +162,26 @@ In the render phase, access rules engine state using the `useRulesEngineBuilderR
 ```
 import { useRulesEngineBuilderRulesEngine } from '@react-querybuilder/rules-engine';
 
+
+
 function MyCustomComponent() {
+
   const rulesEngine = useRulesEngineBuilderRulesEngine();
 
+
+
   return (
+
     <div>
+
       <p>Number of conditions: {rulesEngine.conditions?.length ?? 0}</p>
+
       <p>Has default consequent: {!!rulesEngine.defaultConsequent}</p>
+
     </div>
+
   );
+
 }
 ```
 
@@ -144,31 +193,57 @@ The `formatRulesEngine` function converts rules engine objects into formats comp
 
 ```
 import { formatRulesEngine } from '@react-querybuilder/rules-engine';
+
 import { Engine } from 'json-rules-engine';
 
+
+
 const rulesEngine = {
+
   conditions: [
+
     {
+
       antecedent: {
+
         combinator: 'and',
+
         rules: [
+
           { field: 'temperature', operator: '>', value: 85 },
+
           { field: 'humidity', operator: '<', value: 40 },
+
         ],
+
       },
+
       consequent: { type: 'alert', message: 'High temperature detected' },
+
     },
+
   ],
+
   defaultConsequent: { type: 'monitor', action: 'continue-monitoring' },
+
 };
 
+
+
 // Convert to json-rules-engine format
+
 const jsonRules = formatRulesEngine(rulesEngine, 'json-rules-engine');
 
+
+
 // Create and run engine
+
 const engine = new Engine(jsonRules);
+
 engine.run({ temperature: 90, humidity: 35 }).then(events => {
+
   events.forEach(event => console.log(event.type, event.params));
+
 });
 ```
 
@@ -178,19 +253,33 @@ Extend export functionality with custom processors:
 
 ```
 import { formatRulesEngine } from '@react-querybuilder/rules-engine';
+
 import type { RulesEngineProcessor } from '@react-querybuilder/rules-engine';
 
+
+
 const customProcessor: RulesEngineProcessor<MyCustomFormat> = rulesEngine => ({
+
   // Transform to your custom format
+
   rules: rulesEngine.conditions.map(condition => ({
+
     when: condition.antecedent,
+
     then: condition.consequent,
+
   })),
+
   fallback: rulesEngine.defaultConsequent,
+
 });
 
+
+
 const customFormat = formatRulesEngine(rulesEngine, {
+
   rulesEngineProcessor: customProcessor,
+
 });
 ```
 
@@ -202,22 +291,39 @@ The rules engine includes specialized components for rules engine functionality:
 
 ```
 import { RulesEngineBuilder } from '@react-querybuilder/rules-engine';
+
 import type { ComponentsRE } from '@react-querybuilder/rules-engine';
 
+
+
 const customComponents: Partial<ComponentsRE> = {
+
   consequentSelector: ({ options, value, handleOnChange }) => (
+
     <select value={value} onChange={e => handleOnChange(e.target.value)}>
+
       {options.map(opt => (
+
         <option key={opt.name} value={opt.name}>
+
           {opt.label}
+
         </option>
+
       ))}
+
     </select>
+
   ),
+
 };
 
+
+
 function App() {
+
   return <RulesEngineBuilder components={customComponents} />;
+
 }
 ```
 
@@ -228,23 +334,42 @@ Pass standard `QueryBuilder` props for condition editing:
 ```
 import { RulesEngineBuilder } from '@react-querybuilder/rules-engine';
 
+
+
 function App() {
+
   return (
+
     <RulesEngineBuilder
+
       queryBuilderProps={{
+
         fields: [
+
           { name: 'temperature', label: 'Temperature', datatype: 'number' },
+
           { name: 'humidity', label: 'Humidity', datatype: 'number' },
+
           { name: 'location', label: 'Location', datatype: 'text' },
+
         ],
+
         operators: [
+
           { name: '>', label: 'greater than' },
+
           { name: '<', label: 'less than' },
+
           { name: '=', label: 'equals' },
+
         ],
+
       }}
+
     />
+
   );
+
 }
 ```
 
@@ -256,12 +381,19 @@ Define available consequence types for rules:
 
 ```
 <RulesEngineBuilder
+
   consequentTypes={[
+
     { name: 'email', label: 'Send Email' },
+
     { name: 'webhook', label: 'Call Webhook' },
+
     { name: 'database', label: 'Update Database' },
+
   ]}
+
   autoSelectConsequentType={true}
+
 />
 ```
 
@@ -288,14 +420,25 @@ Customize UI labels:
 ```
 import type { TranslationsRE } from '@react-querybuilder/rules-engine';
 
+
+
 const customTranslations: Partial<TranslationsRE> = {
+
   blockLabelIf: { label: 'When' },
+
   blockLabelElseIf: { label: 'Otherwise when' },
+
   blockLabelElse: { label: 'Otherwise' },
+
   blockLabelThen: { label: 'Do' },
+
   addCondition: { label: 'Add condition' },
+
   addConsequent: { label: 'Add action' },
+
 };
+
+
 
 <RulesEngineBuilder translations={customTranslations} />;
 ```
@@ -306,19 +449,33 @@ const customTranslations: Partial<TranslationsRE> = {
 
 `RulesEngineBuilder` adds specific CSS classes for styling (unless `suppressStandardClassnames` is set):
 
+<!-- -->
+
 ```
 .rulesEngineBuilder {}
+
 .rulesEngineBuilder-header {}
+
 .consequentBuilder {}
+
 .consequentBuilder-header {}
+
 .consequentBuilder-body {}
+
 .consequentBuilder-standalone {}
+
 .conditionBuilder {}
+
 .conditionBuilder-header {}
+
 .blockLabel {}
+
 .blockLabel-if {}
+
 .blockLabel-ifelse {}
+
 .blockLabel-else {}
+
 .blockLabel-then {}
 ```
 
@@ -327,12 +484,21 @@ const customTranslations: Partial<TranslationsRE> = {
 ```
 import type { ClassnamesRE } from '@react-querybuilder/rules-engine';
 
+
+
 const customClassnames: Partial<ClassnamesRE> = {
+
   rulesEngineBuilder: 'my-rules-engine',
+
   blockLabelIf: 'my-if-label',
+
   blockLabelThen: 'my-then-label',
+
   consequentBuilder: 'my-consequent-section',
+
 };
+
+
 
 <RulesEngineBuilder classnames={customClassnames} />;
 ```
@@ -343,29 +509,53 @@ const customClassnames: Partial<ClassnamesRE> = {
 
 ```
 import type {
+
   RulesEngine,
+
   RulesEngineAny,
+
   RECondition,
+
   Consequent,
+
   FormatRulesEngineOptions,
+
 } from '@react-querybuilder/rules-engine';
 
+
+
 // Basic rules engine structure
+
 const rulesEngine: RulesEngine = {
+
   conditions: [
+
     {
+
       antecedent: { combinator: 'and', rules: [] },
+
       consequent: { type: 'action', data: {} },
+
     },
+
   ],
+
   defaultConsequent: { type: 'default' },
+
 };
 
+
+
 // Custom consequent type
+
 interface MyConsequent extends Consequent {
+
   type: 'email' | 'sms' | 'webhook';
+
   recipient: string;
+
   message: string;
+
 }
 ```
 
@@ -373,11 +563,18 @@ interface MyConsequent extends Consequent {
 
 ```
 import type { RuleType } from 'react-querybuilder';
+
 import type { RulesEngine } from '@react-querybuilder/rules-engine';
 
+
+
 interface CustomRule extends RuleType {
+
   metadata?: Record<string, unknown>;
+
 }
+
+
 
 type CustomRulesEngine = RulesEngine<CustomRule, 'and' | 'or' | 'xor'>;
 ```
@@ -390,22 +587,39 @@ Manipulate rules engine structure programmatically:
 
 ```
 import {
+
   regenerateREIDs,
+
   prepareRulesEngine,
+
   isRulesEngine,
+
 } from '@react-querybuilder/rules-engine';
 
+
+
 // Regenerate IDs for all elements
+
 const withNewIds = regenerateREIDs(rulesEngine);
 
+
+
 // Recursively add `id` properties (only if necessary)
+
 const preparedRE = prepareRulesEngine(partialRulesEngine, {
+
   idGenerator: () => `${Math.random()}`, // override default of `crypto.randomUUID()`
+
 });
 
+
+
 // Type checking
+
 if (isRulesEngine(unknownObject)) {
+
   // Safe to use as rules engine
+
 }
 ```
 
@@ -413,14 +627,23 @@ if (isRulesEngine(unknownObject)) {
 
 ```
 <RulesEngineBuilder
+
   onAddCondition={(condition, parentPath, rulesEngine) => {
+
     console.log('Condition added:', condition);
+
     return condition; // Return modified condition or true to proceed
+
   }}
+
   onRemoveCondition={(condition, path, rulesEngine) => {
+
     console.log('Condition removed:', condition);
+
     return true; // Return true to proceed with removal
+
   }}
+
 />
 ```
 

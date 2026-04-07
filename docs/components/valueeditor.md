@@ -86,7 +86,9 @@ By default, React Query Builder facilitates comparing fields (typically database
 
 ```
 SELECT *
+
   FROM users
+
  WHERE lastName LIKE firstName || '%';
 ```
 
@@ -100,9 +102,13 @@ In the query builder above, the definition for the field used in the last rule i
 
 ```
 {
+
   "name": "field",
+
   "label": "field",
+
   "valueSources": ["field", "value"]
+
 }
 ```
 
@@ -110,11 +116,17 @@ The `defaultQuery` prop looks like this:
 
 ```
 {
+
   "combinator": "and",
+
   "rules": [
+
     // ...other rules...
+
     { "field": "field", "operator": "=", "value": "text", "valueSource": "field" }
+
   ]
+
 }
 ```
 
@@ -136,17 +148,29 @@ Here's an example. In the following field list, fields `f1`, `f2`, and `f3` shar
 
 ```
 const fields: Field[] = {
+
   {
+
     name: 'f1',
+
     label: 'f1',
+
     valueSources: ["field"],
+
     comparator: 'datatype',
+
     datatype: 'number'
+
   },
+
   { name: 'f2', label: 'f2', datatype: 'number' },
+
   { name: 'f3', label: 'f3', datatype: 'number' },
+
   { name: 'f4', label: 'f4', datatype: 'string' },
+
   { name: 'f5', label: 'f5', datatype: 'string' },
+
 }
 ```
 
@@ -154,14 +178,24 @@ The `comparator` property can also be a function that takes a `Field` object as 
 
 ```
 const fields: Field[] = {
+
   { name: 'f1',
+
     label: 'f1',
+
     valueSources: ["field"],
+
     comparator: f => f.datatype === 'number'
+
   },
+
   { name: 'f2', label: 'f2', datatype: 'number' },
+
   { name: 'f3', label: 'f3', datatype: 'number' },
+
   { name: 'f4', label: 'f4', datatype: 'string' },
+
   { name: 'f5', label: 'f5', datatype: 'string' },
+
 }
 ```

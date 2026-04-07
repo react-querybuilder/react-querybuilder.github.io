@@ -40,12 +40,19 @@ Example:
 
 ```
 const CustomValueEditor = (props: ValueEditorProps) => {
+
   const fullQuery = useQueryBuilderSelector(getQuerySelectorById(props.schema.qbId));
+
   // Here you can use utilities like `findPath(getParentPath(props.path), fullQuery)`.
+
   // This allows you to, for example, inspect the parent group of the current rule.
+
   // You can then count sibling rules, check for unique `field` selections, etc.
+
   // That information can be used for validation, information to the user, or
+
   // anything else in your render function.
+
 };
 ```
 
@@ -63,7 +70,9 @@ Called by the [`Rule`](/docs/components/rule.md) component. See [source code](ht
 
 ```
 function useRule(props: RuleProps): {
+
   // See source code for returned properties
+
 };
 ```
 
@@ -73,7 +82,9 @@ Called by the [`RuleGroup`](/docs/components/rulegroup.md) component. See [sourc
 
 ```
 function useRuleGroup(props: RuleGroupProps): {
+
   // See source code for returned properties
+
 };
 ```
 
@@ -83,10 +94,15 @@ Called by the [`ValueEditor`](/docs/components/valueeditor.md) component. Accept
 
 ```
 function useValueEditor(props: ValueEditorProps): {
+
   valueAsArray: any[];
+
   multiValueHandler: (val: string, idx: number) => void;
+
   parseNumberMethod: ParseNumberMethod;
+
   valueListItemClassName: string;
+
 };
 ```
 
@@ -106,10 +122,15 @@ Called by the [`ValueSelector`](/docs/components/valueselector.md) component. Re
 
 ```
 function useValueSelector(
+
   props: Pick<ValueSelectorProps, 'handleOnChange' | 'listsAsArrays' | 'multiple' | 'value'>
+
 ): {
+
   onChange: (v: string | string[]) => void;
+
   val?: string | any[];
+
 };
 ```
 
@@ -119,8 +140,11 @@ Used by the [`ValueSelector`](/docs/components/valueselector.md) component. Retu
 
 ```
 function useSelectElementChangeHandler(props: {
+
   multiple?: boolean;
+
   onChange: (v: string | string[]) => void;
+
 }): (e: ChangeEvent<HTMLSelectElement>) => void;
 ```
 
@@ -130,12 +154,19 @@ Used by the [`ShiftActions`](/docs/components/shiftactions.md) component. Genera
 
 ```
 function useShiftActions(
+
   props: { path: Path } & Pick<Schema, 'combinators' | 'dispatchQuery' | 'getQuery'>
+
 ): {
+
   shiftDown: () => void;
+
   shiftDownDisabled: boolean;
+
   shiftUp: () => void;
+
   shiftUpDisabled: boolean;
+
 };
 ```
 
@@ -145,7 +176,9 @@ Used by the default [`Rule`](/docs/components/rule.md) and [`RuleGroup`](/docs/c
 
 ```
 function useStopEventPropagation(
+
   method: (event: React.MouseEvent, context: any) => void
+
 ): (event: React.MouseEvent, context: any) => void;
 ```
 
@@ -171,20 +204,35 @@ This hook is unlikely to be necessary unless you're reimplementing the *entire* 
 
 ```
 function useQueryBuilderSetup(props: QueryBuilderProps): {
+
   qbId: qbId.current;
+
   rqbContext: ReturnType<typeof useMergedContext>;
+
   fields: OptionList<Field>;
+
   fieldMap: Record<string, Field>;
+
   combinators: OptionList<Combinator>;
+
   getOperatorsMain: (field: string) => OptionList<Operator>;
+
   getRuleDefaultOperator: (field: string) => string;
+
   getValueEditorTypeMain: (field: string, operator: string) => ValueEditorType;
+
   getValueSourcesMain: (field: string, operator: string) => ValueSources;
+
   getValuesMain: (field: string, operator: string) => OptionList;
+
   getRuleDefaultValue: (rule: RuleType) => any;
+
   getInputTypeMain: (field: string, operator: string) => string;
+
   createRule: () => RuleType;
+
   createRuleGroup: () => RuleGroupTypeAny;
+
 };
 ```
 
@@ -200,20 +248,35 @@ This hook is unlikely to be necessary unless you're reimplementing the *entire* 
 
 ```
 function useQueryBuilderSchema(
+
   props: QueryBuilderProps,
+
   setup: ReturnType<typeof useQueryBuilderSetup>
+
 ): QueryBuilderProps & {
+
   actions: QueryActions;
+
   rootGroup: RuleGroupTypeAny;
+
   rootGroupDisabled: RuleGroupTypeAny;
+
   queryDisabled: boolean;
+
   rqbContext: ReturnType<typeof useMergedContext>;
+
   schema: Schema;
+
   translations: TranslationsFull;
+
   wrapperClassName: string;
+
   dndEnabledAttr: 'enabled' | 'disabled';
+
   inlineCombinatorsAttr: 'enabled' | 'disabled';
+
   combinatorPropObject: Pick<RuleGroupProps, 'combinator'>;
+
 };
 ```
 
@@ -226,19 +289,35 @@ Augments a `ValueSelectorProps` or `ValueEditorProps` object with [async option 
 ```
 import { type UseAsyncOptionListParams, useAsyncOptionList } from 'react-querybuilder';
 
+
+
 const useAsyncOptionListParams: UseAsyncOptionListParams = {
+
   getCacheKey: 'field',
+
   loadOptionList: async (value, { ruleOrGroup }) => {
+
     const response = await fetch(`/api/operators?field=${ruleOrGroup.field}`);
+
     return response.json();
+
   },
+
 };
+
+
 
 const AsyncOperatorSelector = (props: ValueSelectorProps) => {
+
   const asyncProps = useAsyncOptionList(props, useAsyncOptionListParams);
 
+
+
   return <props.schema.controls.valueSelector {...asyncProps} />;
+
 };
+
+
 
 const App = () => <QueryBuilder controlElements={{ operatorSelector: AsyncOperatorSelector }} />;
 ```

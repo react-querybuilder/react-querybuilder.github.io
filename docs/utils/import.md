@@ -14,18 +14,31 @@ Since `parse*` functions are used less frequently and rarely together, they were
 
 ```
  // Version 6 only
+
 -import { parseCEL } from "react-querybuilder"
+
 -import { parseJsonLogic } from "react-querybuilder"
+
 -import { parseMongoDB } from "react-querybuilder"
+
 -import { parseSQL } from "react-querybuilder"
 
+
+
  // Version 6 or 7
+
 +import { parseCEL } from "react-querybuilder/parseCEL"
+
 +import { parseJsonLogic } from "react-querybuilder/parseJsonLogic"
+
 +import { parseMongoDB } from "react-querybuilder/parseMongoDB"
+
 +import { parseSQL } from "react-querybuilder/parseSQL"
+
  // (New in version 7)
+
 +import { parseSpEL } from "react-querybuilder/parseSpEL"
+
 +import { parseJSONata } from "react-querybuilder/parseJSONata"
 ```
 
@@ -35,6 +48,8 @@ These functions were available as separate exports in version 6 (along with [`fo
 
 ```
 import { parseSQL } from 'react-querybuilder/parseSQL';
+
+
 
 function parseSQL(sql: string, options?: ParseSQLOptions): RuleGroupTypeAny;
 ```
@@ -57,17 +72,30 @@ All these statements produce the same result:
 ```
 parseSQL(`SELECT * FROM t WHERE firstName = 'Steve' AND lastName = 'Vai'`);
 
+
+
 parseSQL(`SELECT * FROM t WHERE firstName = ? AND lastName = ?`, {
+
   params: ['Steve', 'Vai'],
+
 });
+
+
 
 parseSQL(`SELECT * FROM t WHERE firstName = :p1 AND lastName = :p2`, {
+
   params: { p1: 'Steve', p2: 'Vai' },
+
 });
 
+
+
 parseSQL(`SELECT * FROM t WHERE firstName = $p1 AND lastName = $p2`, {
+
   params: { p1: 'Steve', p2: 'Vai' },
+
   paramPrefix: '$',
+
 });
 ```
 
@@ -75,19 +103,33 @@ Output (`RuleGroupType`):
 
 ```
 {
+
   "combinator": "and",
+
   "rules": [
+
     {
+
       "field": "firstName",
+
       "operator": "=",
+
       "value": "Steve"
+
     },
+
     {
+
       "field": "lastName",
+
       "operator": "=",
+
       "value": "Vai"
+
     }
+
   ]
+
 }
 ```
 
@@ -98,15 +140,26 @@ Since v5.0, `parseSQL` detects `XOR` operators and converts them to rule groups 
 ```
 import { defaultCombinatorsExtended, parseSQL, QueryBuilder } from 'react-querybuilder';
 
+
+
 const query = parseSQL(`SELECT * FROM tbl WHERE a = 'b' XOR c = 'd';`);
 
+
+
 const App = () => {
+
   return (
+
     <QueryBuilder
+
       query={query}
+
       combinators={defaultCombinatorsExtended}
+
     />
+
   );
+
 };
 ```
 
@@ -115,9 +168,14 @@ const App = () => {
 ```
 import { parseMongoDB } from 'react-querybuilder/parseMongoDB';
 
+
+
 function parseMongoDB(
+
   mongoDbQuery: string | Record<string, any>,
+
   options?: ParseMongoDbOptions
+
 ): RuleGroupTypeAny;
 ```
 
@@ -129,7 +187,9 @@ Click the "Import MongoDB" button in [the demo](/demo) to try it out.
 
 ```
 parseMongoDB(`{ "firstName": "Steve", "lastName": { $eq: "Vai" } }`);
+
 // OR
+
 parseMongoDB({ firstName: 'Steve', lastName: { $eq: 'Vai' } });
 ```
 
@@ -137,19 +197,33 @@ Output (`RuleGroupType`):
 
 ```
 {
+
   "combinator": "and",
+
   "rules": [
+
     {
+
       "field": "firstName",
+
       "operator": "=",
+
       "value": "Steve"
+
     },
+
     {
+
       "field": "lastName",
+
       "operator": "=",
+
       "value": "Vai"
+
     }
+
   ]
+
 }
 ```
 
@@ -161,18 +235,31 @@ Example:
 
 ```
 parseMongoDB(
+
   {
+
     $myCustomOp: ['Vai', 'Vaughan'],
+
   },
+
   {
+
     additionalOperators: {
+
       $myCustomOp: (_op, val) => ({
+
         field: 'lastName',
+
         operator: 'in',
+
         value: val,
+
       }),
+
     },
+
   }
+
 );
 ```
 
@@ -180,14 +267,23 @@ Output (`RuleGroupType`):
 
 ```
 {
+
   "combinator": "and",
+
   "rules": [
+
     {
+
       "field": "lastName",
+
       "operator": "in",
+
       "value": ["Vai", "Vaughan"]
+
     }
+
   ]
+
 }
 ```
 
@@ -200,9 +296,14 @@ Valid MongoDB query strings may not strictly conform to JSON. To handle extended
 ```
 import { parseJsonLogic } from 'react-querybuilder/parseJsonLogic';
 
+
+
 function parseJsonLogic(
+
   jsonLogic: string | JsonLogic,
+
   options?: ParseJsonLogicOptions
+
 ): RuleGroupTypeAny;
 ```
 
@@ -214,11 +315,17 @@ Click the "Import JsonLogic" button in [the demo](/demo) to try it out.
 
 ```
 parseJsonLogic(
+
   `{ "and": [{ "===": [{ "var": "firstName" }, "Steve"] }, { "===": [{ "var": "lastName" }, "Vai"] }] }`
+
 );
+
 // OR
+
 parseJsonLogic({
+
   and: [{ '===': [{ var: 'firstName' }, 'Steve'] }, { '===': [{ var: 'lastName' }, 'Vai'] }],
+
 });
 ```
 
@@ -226,19 +333,33 @@ Output (`RuleGroupType`):
 
 ```
 {
+
   "combinator": "and",
+
   "rules": [
+
     {
+
       "field": "firstName",
+
       "operator": "=",
+
       "value": "Steve"
+
     },
+
     {
+
       "field": "lastName",
+
       "operator": "=",
+
       "value": "Vai"
+
     }
+
   ]
+
 }
 ```
 
@@ -256,12 +377,19 @@ This example uses a custom "regex" operation to produce a rule with the "contain
 
 ```
 parseJsonLogic(
+
   { regex: [{ var: 'firstName' }, /^Stev/] },
+
   {
+
     jsonLogicOperations: {
+
       regex: val => ({ field: val[0].var, operator: 'contains', value: val[1].source }),
+
     },
+
   }
+
 );
 ```
 
@@ -269,14 +397,23 @@ Output (`RuleGroupType`):
 
 ```
 {
+
   "combinator": "and",
+
   "rules": [
+
     {
+
       "field": "firstName",
+
       "operator": "contains",
+
       "value": "^Stev"
+
     }
+
   ]
+
 }
 ```
 
@@ -284,6 +421,8 @@ Output (`RuleGroupType`):
 
 ```
 import { parseSpEL } from 'react-querybuilder/parseSpEL';
+
+
 
 function parseSpEL(spelQuery: string, options?: ParseSpELOptions): RuleGroupTypeAny;
 ```
@@ -302,19 +441,33 @@ Output (`RuleGroupType`):
 
 ```
 {
+
   "combinator": "and",
+
   "rules": [
+
     {
+
       "field": "firstName",
+
       "operator": "=",
+
       "value": "Steve"
+
     },
+
     {
+
       "field": "lastName",
+
       "operator": "=",
+
       "value": "Vai"
+
     }
+
   ]
+
 }
 ```
 
@@ -322,6 +475,8 @@ Output (`RuleGroupType`):
 
 ```
 import { parseCEL } from 'react-querybuilder/parseCEL';
+
+
 
 function parseCEL(celQuery: string, options?: ParseCELOptions): RuleGroupTypeAny;
 ```
@@ -340,19 +495,33 @@ Output (`RuleGroupType`):
 
 ```
 {
+
   "combinator": "and",
+
   "rules": [
+
     {
+
       "field": "firstName",
+
       "operator": "=",
+
       "value": "Steve"
+
     },
+
     {
+
       "field": "lastName",
+
       "operator": "=",
+
       "value": "Vai"
+
     }
+
   ]
+
 }
 ```
 
@@ -364,11 +533,17 @@ Example:
 
 ```
 parseCEL('opted_in_at.isBirthday(-1)', {
+
   customExpressionHandler: expr => ({
+
     field: expr.left.value,
+
     operator: expr.right.value,
+
     value: expr.list.value[0].value,
+
   }),
+
 });
 ```
 
@@ -376,14 +551,23 @@ Output (`RuleGroupType`):
 
 ```
 {
+
   "combinator": "and",
+
   "rules": [
+
     {
+
       "field": "opted_in_at",
+
       "operator": "isBirthday",
+
       "value": -1
+
     }
+
   ]
+
 }
 ```
 
@@ -393,6 +577,8 @@ To assist with processing the AST fragments, all types, type guard functions, an
 
 ```
 import { parseJSONata } from 'react-querybuilder/parseJSONata';
+
+
 
 function parseJSONata(jsonataQuery: string, options?: ParseJSONataOptions): RuleGroupTypeAny;
 ```
@@ -411,19 +597,33 @@ Output (`RuleGroupType`):
 
 ```
 {
+
   "combinator": "and",
+
   "rules": [
+
     {
+
       "field": "firstName",
+
       "operator": "=",
+
       "value": "Steve"
+
     },
+
     {
+
       "field": "lastName",
+
       "operator": "in",
+
       "value": ["Vai", "Vaughan"]
+
     }
+
   ]
+
 }
 ```
 
@@ -437,7 +637,9 @@ To generate arrays instead of comma-separated strings for "in"- and "between"-ty
 
 ```
 parseSQL(`SELECT * FROM t WHERE lastName IN ('Vai', 'Vaughan') AND age BETWEEN 20 AND 100`, {
+
   listsAsArrays: true;
+
 });
 ```
 
@@ -445,19 +647,33 @@ Output:
 
 ```
 {
+
   "combinator": "and",
+
   "rules": [
+
     {
+
       "field": "lastName",
+
       "operator": "in",
+
       "value": ["Vai", "Vaughan"]
+
     },
+
     {
+
       "field": "age",
+
       "operator": "between",
+
       "value": [20, 100]
+
     }
+
   ]
+
 }
 ```
 
@@ -467,7 +683,9 @@ When `independentCombinators` is `true`, `parse*` functions output queries with 
 
 ```
 parseSQL(`SELECT * FROM t WHERE firstName = 'Steve' AND lastName = 'Vai'`, {
+
   independentCombinators: true,
+
 });
 ```
 
@@ -475,19 +693,33 @@ Output (`RuleGroupTypeIC`):
 
 ```
 {
+
   "rules": [
+
     {
+
       "field": "firstName",
+
       "operator": "=",
+
       "value": "Steve"
+
     },
+
     "and",
+
     {
+
       "field": "lastName",
+
       "operator": "=",
+
       "value": "Vai"
+
     }
+
   ]
+
 }
 ```
 
@@ -499,11 +731,17 @@ For such rules to be valid, one of these must be an array including "field": (1)
 
 ```
 parseSQL(`SELECT * FROM t WHERE firstName = lastName`, {
+
   fields: [
+
     { name: 'firstName', label: 'First Name', valueSources: ['value', 'field'] },
+
     { name: 'lastName', label: 'Last Name', valueSources: () => ['value', 'field'] },
+
   ],
+
   getValueSources: () => ['value', 'field'],
+
 });
 ```
 
@@ -511,15 +749,25 @@ Output:
 
 ```
 {
+
   "combinator": "and",
+
   "rules": [
+
     {
+
       "field": "firstName",
+
       "operator": "=",
+
       "value": "lastName",
+
       "valueSource": "field"
+
     }
+
   ]
+
 }
 ```
 
@@ -535,8 +783,11 @@ note
 
 ```
 // 1 is a scalar value and `iq` is a field name
+
 parseSQL(`SELECT * FROM tbl WHERE age between 1 and iq`);
+
 // List contains a mix of scalar values and field names
+
 parseSQL(`SELECT * FROM tbl WHERE firstName IN (lastName, 'Steve', 'Stevie')`);
 ```
 
@@ -544,11 +795,18 @@ parseSQL(`SELECT * FROM tbl WHERE firstName IN (lastName, 'Steve', 'Stevie')`);
 
 ```
 // Both are field names
+
 parseSQL(`SELECT * FROM tbl WHERE age between numChildren and iq`);
+
 // Both are scalar values
+
 parseSQL(`SELECT * FROM tbl WHERE age between 26 and 52`);
+
 // All items are field names
+
 parseSQL(`SELECT * FROM tbl WHERE firstName IN (lastName, middleName)`);
+
 // All items are scalar values
+
 parseSQL(`SELECT * FROM tbl WHERE firstName IN ('Steve', 'Stevie')`);
 ```

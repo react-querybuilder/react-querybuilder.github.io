@@ -10,26 +10,47 @@ This example query shows the `path` for each rule and group with explanatory com
 
 ```
 // [] (the root group)
+
 const query: RuleGroupType = {
+
   combinator: 'and',
+
   rules: [
+
     // [0] (the first, aka zeroth, element in the root rules array)
+
     { field: 'f1', operator: '=', value: 'v1' },
+
     // [1] (the second element in the root rules array is a sub-group)
+
     {
+
       combinator: 'or',
+
       rules: [
+
         // [1, 0] (the first element within the rules array
+
         //         of the group occupying the second position
+
         //         in the root rules array)
+
         { field: 'f2', operator: '=', value: 'v2' },
+
         // [1, 1] (the second element within the rules array
+
         //         of the group occupying the second position
+
         //         in the root rules array)
+
         { field: 'f3', operator: '=', value: 'v3' },
+
       ],
+
     },
+
   ],
+
 };
 ```
 

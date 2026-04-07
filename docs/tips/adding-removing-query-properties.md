@@ -8,17 +8,30 @@ The example below (inspired by [issue #226](https://github.com/react-querybuilde
 
 ```
 import type { Field, RuleGroupType, RuleType } from 'react-querybuilder';
+
 import { transformQuery } from 'react-querybuilder';
 
+
+
 const fields: Field[] = [
+
   { name: 'description', label: 'Description', inputType: 'string' },
+
   { name: 'price', label: 'Price', inputType: 'number' },
+
 ];
 
+
+
 const ruleProcessor: RuleProcessor = (r, { fieldData }): RuleType & { inputType?: string } => ({
+
   ...r,
+
   inputType: fieldData?.inputType,
+
 });
+
+
 
 const result = transformQuery(query, { ruleProcessor });
 ```
@@ -30,25 +43,47 @@ This example (taken directly from [issue #226](https://github.com/react-querybui
 ```
 import type { Field, RuleGroupType, RuleType } from 'react-querybuilder';
 
+
+
 const fields: Field[] = [
+
   { name: 'description', label: 'Description', inputType: 'string' },
+
   { name: 'price', label: 'Price', inputType: 'number' },
+
 ];
 
+
+
 const processRule = (r: RuleType): RuleType & { inputType?: string } => ({
+
   ...r,
+
   inputType: fields.find(f => f.name === r.field)?.inputType,
+
 });
 
+
+
 const processGroup = (rg: RuleGroupType): RuleGroupType => ({
+
   ...rg,
+
   rules: rg.rules.map(r => {
+
     if ('field' in r) {
+
       return processRule(r);
+
     }
+
     return processGroup(r);
+
   }),
+
 });
+
+
 
 const result = processGroup(query);
 ```
@@ -59,19 +94,33 @@ To create a JSON string from a query object containing only specific properties,
 
 ```
 const query: RuleGroupType = {
+
   id: 'root',
+
   combinator: 'and',
+
   rules: [
+
     {
+
       field: 'firstName',
+
       operator: '=',
+
       value: 'Steve',
+
     },
+
   ],
+
 };
 
+
+
 // This omits all properties except those specified in the replacer array:
+
 console.log(JSON.stringify(query, ['rules', 'field', 'operator', 'value']));
+
 // '{"rules":[{"field":"firstName","operator":"=","value":"Steve"}]}'
 ```
 
@@ -79,5 +128,6 @@ Alternatively, the `formatQuery` function provides a convenient method to genera
 
 ```
 console.log(formatQuery(query, 'json_without_ids'));
+
 // '{"combinator":"and","rules":[{"field":"firstName","operator":"=","value":"Steve"}]}'
 ```

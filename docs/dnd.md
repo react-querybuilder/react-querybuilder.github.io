@@ -33,15 +33,25 @@ pnpm add react-querybuilder @react-querybuilder/dnd react-dnd react-dnd-html5-ba
 
 ```
 import { QueryBuilderDnD } from '@react-querybuilder/dnd';
+
 import * as ReactDnD from 'react-dnd';
+
 import * as ReactDndHtml5Backend from 'react-dnd-html5-backend';
+
 import * as ReactDndTouchBackend from 'react-dnd-touch-backend';
+
 import { QueryBuilder } from 'react-querybuilder';
 
+
+
 const App = () => (
+
   <QueryBuilderDnD dnd={{ ...ReactDnD, ...ReactDndHtml5Backend, ...ReactDndTouchBackend }}>
+
     <QueryBuilder />
+
   </QueryBuilderDnD>
+
 );
 ```
 

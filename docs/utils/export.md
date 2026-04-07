@@ -6,8 +6,11 @@ Use the `formatQuery` function to export queries in various formats. The functio
 
 ```
 function formatQuery(
+
   query: RuleGroupTypeAny,
+
   options?: ExportFormat | FormatQueryOptions
+
 ): string | ParameterizedSQL | ParameterizedNamedSQL | RQBJsonLogic | Record<string, any>;
 ```
 
@@ -46,23 +49,41 @@ The following sections use this example `query`:
 
 ```
 const query: RuleGroupType = {
+
   id: 'root',
+
   combinator: 'and',
+
   not: false,
+
   rules: [
+
     {
+
       id: 'rule1',
+
       field: 'firstName',
+
       operator: '=',
+
       value: 'Steve',
+
     },
+
     {
+
       id: 'rule2',
+
       field: 'lastName',
+
       operator: '=',
+
       value: 'Vai',
+
     },
+
   ],
+
 };
 ```
 
@@ -80,8 +101,11 @@ For example, replacing the default "between" operator with `{ name: "b/w", label
 
 ```
 {
+
   "combinator": "and",
+
   "rules": [{ "field": "someNumber", "operator": "b/w", "value": "12,14" }]
+
 }
 ```
 
@@ -89,11 +113,17 @@ Transform it using `transformQuery` with `operatorMap`:
 
 ```
 const newQuery = transformQuery(query, { operatorMap: { 'b/w': 'between' } });
+
 /*
+
 {
+
   "combinator": "and",
+
   "rules": [{ "field": "someNumber", "operator": "between", "value": "12,14" }]
+
 }
+
 */
 ```
 
@@ -107,7 +137,9 @@ Export the internal query representation (from `onQueryChange` callback) as form
 
 ```
 formatQuery(query);
+
 // or
+
 formatQuery(query, 'json');
 ```
 
@@ -115,23 +147,41 @@ Output is multi-line JSON with 2-space indentation:
 
 ```
 `{
+
   "id": "root",
+
   "combinator": "and",
+
   "not": false,
+
   "rules": [
+
     {
+
       "id": "rule1",
+
       "field": "firstName",
+
       "value": "Steve",
+
       "operator": "="
+
     },
+
     {
+
       "id": "rule2",
+
       "field": "lastName",
+
       "value": "Vai",
+
       "operator": "="
+
     }
+
   ]
+
 }`;
 ```
 
@@ -175,8 +225,11 @@ Output (JSON object):
 
 ```
 {
+
   "sql": "(firstName = ? and lastName = ?)",
+
   "params": ["Steve", "Vai"]
+
 }
 ```
 
@@ -192,11 +245,17 @@ Output (JSON object):
 
 ```
 {
+
   "sql": "(firstName = :firstName_1 and lastName = :lastName_1)",
+
   "params": {
+
     "firstName_1": "Steve",
+
     "lastName_1": "Vai"
+
   }
+
 }
 ```
 
@@ -213,8 +272,13 @@ Generate objects for Prisma ORM `where` properties using the "prisma" format:
 ```
 const where = formatQuery(query, 'prisma');
 
+
+
 console.log(where);
+
 // { AND: [{ firstName: 'Steve' }, { lastName: 'Vai' }] }
+
+
 
 const users = await prisma.users.findMany({ where });
 ```
@@ -227,8 +291,11 @@ Generate functions for Drizzle's [relational queries API](https://orm.drizzle.te
 
 ```
 const where = formatQuery(query, 'drizzle');
+
 // typeof where === 'function'
+
 // where.length === 2
+
 const results = db.query.users.findMany({ where });
 ```
 
@@ -239,8 +306,13 @@ For Drizzle's [query builder API](https://orm.drizzle.team/docs/select), pass ta
 ```
 import { getOperators } from 'drizzle-orm';
 
+
+
 const whereFn = formatQuery(query, 'drizzle');
+
 const whereObj = whereFn(table, getOperators());
+
+
 
 const query = db.select().from(table).where(whereObj);
 ```
@@ -252,12 +324,20 @@ Query builder API objects work with other Drizzle operators, letting you add con
 ```
 import { and, ne, getOperators } from 'drizzle-orm';
 
+
+
 // Conditions from the React Query Builder query object:
+
 const whereFn = formatQuery(query, 'drizzle');
+
 const whereObj = whereFn(table, getOperators());
 
+
+
 // All conditions from the original query object _and_ `id != 123`:
+
 const augmentedWhere = and(whereObj, ne(table.id, 123));
+
 const query = db.select().from(table).where(augmentedWhere);
 ```
 
@@ -269,29 +349,53 @@ First, generate a [rule group processor](#rule-group-processor) by passing a Dri
 
 ```
 import { generateDrizzleRuleGroupProcessor } from '@react-querybuilder/drizzle';
+
 import { sqliteTable, text } from 'drizzle-orm/sqlite-core';
+
 import { formatQuery } from 'react-querybuilder';
+
+
 
 const db = drizzle(process.env.DB_FILE_NAME!);
 
+
+
 const table = sqliteTable('musicians', {
+
   firstName: text(),
+
   lastName: text(),
+
 });
+
+
 
 const ruleGroupProcessor = generateDrizzleRuleGroupProcessor(table);
 
+
+
 // Tip: `format` is not required when `ruleGroupProcessor` is provided
+
 const where = formatQuery(query, { ruleGroupProcessor });
 
+
+
 const query = db.select().from(table).where(where);
+
 console.log(query.toSQL());
+
 // {
+
 //   sql: 'select "firstName", "lastName" from "musicians" where ("musicians"."firstName" = ? and "musicians"."lastName" = ?)',
+
 //   params: ['Steve', 'Vai']
+
 // }
 
+
+
 console.log(query.all());
+
 // [{ firstName: 'Steve', lastName: 'Vai' }]
 ```
 
@@ -305,10 +409,16 @@ Generate objects for Sequelize `findAll` `where` properties using the "sequelize
 
 ```
 import { col, fn, Op } from 'sequelize';
+
 const where = formatQuery(query, {
+
   format: 'sequelize',
+
   context: { sequelizeOperators: Op, sequelizeCol: col, sequelizeFn: fn },
+
 });
+
+
 
 const users = await Users.findAll({ where });
 ```
@@ -381,11 +491,18 @@ Loop through `jsonLogicAdditionalOperators` entries for future-proof registratio
 
 ```
 import { add_operation, apply } from 'json-logic-js';
+
 import { jsonLogicAdditionalOperators } from 'react-querybuilder';
 
+
+
 for (const [op, func] of Object.entries(jsonLogicAdditionalOperators)) {
+
   add_operation(op, func);
+
 }
+
+
 
 apply({ startsWith: [{ var: 'firstName' }, 'Stev'] }, data);
 ```
@@ -426,12 +543,19 @@ For more control, implement a custom rule processor (example below lacks error c
 
 ```
 const customRuleProcessor: RuleProcessor = (rule, options) => {
+
   // `datatype` is a non-standard property of the field, used for this example only.
+
   // Replace this condition with your own logic to determine if the value is a date.
+
   if (options?.fieldData?.datatype === 'date') {
+
     return `$toMillis(${rule.field}) ${rule.operator} $toMillis("${rule.value}")`;
+
   }
+
   return defaultRuleProcessorJSONata(rule, options);
+
 };
 ```
 
@@ -457,14 +581,23 @@ Generate natural language queries using "natural\_language" format. Use `getOper
 
 ```
 formatQuery(query, {
+
   format: 'natural_language',
+
   parseNumbers: true,
+
   getOperators: () => defaultOperators,
+
   fields: [
+
     { value: 'firstName', label: 'First Name' },
+
     { value: 'lastName', label: 'Last Name' },
+
     { value: 'age', label: 'Age' },
+
   ],
+
 });
 ```
 
@@ -488,17 +621,29 @@ Render values as numbers instead of quoted strings using `parseNumbers: true`. S
 
 ```
 const query = {
+
   rules: [{ field: 'age', operator: 'between', value: [30, 20] }],
+
 };
 
+
+
 formatQuery(query, { format: 'sql', parseNumbers: true });
+
 /*
+
 "(age between 20 and 30)"
+
 */
 
+
+
 formatQuery(query, { format: 'sql', parseNumbers: true, preserveValueOrder: true });
+
 /*
+
 "(age between 30 and 20)"
+
 */
 ```
 
@@ -537,33 +682,61 @@ Use the appropriate default rule processor as a fallback so your custom processo
 
 ```
 const query: RuleGroupType = {
+
   combinator: 'and',
+
   not: false,
+
   rules: [
+
     { field: 'firstName', operator: 'has', value: 'S' },
+
     //        non-standard operator ^^^^^
+
     { field: 'lastName', operator: '=', value: 'Vai' },
+
   ],
+
 };
+
+
 
 const customRuleProcessor: RuleProcessor = (rule, options) => {
+
   // The "has" operator is not handled by the default processor
+
   if (rule.operator === 'has') {
+
     return { in: [rule.value, { var: rule.field }] };
+
   }
 
+
+
   // Defer to the default processor for all other operators
+
   return defaultRuleProcessorJsonLogic(rule, options);
+
 };
 
+
+
 formatQuery(query, { format: 'jsonlogic', ruleProcessor: customRuleProcessor });
+
 /*
+
 {
+
   and: [
+
     { in: ["S", { var: "firstName" }] },
+
     { "==": [{ var: "lastName" }, "Vai"] }
+
   ]
+
 }
+
 */
 ```
 
@@ -572,18 +745,32 @@ This SQL example (using Oracle syntax) demonstrates the generation of a case-ins
 ```
 // `query` is the same as in the previous example
 
+
+
 const customRuleProcessor: RuleProcessor = (rule, options) => {
+
   if (rule.operator === 'has') {
+
     return `UPPER(${rule.field}) LIKE UPPER('%${rule.value}%')`;
+
   }
 
+
+
   return defaultRuleProcessorSQL(rule, options);
+
 };
 
+
+
 formatQuery(query, { format: 'sql', ruleProcessor: customRuleProcessor });
+
 /*
+
 "(UPPER(firstName) LIKE UPPER('%S%') and lastName = 'Vai')"
+
  ^------------custom--------------^ ^------default-----^
+
 */
 ```
 
@@ -593,29 +780,53 @@ The "parameterized" and "parameterized\_named" formats require rule processors t
 
 ```
 const customRuleProcessor: RuleProcessor = (rule, options) => {
+
   if (rule.operator === 'has') {
+
     // TIP: `getNextNamedParam` can be called multiple times in case your SQL
+
     // requires multiple unique parameters (e.g., in a "between" condition).
+
     // Each call will generate a new name.
+
     const paramName = options.getNextNamedParam!(rule.field);
+
     return {
+
       sql: `UPPER(${rule.field}) LIKE UPPER('%' || ${options.paramPrefix}${paramName} || '%')`,
+
       params: { [paramName]: rule.value },
+
     };
+
   }
+
+
 
   return defaultRuleProcessorSQLParameterized(rule, options);
+
 };
 
+
+
 formatQuery(query, { format: 'parameterized_named', ruleProcessor: customRuleProcessor });
+
 /*
+
 {
+
   sql: "(UPPER(firstName) LIKE UPPER('%' || :firstName_1 || '%') and lastName = :lastName_1)",
+
   params: {
+
     firstName_1: "S",
+
     lastName_1: "Vai"
+
   }
+
 }
+
 */
 ```
 
@@ -630,18 +841,32 @@ For all formats except "sql", `valueProcessor` is a synonym for `ruleProcessor`.
 ```
 // `query` is the same as in the previous example
 
+
+
 const customValueProcessor: ValueProcessorByRule = (rule, options) => {
+
   if (rule.operator === 'has') {
+
     return `'%${rule.value}%'`;
+
   }
 
+
+
   return defaultValueProcessorByRule(rule, options);
+
 };
 
+
+
 formatQuery(query, { format: 'sql', valueProcessor: customValueProcessor });
+
 /*
+
 "(firstName like '%S%' and lastName = 'Vai')"
+
  ^---default---^ ^---^-custom  ^--default--^
+
 */
 ```
 
@@ -663,26 +888,47 @@ This legacy behavior is documented for completeness but not recommended.
 
 ```
 const query: RuleGroupType = {
+
   combinator: 'and',
+
   not: false,
+
   rules: [
+
     { field: 'instrument', operator: 'in', value: ['Guitar', 'Vocals'] },
+
     { field: 'lastName', operator: '=', value: 'Vai' },
+
   ],
+
 };
+
+
 
 const customValueProcessor = (field, operator, value) => {
+
   if (operator === 'in') {
+
     // Assuming `value` is an array, such as from a multi-select
+
     return `(${value.map(v => `'${v.trim()}'`).join(',')})`;
+
   }
 
+
+
   return defaultValueProcessor(field, operator, value);
+
 };
 
+
+
 formatQuery(query, { format: 'sql', valueProcessor: customValueProcessor });
+
 /*
+
 "(instrument in ('Guitar','Vocals') and lastName = 'Vai')"
+
 */
 ```
 
@@ -703,12 +949,19 @@ Default value processors using the legacy signature are available for some query
 
 ```
 formatQuery(query, {
+
   format: 'sql',
+
   // Convert all operators to uppercase
+
   operatorProcessor: (rule, options) => defaultOperatorProcessorSQL(rule, options).toUpperCase(),
+
 });
+
 /*
+
 "(firstName LIKE 'Stev%' and lastName IN ('Vai', 'Vaughan'))"
+
 */
 ```
 
@@ -718,13 +971,21 @@ Some database engines wrap field names in backticks (`` ` ``) or square brackets
 
 ```
 formatQuery(query, { format: 'sql', quoteFieldNamesWith: '`' });
+
 /*
+
 "(`firstName` = 'Steve' and `lastName` = 'Vai')"
+
 */
 
+
+
 formatQuery(query, { format: 'sql', quoteFieldNamesWith: ['[', ']'] });
+
 /*
+
 "([firstName] = 'Steve' and [lastName] = 'Vai')"
+
 */
 ```
 
@@ -736,12 +997,19 @@ In this example, assume the field names are `musicians.firstName` and `musicians
 
 ```
 formatQuery(query, {
+
   format: 'sql',
+
   quoteFieldNamesWith: ['[', ']'],
+
   fieldIdentifierSeparator: '.',
+
 });
+
 /*
+
 "([musicians].[firstName] = 'Steve' and [musicians].[lastName] = 'Vai')"
+
 */
 ```
 
@@ -751,8 +1019,11 @@ Some database engines can accept string literals in double quotes (`"`). This ca
 
 ```
 formatQuery(query, { format: 'sql', quoteValuesWith: '"' });
+
 /*
+
 "(firstName = "Steve" and lastName = "Vai")"
+
 */
 ```
 
@@ -762,12 +1033,19 @@ If the "parameterized\_named" format is used, configure the parameter prefix use
 
 ```
 const p = formatQuery(query, {
+
   format: 'parameterized_named',
+
   paramPrefix: '$',
+
 });
+
 /*
+
 p.sql === "(firstName = $firstName_1 and lastName = $lastName_1)"
+
 //                     ^^^                         ^^^
+
 */
 ```
 
@@ -781,12 +1059,19 @@ For "parameterized" format, parameter placeholders in generated SQL are "?" by d
 
 ```
 const p = formatQuery(query, {
+
   format: 'parameterized',
+
   paramPrefix: '$',
+
   numberedParams: true,
+
 });
+
 /*
+
 p.sql === "(firstName = $1 and lastName = $2)"
+
 */
 ```
 
@@ -802,21 +1087,37 @@ If the value is `"CONCAT"` (case-insensitive), the `CONCAT` function is used. (N
 
 ```
 const query = {
+
   combinator: 'and',
+
   rules: [
+
     { field: 'firstName', operator: '=', value: 'Kris' },
+
     { field: 'lastName', operator: 'beginswith', value: 'firstName', valueSource: 'field' },
+
   ],
+
 };
 
+
+
 formatQuery(query, { format: 'sql', concatOperator: '+' });
+
 /*
+
 "(firstName = 'Kris' and lastName like firstName + '%')"
+
 */
 
+
+
 formatQuery(query, { format: 'sql', concatOperator: 'CONCAT' });
+
 /*
+
 "(firstName = 'Kris' and lastName like CONCAT(firstName, '%'))"
+
 */
 ```
 
@@ -841,10 +1142,15 @@ If `preset` is from `sqlDialectPresets`, it only applies if `format` is undefine
 ```                                                                                                                   |
 | `'mssql'`      | ```
 {
+
   "quoteFieldNamesWith": ["[", "]"],
+
   "concatOperator": "+",
+
   "fieldIdentifierSeparator": ".",
+
   "paramPrefix": "@"
+
 }
 ``` |
 | `'mysql'`      | ```
@@ -858,16 +1164,27 @@ Examples:
 
 ```
 formatQuery(query, { format: 'parameterized', preset: 'postgresql' });
+
 /*
+
 {
+
   sql: `("firstName" like $1 and "lastName" in ($2, $3))`,
+
   params: ['Stev%', 'Vai', 'Vaughan']
+
 }
+
 */
 
+
+
 formatQuery(query, { format: 'sql', preset: 'mssql' });
+
 /*
+
 "([musicians].[firstName] = 'Kris' and [musicians].[lastName] like [musicians].[firstName] + '%')"
+
 */
 ```
 
@@ -896,14 +1213,23 @@ When a rule's `valueSource` property is "field", no parameters are generated.
 
 ```
 const pf = formatQuery(
+
   {
+
     combinator: 'and',
+
     rules: [
+
       { field: 'firstName', operator: '=', value: 'lastName', valueSource: 'field' },
+
       { field: 'firstName', operator: 'beginsWith', value: 'middleName', valueSource: 'field' },
+
     ],
+
   },
+
   'parameterized_named'
+
 );
 ```
 
@@ -911,8 +1237,11 @@ Output (JSON object):
 
 ```
 {
+
   "sql": "(firstName = lastName and firstName like middleName || '%')",
+
   "params": {}
+
 }
 ```
 
@@ -930,9 +1259,13 @@ Based on [constituent word order](https://en.wikipedia.org/wiki/Word_order#Const
 
 ```
 formatQuery(query, {
+
   format: 'natural_language',
+
   wordOrder: 'SOV',
+
 });
+
 // `First Name 'Steve' is`
 ```
 
@@ -946,21 +1279,37 @@ For example, when a group has a `not: true` property, but the `combinator` is so
 
 ```
 formatQuery(query, {
+
   format: 'natural_language',
+
   translations: {
+
     groupSuffix: 'is def the truth',
+
     groupSuffix_not: 'is so not true',
+
   },
+
 });
+
 // Given the following query:
+
 // const query = {
+
 //   rules: [
+
 //     { rules: [{ field: 'firstName', operator: '=', value: 'Steve' }] },
+
 //     'and',
+
 //     { not: true, rules: [{ field: 'firstName', operator: '=', value: 'Vai' }] },
+
 //   ]
+
 // };
+
 // ...potential output could be:
+
 // `(First Name is 'Steve') is def the truth, and (Last Name is 'Vai') is so not true`
 ```
 
@@ -972,12 +1321,19 @@ When `not` is falsy but the `combinator` is `"xor"`, `groupSuffix_xor` will be u
 
 ```
 formatQuery(query, {
+
   format: 'natural_language',
+
   operatorMap: {
+
     '=': 'is most assuredly',
+
     '!=': ['is not', 'differs from'],
+
   },
+
 });
+
 // `First Name is most assuredly 'Steve', and Last Name differs from First Name`
 ```
 
@@ -1010,28 +1366,51 @@ Use the appropriate default rule group processor as a fallback so your custom pr
 
 ```
 const query: RuleGroupType = {
+
   combinator: 'and',
+
   not: false,
+
   rules: [
+
     { combinator: 'and', rules: [] },
+
     // empty rules array ^^^^^^^^^
+
     { field: 'firstName', operator: 'beginsWith', value: 'S' },
+
   ],
+
 };
+
+
 
 const customRuleGroupProcessor: RuleGroupProcessor<string> = (ruleGroup, options) => {
+
   if (ruleGroup.rules.length === 0) {
+
     // Normally, empty rule groups are ignored, but here they evaluate to false
+
     return '(1 = 0)';
+
   }
 
+
+
   // Defer to the default rule group processor for all other operators
+
   return defaultRuleGroupProcessorSQL(ruleGroup, options);
+
 };
 
+
+
 formatQuery(query, { ruleGroupProcessor: customRuleGroupProcessor });
+
 /*
+
 "((1 = 0) and firstName LIKE 'S%')"
+
 */
 ```
 
@@ -1043,43 +1422,81 @@ Example:
 
 ```
 const query: RuleGroupType = {
+
   id: 'root',
+
   rules: [
+
     { id: 'r1', field: 'firstName', value: '', operator: '=' },
+
     { id: 'r2', field: 'lastName', value: 'Vai', operator: '=' },
+
   ],
+
   combinator: 'and',
+
   not: false,
+
 };
 
+
+
 // Example 1
+
 // Query is invalid based on the validator function
+
 formatQuery(query, {
+
   format: 'sql',
+
   validator: () => false,
+
 });
+
 /*
+
 "(1 = 1)" <-- see `fallbackExpression` option
+
 */
+
+
 
 // Example 2
+
 // Rule "r1" is invalid based on the validation map
+
 formatQuery(query, {
+
   format: 'sql',
+
   validator: () => ({ r1: false }),
+
 });
+
 /*
+
 "(lastName = 'Vai')" <-- skipped `firstName` rule with `id === 'r1'`
+
 */
 
+
+
 // Example 3
+
 // Rule "r1" is invalid based on the field validator for `firstName`
+
 formatQuery(query, {
+
   format: 'sql',
+
   fields: [{ name: 'firstName', validator: () => false }],
+
 });
+
 /*
+
 "(lastName = 'Vai')" <-- skipped `firstName` rule because field validator returned `false`
+
 */
 ```
 
@@ -1089,14 +1506,23 @@ Rules and groups with the `muted` property set to `true` are excluded from outpu
 
 ```
 const query: RuleGroupType = {
+
   combinator: 'and',
+
   rules: [
+
     { field: 'firstName', operator: '=', value: 'Steve' },
+
     { field: 'lastName', operator: '=', value: 'Vai', muted: true },
+
   ],
+
 };
 
+
+
 formatQuery(query, 'sql');
+
 // "(firstName = 'Steve')" - lastName rule is excluded
 ```
 
@@ -1104,21 +1530,37 @@ When a group is muted, it's replaced with the [fallback expression](#fallback-ex
 
 ```
 const query: RuleGroupType = {
+
   combinator: 'and',
+
   rules: [
+
     { field: 'firstName', operator: '=', value: 'Steve' },
+
     {
+
       combinator: 'or',
+
       rules: [
+
         { field: 'lastName', operator: '=', value: 'Vai' },
+
         { field: 'instrument', operator: '=', value: 'Guitar' },
+
       ],
+
       muted: true,
+
     },
+
   ],
+
 };
 
+
+
 formatQuery(query, 'sql');
+
 // "(firstName = 'Steve' and (1 = 1))" - muted group becomes fallback
 ```
 
@@ -1130,11 +1572,15 @@ Enable mute functionality in the UI by setting [`showMuteButtons`](/docs/compone
 
 To minimize invalid syntax, `formatQuery` performs basic validation for "in", "notIn", "between", and "notBetween" operators for all formats except "json" and "json\_without\_ids", even without specified validator functions or field validators.
 
+<!-- -->
+
 * Rules with "in" or "notIn" operators are invalid if the `value` is neither an array with at least one element (`value.length > 0`) nor a non-empty string.
 * Rules with "between" or "notBetween" operators are invalid if the `value` is neither an array with at least two elements (`value.length >= 2`) nor a string with at least one comma not at the first or last position (`value.split(',').length >= 2`, and neither element is empty).
 * Rules where `field`, `operator`, or `value` match their respective placeholder are invalid:
   ```
   field === placeholderFieldName ||
+
     operator === placeholderOperatorName ||
+
     (placeholderValueName !== undefined && value === placeholderValueName)
   ```

@@ -12,6 +12,8 @@ Starting with version 7, all `QueryBuilder` props, components, and derived value
 
 Prevent unstable references by defining static props (objects, arrays, functions) outside the component render function. This typically applies to the `fields` array and `onQueryChange` callback. For props that must be created within the component, use `useMemo` or `useCallback` for memoization. Most importantly, avoid defining non-primitive props inline within JSX.
 
+<!-- -->
+
 * ✓ DO define variables that will remain unchanged outside the component if possible.
 
 * ✓ DO memoize objects, arrays, and other values that must be created and/or calculated within the component with `useMemo`.
@@ -39,42 +41,79 @@ These patterns negatively impact `QueryBuilder` performance:
 
 ```
 function App() {
+
   const { t } = useTranslation(); // (<-- third-party i18n library)
+
   // ⚠ Even though this `useState` call only sets the initial `query` value once, the object
+
   // itself is still created on every render. This doesn't affect the stability of the reference,
+
   // but it's probably a good idea to define the object outside the component anyway.
+
   const [query, setQuery] = useState({ combinator: 'and', rules: [] });
 
+
+
   // ❌ This function is not memoized and will get recreated on each render.
+
   const getOperators = (field: Field) => t(defaultOperators);
 
+
+
   return (
+
     <QueryBuilder
+
       // ⚠ As a controlled component with potential for updates (not disabled), an unstable
+
       // reference to `query` is unavoidable. This is generally not a problem, but using
+
       // `defaultQuery` instead of `query` could avoid the issue entirely.
+
       query={query}
+
       //
+
       // ❌ Inline function definition. Also see note below about `useState`/`useReducer`.
+
       onQueryChange={q => setQuery(q)}
+
       //
+
       // ❌ Inline definition of an array that doesn't change over time.
+
       fields={[
+
         { name: 'firstName', label: 'First Name' },
+
         { name: 'lastName', label: 'Last Name' },
+
       ]}
+
       //
+
       // This function is not defined inline in the JSX, but it does not have a stable
+
       // reference since it's recreated on each render (see its declaration above).
+
       getOperators={getOperators}
+
       //
+
       controlElements={{
+
         // ❌ Component function is defined inline and will be recreated during each render.
+
         // This can also cause bugs like "input loses focus after each keystroke."
+
         actionElement: props => <button onClick={props.handleOnClick}>{props.label}</button>,
+
       }}
+
     />
+
   );
+
 }
 ```
 
@@ -86,58 +125,112 @@ Use these patterns to optimize `QueryBuilder` performance:
 
 ```
 // ✅ Fields array that never changes defined outside the component.
+
 const fields: Field[] = [
+
   { name: 'firstName', label: 'First Name' },
+
   { name: 'lastName', label: 'Last Name' },
+
 ];
 
+
+
 // ✅ Custom subcomponent defined outside the main component render function.
+
 const MyActionElement = (props: ActionProps) => (
+
   <button onClick={props.handleOnClick}>{props.label}</button>
+
 );
 
+
+
 // ✅ Default query, which is only access once, defined outside the component.
+
 const defaultQuery: RuleGroupType = { combinator: 'and', rules: [] };
 
+
+
 function App() {
+
   const { t } = useTranslation(); // (<-- third-party i18n library)
+
   // ✅ `useState` parameter (the initial value of `query`) defined outside the component.
+
   const [query, setQuery] = useState(defaultQuery);
 
+
+
   // ✅ Function defined inside the component memoized with `useCallback`. Since `t`
+
   // _probably_ has a stable reference, this function will rarely, if ever, be recreated.
+
   const getOperators = useCallback((field: Field) => t(defaultOperators), [t]);
 
+
+
   return (
+
     <QueryBuilder
+
       // ✅ The value passed to `defaultQuery` is only used once, so the stability of
+
       // its reference is unimportant.
+
       defaultQuery={query}
+
       //
+
       // ✅ `useState` setters and `useReducer` dispatchers always have stable references.
+
       onQueryChange={setQuery}
+
       //
+
       // ✅ `fields` array defined outside the component.
+
       fields={fields}
+
       //
+
       // ✅ Function memoized with `useCallback`.
+
       getOperators={getOperators}
+
       //
+
       // See "Exceptions" section above regarding the following props.
+
       controlElements={{
+
         // ✅ Subcomponent defined outside the current component.
+
         actionElement: MyActionElement,
+
       }}
+
       // ✅ `translations` is memoized down to the sub-property level.
+
       translations={{
+
         addGroup: {
+
           label: 'Add Group',
+
         },
+
         addRule: {
+
           label: 'Add Rule',
+
         },
+
       }}
+
     />
+
   );
+
 }
 ```

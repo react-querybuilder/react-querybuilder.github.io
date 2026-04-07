@@ -8,9 +8,13 @@ The `controlElements` prop allows you to override default components with custom
 
 ```
 function App() {
+
   return (
+
     <QueryBuilder controlElements={{ valueEditor: CustomValueEditor }}>
+
   )
+
 }
 ```
 
@@ -72,18 +76,31 @@ For example, this:
 
 ```
 <QueryBuilder
+
   controlElements={{
+
     addGroupAction: MyAwesomeButton
+
     addRuleAction: MyAwesomeButton
+
     cloneGroupAction: MyAwesomeButton
+
     cloneRuleAction: MyAwesomeButton
+
     lockGroupAction: MyAwesomeButton
+
     lockRuleAction: MyAwesomeButton
+
     muteGroupAction: MyAwesomeButton
+
     muteRuleAction: MyAwesomeButton
+
     removeGroupAction: MyAwesomeButton
+
     removeRuleAction: MyAwesomeButton
+
   }}
+
 />
 ```
 
@@ -607,12 +624,19 @@ For example, this:
 
 ```
 <QueryBuilder
+
   controlElements={{
+
     combinatorSelector: MyAwesomeSelector
+
     fieldSelector: MyAwesomeSelector
+
     operatorSelector: MyAwesomeSelector
+
     valueSourceSelector: MyAwesomeSelector
+
   }}
+
 />
 ```
 

@@ -10,29 +10,53 @@ This example creates a custom value editor using the [`react-datepicker`](https:
 
 ```
 // fields.ts
+
 import { Field } from 'react-querybuilder';
 
+
+
 export const fields: Field[] = [
+
   {
+
     name: 'name',
+
     label: 'Name',
+
     operators: [
+
       { name: '=', label: 'is' },
+
       { name: 'beginsWith', label: 'begins with' },
+
     ],
+
   },
+
   {
+
     name: 'dateOfBirth',
+
     label: 'Date of Birth',
+
     operators: [{ name: '=', label: 'is' }],
+
     datatype: 'date',
+
   },
+
   {
+
     name: 'dateRange',
+
     label: 'Date Range',
+
     operators: [{ name: 'between', label: 'is between' }],
+
     datatype: 'dateRange',
+
   },
+
 ];
 ```
 
@@ -46,44 +70,83 @@ We use the [`date-fns`](https://date-fns.org/) library for date parsing and form
 
 ```
 // CustomValueEditor.tsx
+
 import { format, parse } from 'date-fns';
+
 import DatePicker from 'react-datepicker';
+
 import 'react-datepicker/dist/react-datepicker.css';
+
 import { ValueEditor, ValueEditorProps } from 'react-querybuilder';
+
+
 
 const dateFormat = 'yyyy-MM-dd';
 
+
+
 export const CustomValueEditor = (props: ValueEditorProps) => {
+
   if (props.fieldData.datatype === 'date') {
+
     return (
+
       <div>
+
         <DatePicker
+
           dateFormat={dateFormat}
+
           selected={!props.value ? null : parse(props.value, dateFormat, new Date())}
+
           onChange={(d: Date) => props.handleOnChange(d ? format(d, dateFormat) : null)}
+
         />
+
       </div>
+
     );
+
   } else if (props.fieldData.datatype === 'dateRange') {
+
     const [startDate, endDate] = props.value.split(',');
+
     return (
+
       <div>
+
         <DatePicker
+
           selectsRange
+
           dateFormat={dateFormat}
+
           startDate={!startDate ? null : parse(startDate, dateFormat, new Date())}
+
           endDate={!endDate ? null : parse(endDate, dateFormat, new Date())}
+
           onChange={(update: [Date, Date]) => {
+
             const [s, e] = update;
+
             props.handleOnChange(
+
               [!s ? '' : format(s, dateFormat), !e ? '' : format(e, dateFormat)].join(',')
+
             );
+
           }}
+
         />
+
       </div>
+
     );
+
   }
+
   return <ValueEditor {...props} />;
+
 };
 ```
 
@@ -93,12 +156,15 @@ If you're using one of the [compatibility packages](/docs/compat.md), you probab
 
 ```
 -import { ValueEditor, ValueEditorProps } from 'react-querybuilder';
+
 +import { AntDValueEditor } from '@react-querybuilder/antd';
+
 +import { ValueEditorProps } from 'react-querybuilder';
 ```
 
 ```
 -  return <ValueEditor {...props} />;
+
 +  return <AntDValueEditor {...props} />;
 ```
 
@@ -106,20 +172,35 @@ Configure the `QueryBuilder` component to use the custom value editor through th
 
 ```
 // App.tsx
+
 import { useState } from 'react';
+
 import { CustomValueEditor } from './CustomValueEditor';
+
 import { fields } from './fields';
 
+
+
 export default function App() {
+
   const [query, setQuery] = useState({ combinator: 'and', rules: [] });
+
   return (
+
     <QueryBuilder
+
       fields={fields}
+
       query={query}
+
       onQueryChange={setQuery}
+
       controlElements={{ valueEditor: CustomValueEditor }}
+
     />
+
   );
+
 }
 ```
 

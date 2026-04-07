@@ -12,10 +12,15 @@ This code generates a SQL string with numbered bind variable placeholders from "
 
 ```
 let i = 0;
+
 const fq = formatQuery(query, 'parameterized');
+
 const fqWithNumberedParams = {
+
   ...fq,
+
   sql: fq.sql.replaceAll('?', () => `$${++i}`),
+
 };
 ```
 
@@ -23,8 +28,11 @@ If `formatQuery(query, "parameterized")` returns this object:
 
 ```
 {
+
   "sql": "(firstName = ? and lastName = ?)",
+
   "params": ["Steve", "Vai"]
+
 }
 ```
 
@@ -32,7 +40,10 @@ The code above transforms it into:
 
 ```
 {
+
   "sql": "(firstName = $1 and lastName = $2)",
+
   "params": ["Steve", "Vai"]
+
 }
 ```

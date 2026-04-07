@@ -77,46 +77,87 @@ Value list (fb1)betweenfield.rule-value-list-item (fb2).rule-value-list-item (fb
 
 ```
 export const standardClassnames = {
+
   queryBuilder: 'queryBuilder',
+
   ruleGroup: 'ruleGroup',
+
   header: 'ruleGroup-header',
+
   body: 'ruleGroup-body',
+
   combinators: 'ruleGroup-combinators',
+
   addRule: 'ruleGroup-addRule',
+
   addGroup: 'ruleGroup-addGroup',
+
   cloneRule: 'rule-cloneRule',
+
   cloneGroup: 'ruleGroup-cloneGroup',
+
   removeGroup: 'ruleGroup-remove',
+
   notToggle: 'ruleGroup-notToggle',
+
   rule: 'rule',
+
   fields: 'rule-fields',
+
   matchMode: 'rule-matchMode',
+
   matchThreshold: 'rule-matchThreshold',
+
   operators: 'rule-operators',
+
   value: 'rule-value',
+
   removeRule: 'rule-remove',
+
   betweenRules: 'betweenRules',
+
   valid: 'queryBuilder-valid',
+
   invalid: 'queryBuilder-invalid',
+
   shiftActions: 'shiftActions',
+
   dndDragging: 'dndDragging',
+
   dndOver: 'dndOver',
+
   dndCopy: 'dndCopy',
+
   dndGroup: 'dndGroup',
+
   dndDropNotAllowed: 'dndDropNotAllowed',
+
   dragHandle: 'queryBuilder-dragHandle',
+
   disabled: 'queryBuilder-disabled',
+
   muted: 'queryBuilder-muted',
+
   lockRule: 'rule-lock',
+
   lockGroup: 'ruleGroup-lock',
+
   muteRule: 'rule-mute',
+
   muteGroup: 'ruleGroup-mute',
+
   valueSource: 'rule-valueSource',
+
   valueListItem: 'rule-value-list-item',
+
   branches: 'queryBuilder-branches',
+
   justified: 'queryBuilder-justified',
+
   hasSubQuery: 'rule-hasSubQuery',
+
   loading: 'queryBuilder-loading',
+
 } as const;
 ```
 

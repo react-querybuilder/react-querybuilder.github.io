@@ -8,23 +8,41 @@ App.jsx
 
 ```
 const App = () => {
+
   // Other stuff ...
 
+
+
   const CustomValueEditor = props => {
+
     // Custom logic here ...
+
     return <input />;
+
   };
 
+
+
   return (
+
     <QueryBuilder
+
       fields={fields}
+
       query={query}
+
       handleOnChange={q => setQuery(q)}
+
       controlElements={{
+
         valueEditor: CustomValueEditor,
+
       }}
+
     />
+
   );
+
 };
 ```
 
@@ -34,23 +52,41 @@ App.jsx
 
 ```
 const CustomValueEditor = props => {
+
   // Custom logic here ...
+
   return <input />;
+
 };
 
+
+
 const App = () => {
+
   // Other stuff ...
 
+
+
   return (
+
     <QueryBuilder
+
       fields={fields}
+
       query={query}
+
       handleOnChange={q => setQuery(q)}
+
       controlElements={{
+
         valueEditor: CustomValueEditor,
+
       }}
+
     />
+
   );
+
 };
 ```
 
@@ -60,25 +96,46 @@ App.jsx
 
 ```
 const CustomValueEditor = props => {
+
   // Custom logic here ...
+
   return <input />;
+
 };
 
+
+
 const App = () => {
+
   // Other stuff ...
 
+
+
   return (
+
     <QueryBuilder
+
       fields={fields}
+
       query={query}
+
       handleOnChange={q => setQuery(q)}
+
       controlElements={{
+
         // Don't do this:
+
         valueEditor: props => <CustomValueEditor {...props} />,
+
         // Do this instead:
+
         // valueEditor: CustomValueEditor,
+
       }}
+
     />
+
   );
+
 };
 ```

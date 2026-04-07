@@ -16,8 +16,11 @@ The documentation below assumes the use of the Day.js plugin. To use one of the 
 
 ```
 import { datetimeRuleProcessorSQL } from '@react-querybuilder/datetime/dayjs';
+
 // Other options:
+
 // import { datetimeRuleProcessorSQL } from '@react-querybuilder/datetime/date-fns';
+
 // import { datetimeRuleProcessorSQL } from '@react-querybuilder/datetime/luxon';
 ```
 
@@ -38,21 +41,37 @@ In the example below, the value in the "birthDate" rule matches the regular expr
 
 ```
 // Returns true if the value appears to be an ISO date-only string (YYYY-MM-DD)
+
 const isDateField = (rule, opts) => /^\d\d\d\d-\d\d-\d\d$/.test(rule.value);
 
+
+
 const query: RuleGroupType = {
+
   combinator: 'and',
+
   rules: [
+
     { field: 'birthDate', operator: '<', value: '1950-01-01' },
+
     { field: 'mathNotDate', operator: '=', value: '1950-1-1' },
+
   ],
+
 };
 
+
+
 formatQuery(query, {
+
   preset: 'postgresql',
+
   ruleProcessor: datetimeRuleProcessorSQL,
+
   context: { isDateField },
+
 });
+
 // `(birthDate < date'1950-01-01' and mathNotDate = '1950-1-1')`
 ```
 
@@ -60,27 +79,49 @@ In the next example, `isDateField` is an array of objects. If the field object (
 
 ```
 // Triggers date processing if the field has `datatype: "date"` _or_ `inputType: "datetime-local"`
+
 const isDateField = [{ datatype: 'date' }, { inputType: 'datetime-local' }];
 
+
+
 const fields: Field[] = [
+
   { name: 'birthDate', label: 'Birth Date', datatype: 'date' },
+
   { name: 'mathNotDate', label: 'Math, Not Date', datatype: 'number' },
+
 ];
 
+
+
 const query: RuleGroupType = {
+
   combinator: 'and',
+
   rules: [
+
     { field: 'birthDate', operator: '<', value: '1950-01-01' },
+
     { field: 'mathNotDate', operator: '=', value: '1950-1-1' },
+
   ],
+
 };
 
+
+
 formatQuery(query, {
+
   preset: 'postgresql',
+
   fields,
+
   ruleProcessor: datetimeRuleProcessorSQL,
+
   context: { isDateField },
+
 });
+
 // `(birthDate < date'1950-01-01' and mathNotDate = '1950-1-1')`
 ```
 
@@ -95,9 +136,14 @@ Since the `datetimeRuleProcessorMongoDBQuery` rule processor handles real date/t
 ```
 import { datetimeRuleProcessorMongoDBQuery } from '@react-querybuilder/datetime/dayjs';
 
+
+
 const mongodbQuery = formatQuery(query, {
+
   format: 'mongodb_query',
+
   ruleProcessor: datetimeRuleProcessorMongoDBQuery,
+
 });
 ```
 
@@ -107,16 +153,28 @@ The `datetimeRuleProcessorJsonLogic` rule processor produces custom JsonLogic op
 
 ```
 import { add_operation, apply } from 'json-logic-js';
+
 import { jsonLogicDateTimeOperations } from '@react-querybuilder/datetime/dayjs';
 
+
+
 for (const [op, func] of Object.entries(jsonLogicDateTimeOperations)) {
+
   add_operation(op, func);
+
 }
 
+
+
 const jsonLogic = formatQuery(query, {
+
   format: 'jsonlogic',
+
   ruleProcessor: datetimeRuleProcessorJsonLogic,
+
 });
+
+
 
 const results = data.filter(d => apply(jsonLogic, d));
 ```
@@ -126,6 +184,8 @@ const results = data.filter(d => apply(jsonLogic, d));
 ```
 import { datetimeRuleProcessorCEL } from '@react-querybuilder/datetime/dayjs';
 
+
+
 const cel = formatQuery(query, { format: 'cel', ruleProcessor: datetimeRuleProcessorCEL });
 ```
 
@@ -134,9 +194,14 @@ const cel = formatQuery(query, { format: 'cel', ruleProcessor: datetimeRuleProce
 ```
 import { datetimeRuleProcessorJSONata } from '@react-querybuilder/datetime/dayjs';
 
+
+
 const jsonata = formatQuery(query, {
+
   format: 'jsonata',
+
   ruleProcessor: datetimeRuleProcessorJSONata,
+
 });
 ```
 
@@ -146,9 +211,13 @@ The `datetimeRuleProcessorNL` formats date/time values using `Intl.DateTimeForma
 
 ```
 // For date-only values, e.g. "1969-01-01":
+
 new Intl.DateTimeFormat(undefined, { dateStyle: 'full' });
 
+
+
 // For date+time values, e.g. "1969-01-01T12:14:26.052Z":
+
 new Intl.DateTimeFormat(undefined, { dateStyle: 'full', timeStyle: 'long' });
 ```
 
@@ -157,16 +226,32 @@ To customize the output, use the `context` option. The `locales` property is pas
 ```
 import { datetimeRuleProcessorNL } from '@react-querybuilder/datetime/dayjs';
 
+
+
 const nl = formatQuery(query, {
+
   format: 'natural_language',
+
   ruleProcessor: datetimeRuleProcessorNL,
+
   context: {
+
     locales: 'en-GB',
+
     dateFormat: { dateStyle: 'full' },
+
     dateTimeFormat: { dateStyle: 'full', timeStyle: 'long' },
+
   },
+
 });
 ```
+
+<!-- -->
+
+<!-- -->
+
+<!-- -->
 
 ## Custom plugins[​](#custom-plugins "Direct link to Custom plugins")
 
@@ -175,26 +260,48 @@ If the official date/time processor plugins do not meet your requirements, you c
 ```
 type DateOrString = string | Date;
 
+
+
 interface RQBDateTimeLibraryAPI {
+
   /** Format a `Date` or ISO 8601 string with format `fmt` */
+
   format: (d: DateOrString, fmt: string) => string;
+
   /** `a` is after `b`. */
+
   isAfter: (a: DateOrString, b: DateOrString) => boolean;
+
   /** `a` is before `b`. */
+
   isBefore: (a: DateOrString, b: DateOrString) => boolean;
+
   /**
+
    * `a` evaluates to the same timestamp as `b`. If either `a` or `b` is an
+
    * ISO date-only string, they are the same date (time component is ignored).
+
    */
+
   isSame: (a: DateOrString, b: DateOrString) => boolean;
+
   /** `d` is, or evaluates to, a valid `Date` object */
+
   isValid: (d: DateOrString) => boolean;
+
   /** Convert a string to a `Date` object (returns a `Date` unchanged) */
+
   toDate: (d: DateOrString) => Date;
+
   /** 'YYYY-MM-DDTHH:mm:ss.SSSZ' format */
+
   toISOString: (d: DateOrString) => string;
+
   /** Format `Date` or ISO 8601 string in ISO date-only format ('YYYY-MM-DD') */
+
   toISOStringDateOnly: (d: DateOrString) => string;
+
 }
 ```
 
@@ -202,6 +309,8 @@ Most exports from the date/time library have a corresponding `get*` method that 
 
 ```
 const mySQLRuleProcessor = getDatetimeRuleProcessorSQL(myDateTimeLibraryAPI);
+
+
 
 const sql = formatQuery(query, { format: 'sql', ruleProcessor: mySQLRuleProcessor });
 ```

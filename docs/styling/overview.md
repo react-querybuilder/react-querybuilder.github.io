@@ -15,13 +15,17 @@ For layout-only styles (structural properties like `flex-direction`, `gap`, alig
 
 ```
 @import 'react-querybuilder/dist/query-builder.css';
+
 /* OR, for layout only: */
+
 @import 'react-querybuilder/dist/query-builder-layout.css';
 ```
 
 ```
 @use 'react-querybuilder/dist/query-builder.scss';
+
 // OR, for layout only:
+
 @use 'react-querybuilder/dist/query-builder-layout.scss';
 ```
 
@@ -40,23 +44,37 @@ Default variables:
 
 ```
 :root {
+
   --rqb-spacing: 0.5rem;
+
   --rqb-border-width: 1px;
+
   --rqb-base-color: #004bb8;
+
   --rqb-background-color: #004bb833;
+
   --rqb-border-color: #8081a2;
+
   --rqb-border-style: solid;
+
   --rqb-border-radius: 0.25rem;
+
 }
 ```
 
 ```
 $rqb-spacing: 0.5rem;
+
 $rqb-border-width: 1px;
+
 $rqb-base-color: #004bb8;
+
 $rqb-background-color: #004bb833;
+
 $rqb-border-color: #8081a2;
+
 $rqb-border-style: solid;
+
 $rqb-border-radius: 0.25rem;
 ```
 
@@ -68,16 +86,24 @@ Example:
 ```
 @import 'react-querybuilder/dist/query-builder.css';
 
+
+
 :root {
+
   --rqb-spacing: 0.8rem; /* a little roomier than the default 0.5rem */
+
   --rqb-background-color: #ccc3; /* gray, semi-transparent background */
+
 }
 ```
 
 ```
 @use 'react-querybuilder/dist/query-builder' with (
+
   $rqb-spacing: 0.8rem, /* a little roomier than the default 0.5rem */
+
   $rqb-background-color: #ccc3 /* gray, semi-transparent background */
+
 );
 ```
 
@@ -89,12 +115,19 @@ SCSS allows you to customize the CSS variable prefix (`rqb-` by default) by sett
 
 ```
 @use 'react-querybuilder/dist/query-builder' with (
+
   $rqb-var-prefix: myprefix-,
+
   $rqb-spacing: 0.8rem
+
 );
 
+
+
 :root {
+
   --myprefix-background-color: #ccc3;
+
 }
 ```
 
@@ -104,7 +137,9 @@ To add branch lines to the left side of rule groups, add the `queryBuilder-branc
 
 ```
 <QueryBuilder
+
   controlClassnames={{ queryBuilder: 'queryBuilder-branches' }}
+
 />
 ```
 
@@ -129,19 +164,29 @@ The branch lines are colored red in the example above to stand out, but by defau
 
 ```
 :root {
+
   --rqb-branch-indent: var(--rqb-spacing);
+
   --rqb-branch-width: var(--rqb-border-width);
+
   --rqb-branch-color: var(--rqb-border-color);
+
   --rqb-branch-radius: var(--rqb-border-radius);
+
   --rqb-branch-style: var(--rqb-border-style);
+
 }
 ```
 
 ```
 $rqb-branch-indent: $rqb-spacing;
+
 $rqb-branch-width: $rqb-border-width;
+
 $rqb-branch-color: $rqb-border-color;
+
 $rqb-branch-radius: $rqb-border-radius;
+
 $rqb-branch-style: $rqb-border-style;
 ```
 
@@ -153,7 +198,9 @@ Justified layout styles augment the default styles by pushing "+ Rule", "+ Group
 
 ```
 <QueryBuilder
+
   controlClassnames={{ queryBuilder: 'queryBuilder-justified' }}
+
 />
 ```
 
@@ -178,23 +225,37 @@ When [drag-and-drop is enabled](/docs/dnd.md), these variables control styles fo
 
 ```
 :root {
+
   --rqb-dnd-drop-indicator-color: rebeccapurple;
+
   --rqb-dnd-drop-indicator-copy-color: #669933;
+
   --rqb-dnd-drop-indicator-style: dashed;
+
   --rqb-dnd-drop-indicator-width: 2px;
+
 }
 ```
 
 ```
 $rqb-dnd-drop-indicator-color: rebeccapurple;
+
 $rqb-dnd-drop-indicator-copy-color: #669933;
+
 $rqb-dnd-drop-indicator-style: dashed;
+
 $rqb-dnd-drop-indicator-width: 2px;
 
+
+
 // Deprecated variable names (still work)
+
 // $rqb-dnd-hover-border-bottom-color: rebeccapurple;
+
 // $rqb-dnd-hover-copy-border-bottom-color: #669933;
+
 // $rqb-dnd-hover-border-bottom-style: dashed;
+
 // $rqb-dnd-hover-border-bottom-width: 2px;
 ```
 

@@ -8,12 +8,19 @@ The simplest approach is hiding the "+ Group" button entirely. Set the `addGroup
 
 ```
 <QueryBuilder
+
   fields={fields}
+
   query={query}
+
   onQueryChange={setQuery}
+
   controlElements={{
+
     addGroupAction: null,
+
   }}
+
 />
 ```
 
@@ -21,7 +28,9 @@ Alternatively, hide the button using CSS with the default `ruleGroup-addGroup` c
 
 ```
 .ruleGroup-addGroup {
+
   display: none;
+
 }
 ```
 
@@ -37,12 +46,19 @@ To allow groups only at the top level (hiding the button in sub-groups), conditi
 
 ```
 <QueryBuilder
+
   fields={fields}
+
   query={query}
+
   onQueryChange={setQuery}
+
   controlElements={{
+
     addGroupAction: props => (props.level === 0 ? <ActionElement {...props} /> : null),
+
   }}
+
 />
 ```
 
@@ -50,7 +66,9 @@ The CSS equivalent uses descendant selectors:
 
 ```
 .ruleGroup .ruleGroup .ruleGroup-addGroup {
+
   display: none;
+
 }
 ```
 
@@ -74,9 +92,14 @@ This approach alone may confuse users since the "+ Group" button appears clickab
 
 ```
 <QueryBuilder
+
   fields={fields}
+
   query={query}
+
   onQueryChange={setQuery}
+
   onAddGroup={() => false}
+
 />
 ```

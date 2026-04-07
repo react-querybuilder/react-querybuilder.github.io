@@ -27,7 +27,9 @@ See the [test suite](https://github.com/react-querybuilder/react-querybuilder/bl
 
 ```
 function defaultValidator(query: RuleGroupTypeAny): {
+
   [id: string]: { valid: boolean; reasons?: string[] };
+
 };
 ```
 
@@ -60,7 +62,9 @@ function findID(id: string, query: RuleGroupTypeAny): RuleType | RuleGroupTypeAn
 
 ```
 function convertQuery(query: RuleGroupType): RuleGroupTypeIC;
+
 // OR
+
 function convertQuery(query: RuleGroupTypeIC): RuleGroupType;
 ```
 
@@ -84,23 +88,41 @@ AddOptions
 
 ```
 export interface AddOptions {
+
   /**
+
    * If the query extends `RuleGroupTypeIC` (i.e. the query has independent
+
    * combinators), then the first combinator in this list will be inserted
+
    * before the new rule/group if the parent group is not empty. This option
+
    * is overridden by `combinatorPreceding`.
+
    */
+
   combinators?: OptionList;
+
   /**
+
    * If the query extends `RuleGroupTypeIC` (i.e. the query has independent
+
    * combinators), then this combinator will be inserted before the new rule/group
+
    * if the parent group is not empty. This option will supersede `combinators`.
+
    */
+
   combinatorPreceding?: string;
+
   /**
+
    * ID generator.
+
    */
+
   idGenerator?: () => string;
+
 }
 ```
 
@@ -122,33 +144,61 @@ UpdateOptions
 
 ```
 export interface UpdateOptions {
+
   /**
+
    * When updating the `field` of a rule, the rule's `operator`, `value`, and `valueSource`
+
    * will be reset to their respective defaults. Defaults to `true`.
+
    */
+
   resetOnFieldChange?: boolean;
+
   /**
+
    * When updating the `operator` of a rule, the rule's `value` and `valueSource`
+
    * will be reset to their respective defaults. Defaults to `false`.
+
    */
+
   resetOnOperatorChange?: boolean;
+
   /**
+
    * Determines the default operator name for a given field.
+
    */
+
   getRuleDefaultOperator?: (field: string) => string;
+
   /**
+
    * Determines the valid value sources for a given field and operator.
+
    */
+
   getValueSources?: (field: string, operator: string) => ValueSources | ValueSourceFlexibleOptions;
+
   /**
+
    * Gets the default value for a given rule, in case the value needs to be reset.
+
    */
+
   // oxlint-disable-next-line typescript/no-explicit-any
+
   getRuleDefaultValue?: (rule: RuleType) => any;
+
   /**
+
    * Determines the valid match modes for a given field.
+
    */
+
   getMatchModes?: (field: string) => MatchModeOptions;
+
 }
 ```
 
@@ -164,20 +214,35 @@ MoveOptions
 
 ```
 export interface MoveOptions {
+
   /**
+
    * When `true`, the source rule/group will not be removed from its original path.
+
    */
+
   clone?: boolean;
+
   /**
+
    * If the query extends `RuleGroupTypeIC` (i.e. the query is using independent
+
    * combinators), then the first combinator in this list will be inserted before
+
    * the rule/group if necessary.
+
    */
+
   combinators?: OptionList;
+
   /**
+
    * ID generator.
+
    */
+
   idGenerator?: () => string;
+
 }
 ```
 
@@ -193,37 +258,69 @@ InsertOptions
 
 ```
 export interface InsertOptions {
+
   /**
+
    * If the query extends `RuleGroupTypeIC` (i.e. the query has independent
+
    * combinators), then the first combinator in this list will be inserted
+
    * before the new rule/group if the parent group is not empty. This option
+
    * is overridden by `combinatorPreceding`.
+
    */
+
   combinators?: OptionList;
+
   /**
+
    * If the query extends `RuleGroupTypeIC` (i.e. the query has independent
+
    * combinators), then this combinator will be inserted before the new rule/group
+
    * if the parent group is not empty and the new rule/group is not the first in the
+
    * group (`path.at(-1) > 0`). This option will supersede `combinators`.
+
    */
+
   combinatorPreceding?: string;
+
   /**
+
    * If the query extends `RuleGroupTypeIC` (i.e. the query has independent
+
    * combinators), then this combinator will be inserted after the new rule/group
+
    * if the parent group is not empty and the new rule/group is the first in the
+
    * group (`path.at(-1) === 0`). This option will supersede `combinators`.
+
    */
+
   combinatorSucceeding?: string;
+
   /**
+
    * ID generator.
+
    *
+
    * @default generateID
+
    */
+
   idGenerator?: () => string;
+
   /**
+
    * When `true`, the new rule/group will replace the rule/group at `path`.
+
    */
+
   replace?: boolean;
+
 }
 ```
 
@@ -239,20 +336,35 @@ GroupOptions
 
 ```
 export interface GroupOptions {
+
   /**
+
    * When `true`, the source rule/group will not be removed from its original path.
+
    */
+
   clone?: boolean;
+
   /**
+
    * If the query extends `RuleGroupTypeIC` (i.e. the query is using independent
+
    * combinators), then the first combinator in this list will be inserted between
+
    * the two rules/groups.
+
    */
+
   combinators?: OptionList;
+
   /**
+
    * ID generator.
+
    */
+
   idGenerator?: () => string;
+
 }
 ```
 
@@ -278,21 +390,37 @@ HTML `<input>` controls store values as strings (even for `type="number"`), but 
 
 ```
 const query: RuleGroupType = {
+
   combinator: 'and',
+
   not: false,
+
   rules: [
+
     { field: 'digits', operator: '=', value: '20' },
+
     { field: 'age', operator: 'between', value: '26, 52' },
+
     { field: 'lastName', operator: '=', value: 'Vai' },
+
   ],
+
 };
 
+
+
 // Default configuration - all values are strings:
+
 formatQuery(query, { format: 'sql' });
+
 // "(digits = '20' and age between '26' and '52' and lastName = 'Vai')"
 
+
+
 // `parseNumbers: true` - numeric strings converted to actual numbers:
+
 formatQuery(query, { format: 'sql', parseNumbers: true });
+
 // "(digits = 20 and age between 26 and 52 and lastName = 'Vai')"
 ```
 
@@ -304,18 +432,31 @@ Each of the following expressions evaluates to `true`:
 
 ```
 // Everything after the '3' is ignored by `parseFloat`
+
 parseFloat('000123abcdef') === 123;
 
+
+
 // `value` contains non-numeric characters, so remains as-is
+
 formatQuery(
+
   { rules: [{ field: 'f', operator: '=', value: '000123abcdef' }] },
+
   { format: 'sql', parseNumbers: true }
+
 ) === "(f = '000123abcdef')";
 
+
+
 // `value` is wholly numeric (after trimming whitespace) so it gets converted to a number
+
 formatQuery(
+
   { rules: [{ field: 'f', operator: '=', value: '  000123  ' }] },
+
   { format: 'sql', parseNumbers: true }
+
 ) === '(f = 123)';
 ```
 
