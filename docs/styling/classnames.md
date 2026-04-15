@@ -132,6 +132,10 @@ export const standardClassnames = {
 
   dndDropNotAllowed: 'dndDropNotAllowed',
 
+  dndPreviewPosition: 'dndPreviewPosition',
+
+  dndHidden: 'dndHidden',
+
   dragHandle: 'queryBuilder-dragHandle',
 
   disabled: 'queryBuilder-disabled',
@@ -161,4 +165,4 @@ export const standardClassnames = {
 } as const;
 ```
 
-> *Source: [/packages/core/src/defaults.ts#L275-L316](https://github.com/react-querybuilder/react-querybuilder/blob/main/packages/core/src/defaults.ts#L275-L316)*
+> *Source: [/packages/core/src/defaults.ts#L275-L318](https://github.com/react-querybuilder/react-querybuilder/blob/main/packages/core/src/defaults.ts#L275-L318)*
