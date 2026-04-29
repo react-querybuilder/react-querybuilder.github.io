@@ -607,6 +607,52 @@ Output (string):
 First Name is 'Steve', and Last Name is "Vai", and Age is between 26 and 52
 ```
 
+### Cypher[​](#cypher "Direct link to Cypher")
+
+Generate [Cypher](https://neo4j.com/docs/cypher-manual/) `WHERE` clause conditions using the "cypher" format. This format is also available as "gql" since [GQL](https://www.iso.org/standard/76120.html) uses the same expression syntax.
+
+```
+formatQuery(query, 'cypher');
+
+// or
+
+formatQuery(query, 'gql');
+```
+
+Output (string):
+
+```
+n.firstName = 'Steve' AND n.lastName = 'Vai'
+```
+
+### SPARQL[​](#sparql "Direct link to SPARQL")
+
+Generate [SPARQL](https://www.w3.org/TR/sparql11-query/) `FILTER` expressions using the "sparql" format:
+
+```
+formatQuery(query, 'sparql');
+```
+
+Output (string):
+
+```
+?firstName = "Steve" && ?lastName = "Vai"
+```
+
+### Gremlin[​](#gremlin "Direct link to Gremlin")
+
+Generate [Apache TinkerPop Gremlin](https://tinkerpop.apache.org/) `.has()` steps using the "gremlin" format:
+
+```
+formatQuery(query, 'gremlin');
+```
+
+Output (string):
+
+```
+.has('firstName', 'Steve').has('lastName', 'Vai')
+```
+
 ### Diagnostics[​](#diagnostics "Direct link to Diagnostics")
 
 Generate a diagnostics result object using the "diagnostics" format. The output includes an annotated copy of the query tree, a flat diagnostics array, aggregate statistics, and a per-field summary.

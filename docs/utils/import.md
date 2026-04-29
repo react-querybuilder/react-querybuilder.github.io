@@ -15,31 +15,41 @@ Since `parse*` functions are used less frequently and rarely together, they were
 ```
  // Version 6 only
 
--import { parseCEL } from "react-querybuilder"
+-import { parseCEL } from '@react-querybuilder/core'
 
--import { parseJsonLogic } from "react-querybuilder"
+-import { parseJsonLogic } from '@react-querybuilder/core'
 
--import { parseMongoDB } from "react-querybuilder"
+-import { parseMongoDB } from '@react-querybuilder/core'
 
--import { parseSQL } from "react-querybuilder"
+-import { parseSQL } from '@react-querybuilder/core'
 
 
 
  // Version 6 or 7
 
-+import { parseCEL } from "react-querybuilder/parseCEL"
++import { parseCEL } from '@react-querybuilder/core/parseCEL'
 
-+import { parseJsonLogic } from "react-querybuilder/parseJsonLogic"
++import { parseJsonLogic } from '@react-querybuilder/core/parseJsonLogic'
 
-+import { parseMongoDB } from "react-querybuilder/parseMongoDB"
++import { parseMongoDB } from '@react-querybuilder/core/parseMongoDB'
 
-+import { parseSQL } from "react-querybuilder/parseSQL"
++import { parseSQL } from '@react-querybuilder/core/parseSQL'
 
  // (New in version 7)
 
-+import { parseSpEL } from "react-querybuilder/parseSpEL"
++import { parseSpEL } from '@react-querybuilder/core/parseSpEL'
 
-+import { parseJSONata } from "react-querybuilder/parseJSONata"
++import { parseJSONata } from '@react-querybuilder/core/parseJSONata'
+
+ // (New in version 8)
+
++import { parseCypher } from '@react-querybuilder/core/parseCypher'
+
++import { parseGQL } from '@react-querybuilder/core/parseGQL'
+
++import { parseSPARQL } from '@react-querybuilder/core/parseSPARQL'
+
++import { parseGremlin } from '@react-querybuilder/core/parseGremlin'
 ```
 
 These functions were available as separate exports in version 6 (along with [`formatQuery`](/docs/utils/export.md) and [`transformQuery`](/docs/utils/misc.md#transformquery)) but could also be imported from `"react-querybuilder"`. In version 7, they're *only* available as separate exports. (This reduced the main bundle size by almost 50%.)
@@ -47,7 +57,7 @@ These functions were available as separate exports in version 6 (along with [`fo
 ## SQL[​](#sql "Direct link to SQL")
 
 ```
-import { parseSQL } from 'react-querybuilder/parseSQL';
+import { parseSQL } from '@react-querybuilder/core/parseSQL';
 
 
 
@@ -138,7 +148,9 @@ tip
 Since v5.0, `parseSQL` detects `XOR` operators and converts them to rule groups with the "xor" combinator. Since "xor" isn't in `defaultCombinators`, specify `defaultCombinatorsExtended` in your `<QueryBuilder />` props if the original SQL might contain `XOR` clauses.
 
 ```
-import { defaultCombinatorsExtended, parseSQL, QueryBuilder } from 'react-querybuilder';
+import { parseSQL } from '@react-querybuilder/core/parseSQL';
+
+import { defaultCombinatorsExtended, QueryBuilder } from 'react-querybuilder';
 
 
 
@@ -166,7 +178,7 @@ const App = () => {
 ## MongoDB[​](#mongodb "Direct link to MongoDB")
 
 ```
-import { parseMongoDB } from 'react-querybuilder/parseMongoDB';
+import { parseMongoDB } from '@react-querybuilder/core/parseMongoDB';
 
 
 
@@ -294,7 +306,7 @@ Valid MongoDB query strings may not strictly conform to JSON. To handle extended
 ## JsonLogic[​](#jsonlogic "Direct link to JsonLogic")
 
 ```
-import { parseJsonLogic } from 'react-querybuilder/parseJsonLogic';
+import { parseJsonLogic } from '@react-querybuilder/core/parseJsonLogic';
 
 
 
@@ -420,7 +432,7 @@ Output (`RuleGroupType`):
 ## Spring Expression Language (SpEL)[​](#spring-expression-language-spel "Direct link to Spring Expression Language (SpEL)")
 
 ```
-import { parseSpEL } from 'react-querybuilder/parseSpEL';
+import { parseSpEL } from '@react-querybuilder/core/parseSpEL';
 
 
 
@@ -474,7 +486,7 @@ Output (`RuleGroupType`):
 ## Common Expression Language (CEL)[​](#common-expression-language-cel "Direct link to Common Expression Language (CEL)")
 
 ```
-import { parseCEL } from 'react-querybuilder/parseCEL';
+import { parseCEL } from '@react-querybuilder/core/parseCEL';
 
 
 
@@ -576,7 +588,7 @@ To assist with processing the AST fragments, all types, type guard functions, an
 ## JSONata[​](#jsonata "Direct link to JSONata")
 
 ```
-import { parseJSONata } from 'react-querybuilder/parseJSONata';
+import { parseJSONata } from '@react-querybuilder/core/parseJSONata';
 
 
 
@@ -628,6 +640,154 @@ Output (`RuleGroupType`):
 ```
 
 JSONata lists are always translated to arrays. The [`listsAsArrays` option](#lists-as-arrays) is ignored (effectively always `true`).
+
+## Cypher[​](#cypher "Direct link to Cypher")
+
+```
+import { parseCypher } from '@react-querybuilder/core/parseCypher';
+
+
+
+function parseCypher(cypherQuery: string, options?: ParseCypherOptions): RuleGroupTypeAny;
+```
+
+`parseCypher` accepts a [Cypher](https://neo4j.com/docs/cypher-manual/) query string, a `WHERE` clause, or a bare boolean expression. MATCH and RETURN clauses are consumed but discarded — only WHERE conditions are returned.
+
+A `parseGQL` function is also exported since [GQL](https://www.iso.org/standard/76120.html) uses the same expression syntax.
+
+note
+
+`parseCypher` requires the `chevrotain` package (optional peer dependency).
+
+### Usage[​](#usage-6 "Direct link to Usage")
+
+```
+// Full query — extracts WHERE conditions only
+
+parseCypher('MATCH (n:Person) WHERE n.age > 30 AND n.name CONTAINS "Alice" RETURN n');
+
+
+
+// WHERE clause only
+
+parseCypher('WHERE n.age > 30');
+
+
+
+// Bare expression
+
+parseCypher('n.age > 30 AND n.name CONTAINS "Alice"');
+```
+
+Output (`RuleGroupType`):
+
+```
+{
+
+  "combinator": "and",
+
+  "rules": [
+
+    { "field": "n.age", "operator": ">", "value": 30 },
+
+    { "field": "n.name", "operator": "contains", "value": "Alice" }
+
+  ]
+
+}
+```
+
+## SPARQL[​](#sparql "Direct link to SPARQL")
+
+```
+import { parseSPARQL } from '@react-querybuilder/core/parseSPARQL';
+
+
+
+function parseSPARQL(sparqlQuery: string, options?: ParseSPARQLOptions): RuleGroupTypeAny;
+```
+
+`parseSPARQL` accepts a [SPARQL](https://www.w3.org/TR/sparql11-query/) query string or a bare `FILTER` expression. Triple patterns (BGPs) are consumed but discarded — only FILTER conditions are returned.
+
+note
+
+`parseSPARQL` requires the `@traqula/parser-sparql-1-2` package (optional peer dependency).
+
+### Usage[​](#usage-7 "Direct link to Usage")
+
+```
+// Full query — extracts FILTER conditions only
+
+parseSPARQL('SELECT ?x WHERE { ?x foaf:name ?name . FILTER(?age > 30) }');
+
+
+
+// Bare FILTER expression (auto-wrapped in a stub query)
+
+parseSPARQL('?age > 30 && ?name != "Alice"');
+```
+
+Output (`RuleGroupType`):
+
+```
+{
+
+  "combinator": "and",
+
+  "rules": [
+
+    { "field": "?age", "operator": ">", "value": 30 },
+
+    { "field": "?name", "operator": "!=", "value": "Alice" }
+
+  ]
+
+}
+```
+
+## Gremlin[​](#gremlin "Direct link to Gremlin")
+
+```
+import { parseGremlin } from '@react-querybuilder/core/parseGremlin';
+
+
+
+function parseGremlin(gremlinQuery: string, options?: ParseGremlinOptions): RuleGroupTypeAny;
+```
+
+`parseGremlin` accepts a [Gremlin](https://tinkerpop.apache.org/) traversal string or a chain of `.has()` steps. Pattern steps (`.hasLabel()`, `.out()`, `.in()`, `.as()`) are consumed but discarded — only `.has()` filter predicates are returned.
+
+### Usage[​](#usage-8 "Direct link to Usage")
+
+```
+// Full traversal — extracts .has() conditions only
+
+parseGremlin("g.V().hasLabel('Person').has('age', gt(30)).has('name', 'Alice')");
+
+
+
+// Bare .has() chain
+
+parseGremlin(".has('age', gt(30)).has('name', 'Alice')");
+```
+
+Output (`RuleGroupType`):
+
+```
+{
+
+  "combinator": "and",
+
+  "rules": [
+
+    { "field": "age", "operator": ">", "value": 30 },
+
+    { "field": "name", "operator": "=", "value": "Alice" }
+
+  ]
+
+}
+```
 
 ## Configuration[​](#configuration "Direct link to Configuration")
 
