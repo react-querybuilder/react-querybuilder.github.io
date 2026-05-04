@@ -493,7 +493,7 @@ import { parseCEL } from '@react-querybuilder/core/parseCEL';
 function parseCEL(celQuery: string, options?: ParseCELOptions): RuleGroupTypeAny;
 ```
 
-`parseCEL` accepts a [CEL](https://github.com/google/cel-spec) string.
+`parseCEL` accepts a [CEL](https://cel.dev) string.
 
 Click the "Import CEL" button in [the demo](/demo) to try it out.
 

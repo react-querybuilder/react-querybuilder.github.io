@@ -137,7 +137,7 @@ export default () => {
 
 ## Exporting queries[​](#exporting-queries "Direct link to Exporting queries")
 
-Use the `formatQuery` function to convert query objects to formats like [SQL](https://en.wikipedia.org/wiki/SQL), [MongoDB](https://www.mongodb.com/), and [CEL](https://github.com/google/cel-spec) ([full documentation](/docs/utils/export.md)). The example below shows real-time SQL generation—modify the query and watch the SQL update automatically.
+Use the `formatQuery` function to convert query objects to formats like [SQL](https://en.wikipedia.org/wiki/SQL), [MongoDB](https://www.mongodb.com/), and [CEL](https://cel.dev) ([full documentation](/docs/utils/export.md)). The example below shows real-time SQL generation—modify the query and watch the SQL update automatically.
 
 ```
 import { useState } from 'react';

@@ -443,7 +443,7 @@ Output (JSON object):
 
 ### Common Expression Language[​](#common-expression-language "Direct link to Common Expression Language")
 
-For Common Expression Language (CEL) output, use the "cel" format.
+For [Common Expression Language (CEL)](https://cel.dev) output, use the "cel" format.
 
 ```
 formatQuery(query, 'cel');
@@ -457,7 +457,7 @@ firstName = "Steve" && lastName = "Vai"
 
 ### Spring Expression Language[​](#spring-expression-language "Direct link to Spring Expression Language")
 
-For Spring Expression Language (SpEL) output, use the "spel" format.
+For [Spring Expression Language (SpEL)](https://docs.spring.io/spring-framework/reference/core/expressions.html) output, use the "spel" format.
 
 ```
 formatQuery(query, 'spel');
@@ -1413,7 +1413,7 @@ formatQuery(query, { format: 'sql', preset: 'mssql' });
 | `'parameterized_named'` | `'(1 = 1)'`                   |
 | `'ldap'`                | `''`                          |
 | `'mongodb'`             | `'{"$and":[{"$expr":true}]}'` |
-| `'mongodb_query'`       | `'{"$and":[{"$expr":true}]}'` |
+| `'mongodb_query'`       | `{"$and":[{"$expr":true}]}`   |
 | `'natural_language'`    | `'1 is 1'`                    |
 | `'cel'`                 | `'1 == 1'`                    |
 | `'spel'`                | `'1 == 1'`                    |
