@@ -6,6 +6,12 @@ These examples showcase React Query Builder's extensive customization capabiliti
 
 These CSS rules push "clone", "lock", or "remove" buttons to the right edge, creating a justified appearance. [The demo has an option to enable this technique](/demo#justifiedLayout=true).
 
+tip
+
+These styles are now part of the default stylesheet.
+
+Apply them by adding `queryBuilder-justified` to the `className` prop on your `<QueryBuilder />` component or an ancestor element.
+
 CSS
 
 ```
