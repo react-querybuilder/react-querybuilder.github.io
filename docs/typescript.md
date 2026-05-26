@@ -192,15 +192,33 @@ type ExportFormat =
 
   | 'jsonlogic'
 
-  | 'jsonata'
-
-  | 'ldap'
+  | 'spel'
 
   | 'elasticsearch'
 
-  | 'spel'
+  | 'jsonata'
 
-  | 'natural_language';
+  | 'natural_language'
+
+  | 'ldap'
+
+  | 'drizzle'
+
+  | 'tanstack_db'
+
+  | 'prisma'
+
+  | 'sequelize'
+
+  | 'cypher'
+
+  | 'gql'
+
+  | 'sparql'
+
+  | 'gremlin'
+
+  | 'diagnostics';
 
 
 

@@ -25,7 +25,7 @@ function formatQuery(
   * Parameterized with anonymous parameters
   * Parameterized with named parameters
 
-* ORM query objects for Drizzle, Prisma, and Sequelize
+* ORM query objects for Drizzle, Prisma, Sequelize, and TanStack DB
 
 * MongoDB query object
 
@@ -422,6 +422,110 @@ const where = formatQuery(query, {
 
 const users = await Users.findAll({ where });
 ```
+
+#### TanStack DB[​](#tanstack-db "Direct link to TanStack DB")
+
+Generate a `WhereCallback` for [TanStack DB](https://tanstack.com/db)'s `.where()` method using the "tanstack\_db" format. The processor does not import any executable code from `@tanstack/db` — operators are passed in through the `context` option.
+
+Pass the full `@tanstack/db` module or individual operators as `tanStackDbOperators`:
+
+```
+import * as tsdb from '@tanstack/db';
+
+
+
+const where = formatQuery(query, {
+
+  format: 'tanstack_db',
+
+  context: { tanStackDbOperators: tsdb },
+
+});
+
+
+
+const results = useLiveQuery(q => q.from({ users: usersCollection }).where(where));
+```
+
+Or with cherry-picked operators:
+
+```
+import { eq, gt, gte, lt, lte, like, inArray, isNull, not, and, or } from '@tanstack/db';
+
+
+
+const where = formatQuery(query, {
+
+  format: 'tanstack_db',
+
+  context: {
+
+    tanStackDbOperators: { eq, gt, gte, lt, lte, like, inArray, isNull, not, and, or },
+
+  },
+
+});
+```
+
+tip
+
+TanStack DB does not expose `ne`, `between`, `notBetween`, `notInArray`, `notLike`, or `isNotNull` — these are composed automatically using `not(...)`. For example, `!=` becomes `not(eq(...))` and `between` becomes `and(gte(...), lte(...))`.
+
+##### Joins (multi-collection queries)[​](#joins-multi-collection-queries "Direct link to Joins (multi-collection queries)")
+
+When querying across joined collections, fields from non-primary collections must use dotted notation (`"alias.fieldName"`) to target the correct ref. Bare (unprefixed) fields always resolve to the primary collection (the first key in the `refs` object).
+
+```
+import * as tsdb from '@tanstack/db';
+
+
+
+const query = {
+
+  combinator: 'and',
+
+  rules: [
+
+    // Bare field → resolves to the primary collection (su)
+
+    { field: 'firstName', operator: '=', value: 'Bruce' },
+
+    // Dotted field → resolves to the nicknames collection (nn)
+
+    { field: 'nn.nickname', operator: 'contains', value: 'Dark' },
+
+  ],
+
+};
+
+
+
+const where = formatQuery(query, {
+
+  format: 'tanstack_db',
+
+  context: { tanStackDbOperators: tsdb },
+
+});
+
+
+
+const results = useLiveQuery(q =>
+
+  q
+
+    .from({ su: superUsersCollection })
+
+    .leftJoin({ nn: nicknamesCollection }, refs => eq(refs.su.id, refs.nn.userId))
+
+    .where(where)
+
+);
+```
+
+caution
+
+Bare fields cannot be disambiguated across collections at export time because TanStack DB refs are proxies that accept any property name. Always use dotted notation for fields on joined (non-primary) collections.
 
 ### MongoDB[​](#mongodb "Direct link to MongoDB")
 
@@ -889,6 +993,7 @@ The default rule processors for each format are available as exports from `react
 * `defaultRuleProcessorSpEL`
 * `defaultRuleProcessorSQL`
 * `defaultRuleProcessorParameterized`
+* `defaultRuleProcessorTanStackDB`
 
 Refer to the source code to determine the appropriate return type for custom rule processors.
 
@@ -1411,6 +1516,9 @@ formatQuery(query, { format: 'sql', preset: 'mssql' });
 | `'sql'`                 | `'(1 = 1)'`                   |
 | `'parameterized'`       | `'(1 = 1)'`                   |
 | `'parameterized_named'` | `'(1 = 1)'`                   |
+| `'cypher'` / `'gql'`    | `'(1 = 1)'`                   |
+| `'sparql'`              | `'1 = 1'`                     |
+| `'gremlin'`             | `''`                          |
 | `'ldap'`                | `''`                          |
 | `'mongodb'`             | `'{"$and":[{"$expr":true}]}'` |
 | `'mongodb_query'`       | `{"$and":[{"$expr":true}]}`   |
@@ -1420,6 +1528,10 @@ formatQuery(query, { format: 'sql', preset: 'mssql' });
 | `'jsonata'`             | `'(1 = 1)'`                   |
 | `'jsonlogic'`           | `false`                       |
 | `'elasticsearch'`       | `{}`                          |
+| `'drizzle'`             | `undefined`                   |
+| `'prisma'`              | `{}`                          |
+| `'sequelize'`           | `{}`                          |
+| `'tanstack_db'`         | `eq(1, 1)`                    |
 
 ### Value sources[​](#value-sources "Direct link to Value sources")
 
@@ -1807,6 +1919,7 @@ The default rule group processors for each format are available as exports from 
 * `defaultRuleGroupProcessorSpEL`
 * `defaultRuleGroupProcessorSQL`
 * `defaultRuleGroupProcessorParameterized`
+* `defaultRuleGroupProcessorTanStackDB`
 
 Use the appropriate default rule group processor as a fallback so your custom processor doesn't need to cover all cases:
 
