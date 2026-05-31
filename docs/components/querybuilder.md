@@ -469,7 +469,7 @@ export const defaultTranslations: BaseTranslationsFull = {
 
   matchMode: { title: 'Match mode' } as const,
 
-  matchThreshold: { title: 'Match threshold' } as const,
+  matchThreshold: { title: 'Match threshold', placeholderName: '#' } as const,
 
   value: { title: 'Value' } as const,
 
