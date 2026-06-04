@@ -162,7 +162,9 @@ export const standardClassnames = {
 
   loading: 'queryBuilder-loading',
 
+  valueDateTimeRelative: 'rule-value-dateTimeRelative',
+
 } as const;
 ```
 
-> *Source: [/packages/core/src/defaults.ts#L275-L318](https://github.com/react-querybuilder/react-querybuilder/blob/main/packages/core/src/defaults.ts#L275-L318)*
+> *Source: [/packages/core/src/defaults.ts#L275-L319](https://github.com/react-querybuilder/react-querybuilder/blob/main/packages/core/src/defaults.ts#L275-L319)*
