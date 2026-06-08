@@ -29,9 +29,9 @@
 
 ### rules-engine
 
-This package is in an early stage of development.
+Try the interactive Rules Engine demo with a musician-themed example, including live execution against sample data.
 
-- [Rules engine](/docs/rules-engine.md): This package is in an early stage of development.
+- [Rules engine](/docs/rules-engine.md): Try the interactive Rules Engine demo with a musician-themed example, including live execution against sample data.
 
 ### Styling
 
