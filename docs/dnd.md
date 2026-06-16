@@ -136,7 +136,33 @@ const App = () => (
 );
 ```
 
-The dnd-kit adapter uses `PointerSensor` and `KeyboardSensor` by default, with a 5px activation distance to prevent accidental drags. ARIA attributes are automatically applied to drag handles for accessibility.
+The dnd-kit adapter uses `PointerSensor` and `KeyboardSensor` by default, with a 5px activation distance to prevent accidental drags. Drag-handle ARIA attributes and sensor event listeners are passed to the [drag handle](/docs/components/draghandle.md) as JSX props through a `dragHandleAttributes` object, so accessibility attributes are applied automatically.
+
+Custom drag handles
+
+The default `DragHandle` component spreads `dragHandleAttributes` for you. If you supply a [custom `dragHandle` component](/docs/components/querybuilder-controlelements.md#draghandle), it must spread `dragHandleAttributes` onto the element that receives the forwarded `ref`, otherwise the handle will not respond to drag interactions:
+
+```
+import { forwardRef } from 'react';
+
+import type { DragHandleProps } from 'react-querybuilder';
+
+
+
+const CustomDragHandle = forwardRef<HTMLSpanElement, DragHandleProps>(
+
+  ({ className, title, label, dragHandleAttributes }, dragRef) => (
+
+    <span ref={dragRef} className={className} title={title} {...dragHandleAttributes}>
+
+      {label}
+
+    </span>
+
+  )
+
+);
+```
 
 ### Using the `react-dnd` adapter[​](#using-the-react-dnd-adapter "Direct link to using-the-react-dnd-adapter")
 
@@ -260,7 +286,7 @@ const myAdapter: DndAdapter = {
 
     // Implement using your DnD library's primitives
 
-    // Must return: isDragging, dragMonitorId, isOver, dropMonitorId, dragRef, dndRef, dropEffect?, groupItems?, dropNotAllowed?
+    // Must return: isDragging, dragMonitorId, isOver, dropMonitorId, dragRef, dndRef, dragHandleAttributes?, dropEffect?, groupItems?, dropNotAllowed?
 
   },
 
@@ -270,7 +296,7 @@ const myAdapter: DndAdapter = {
 
   useRuleGroupDnD: params => {
 
-    // Must return: isDragging, dragMonitorId, isOver, dropMonitorId, previewRef, dragRef, dropRef, dropEffect?, groupItems?, dropNotAllowed?
+    // Must return: isDragging, dragMonitorId, isOver, dropMonitorId, previewRef, dragRef, dropRef, dragHandleAttributes?, dropEffect?, groupItems?, dropNotAllowed?
 
   },
 
@@ -288,6 +314,8 @@ const myAdapter: DndAdapter = {
 ```
 
 The shared logic functions `canDropOnRule`, `canDropOnRuleGroup`, `canDropOnInlineCombinator`, `buildDropResult`, and `handleDrop` are exported from `@react-querybuilder/dnd` and can be used in custom adapter implementations to ensure consistent drop validation and behavior.
+
+The optional `dragHandleAttributes` field returned by `useRuleDnD`/`useRuleGroupDnD` is spread onto the [drag handle](/docs/components/draghandle.md) as JSX props. Use it to supply drag-handle attributes and event listeners (such as ARIA attributes and pointer/keyboard sensor listeners) without imperative DOM manipulation.
 
 ## Props[​](#props "Direct link to Props")
 
