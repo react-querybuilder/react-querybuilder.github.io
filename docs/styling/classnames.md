@@ -158,6 +158,8 @@ export const standardClassnames = {
 
   justified: 'queryBuilder-justified',
 
+  responsive: 'queryBuilder-responsive',
+
   hasSubQuery: 'rule-hasSubQuery',
 
   loading: 'queryBuilder-loading',
@@ -167,4 +169,4 @@ export const standardClassnames = {
 } as const;
 ```
 
-> *Source: [/packages/core/src/defaults.ts#L275-L319](https://github.com/react-querybuilder/react-querybuilder/blob/main/packages/core/src/defaults.ts#L275-L319)*
+> *Source: [/packages/core/src/defaults.ts#L275-L320](https://github.com/react-querybuilder/react-querybuilder/blob/main/packages/core/src/defaults.ts#L275-L320)*

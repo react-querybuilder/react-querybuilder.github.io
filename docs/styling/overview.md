@@ -216,6 +216,34 @@ Last name (lastName)=Vai⨯
 
 Last name (lastName)=Vaughan⨯
 
+## Responsive layout[​](#responsive-layout "Direct link to Responsive layout")
+
+For a layout that adapts to narrow containers (e.g. mobile), add the `queryBuilder-responsive` class using the [`controlClassnames` prop](/docs/components/querybuilder.md#controlclassnames) or to any ancestor element.
+
+Responsive layout styles augment the default styles so that rule and group header rows wrap onto multiple lines when they run out of horizontal space instead of overflowing. No media or container queries are involved, so the layout reflows based on the actual available width—even for deeply nested groups.
+
+These styles are intentionally minimal and only lightly opinionated; think of them as a convenient starting point for responsive behavior rather than a canonical or prescribed approach. Override or replace them freely to suit your design.
+
+```
+<QueryBuilder
+
+  controlClassnames={{ queryBuilder: 'queryBuilder-responsive' }}
+
+/>
+```
+
+https\://example.com
+
+AND (and)+ Rule+ Group
+
+First name (firstName)begins with (beginsWith)Stev⨯
+
+OR (or)+ Rule+ Group⨯
+
+Last name (lastName)=Vai⨯
+
+Last name (lastName)=Vaughan⨯
+
 ## Drag-and-drop[​](#drag-and-drop "Direct link to Drag-and-drop")
 
 When [drag-and-drop is enabled](/docs/dnd.md), these variables control styles for dragged and hovered elements:
