@@ -27,6 +27,12 @@
 - [ValueEditor](/docs/components/valueeditor.md): Dynamic editor component
 - [ValueSelector](/docs/components/valueselector.md): Versatile selector component
 
+### expr
+
+The @react-querybuilder/expr package augments React Query Builder with arithmetic and function expression support. .
+
+- [Expressions](/docs/expr.md): The @react-querybuilder/expr package augments React Query Builder with arithmetic and function expression support. .
+
 ### rules-engine
 
 Try the interactive Rules Engine demo with a musician-themed example, including live execution against sample data.

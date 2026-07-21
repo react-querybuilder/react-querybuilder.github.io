@@ -140,6 +140,22 @@ Removes a rule or group (and the preceding independent combinator if one exists)
 
 Updates a property of a rule or group, or an independent combinator, at the specified `path` or with the given `id`.
 
+Multiple properties can be updated at once by passing either a property-to-value map or parallel arrays of property names and values (note that `pathOrID` shifts to the third argument for the map form):
+
+`(query: RuleGroupTypeAny, props: UpdateValueMap, pathOrID: Path | string, options: UpdateOptions) => RuleGroupTypeAny`
+
+`(query: RuleGroupTypeAny, props: string[], values: any[], pathOrID: Path | string, options: UpdateOptions) => RuleGroupTypeAny`
+
+```
+// Equivalent ways to set `valueSource` and `value` in a single call:
+
+update(query, { valueSource: 'field', value: 'otherField' }, rulePath);
+
+update(query, ['valueSource', 'value'], ['field', 'otherField'], rulePath);
+```
+
+Regardless of the order in which properties are listed, `field`, `operator`, and `valueSource` are applied before `value`. This ensures an explicitly-provided `value` is never reset by a change to one of those properties (e.g. updating `field` normally resets `value`).
+
 UpdateOptions
 
 ```
@@ -246,7 +262,7 @@ export interface MoveOptions {
 }
 ```
 
-> *Source: [/packages/core/src/utils/queryTools.ts#L420-L435](https://github.com/react-querybuilder/react-querybuilder/blob/main/packages/core/src/utils/queryTools.ts#L420-L435)*
+> *Source: [/packages/core/src/utils/queryTools.ts#L542-L557](https://github.com/react-querybuilder/react-querybuilder/blob/main/packages/core/src/utils/queryTools.ts#L542-L557)*
 
 ### `insert`[​](#insert "Direct link to insert")
 
@@ -324,7 +340,7 @@ export interface InsertOptions {
 }
 ```
 
-> *Source: [/packages/core/src/utils/queryTools.ts#L581-L613](https://github.com/react-querybuilder/react-querybuilder/blob/main/packages/core/src/utils/queryTools.ts#L581-L613)*
+> *Source: [/packages/core/src/utils/queryTools.ts#L703-L735](https://github.com/react-querybuilder/react-querybuilder/blob/main/packages/core/src/utils/queryTools.ts#L703-L735)*
 
 ### `group`[​](#group "Direct link to group")
 
@@ -368,7 +384,7 @@ export interface GroupOptions {
 }
 ```
 
-> *Source: [/packages/core/src/utils/queryTools.ts#L710-L725](https://github.com/react-querybuilder/react-querybuilder/blob/main/packages/core/src/utils/queryTools.ts#L710-L725)*
+> *Source: [/packages/core/src/utils/queryTools.ts#L832-L847](https://github.com/react-querybuilder/react-querybuilder/blob/main/packages/core/src/utils/queryTools.ts#L832-L847)*
 
 ## Number parsing[​](#number-parsing "Direct link to Number parsing")
 
