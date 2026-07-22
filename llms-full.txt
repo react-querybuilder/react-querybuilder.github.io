@@ -305,6 +305,7 @@ See each component package in action by selecting the "Style library" option on 
 | [Fluent UI](https://github.com/microsoft/fluentui/) | [@react-querybuilder/fluent](https://www.npmjs.com/package/@react-querybuilder/fluent)       | [Demo](/demo/fluent)    | [CodeSandbox](/sandbox?t=fluent)    | [StackBlitz](/sandbox?p=sb\&t=fluent)    |
 | [Mantine](https://mantine.dev/)                     | [@react-querybuilder/mantine](https://www.npmjs.com/package/@react-querybuilder/mantine)     | [Demo](/demo/mantine)   | [CodeSandbox](/sandbox?t=mantine)   | [StackBlitz](/sandbox?p=sb\&t=mantine)   |
 | [MUI](https://mui.com/)                             | [@react-querybuilder/material](https://www.npmjs.com/package/@react-querybuilder/material)   | [Demo](/demo/material)  | [CodeSandbox](/sandbox?t=material)  | [StackBlitz](/sandbox?p=sb\&t=material)  |
+| [PrimeReact](https://primereact.org/)               | [@react-querybuilder/prime](https://www.npmjs.com/package/@react-querybuilder/prime)         | [Demo](/demo/prime)     | [CodeSandbox](/sandbox?t=prime)     | [StackBlitz](/sandbox?p=sb\&t=prime)     |
 | [React Native](https://reactnative.dev/)            | [@react-querybuilder/native](https://www.npmjs.com/package/@react-querybuilder/native)       | *Coming soon!*          | [CodeSandbox](/sandbox?t=native)    | [StackBlitz](/sandbox?p=sb\&t=native)    |
 | [Tremor](https://www.tremor.so/)                    | [@react-querybuilder/tremor](https://www.npmjs.com/package/@react-querybuilder/tremor)       | [Demo](/demo/tremor)    | [CodeSandbox](/sandbox?t=tremor)    | [StackBlitz](/sandbox?p=sb\&t=tremor)    |
 
@@ -353,6 +354,7 @@ Each compatibility package exports its own context provider, except `@react-quer
 | `@react-querybuilder/fluent`    | `QueryBuilderFluent`    |
 | `@react-querybuilder/mantine`   | `QueryBuilderMantine`   |
 | `@react-querybuilder/material`  | `QueryBuilderMaterial`  |
+| `@react-querybuilder/prime`     | `QueryBuilderPrime`     |
 | `@react-querybuilder/tremor`    | `QueryBuilderTremor`    |
 
 tip
@@ -952,7 +954,7 @@ export const defaultCombinators: DefaultCombinators = [
 ];
 ```
 
-> *Source: [/packages/core/src/defaults.ts#L232-L235](https://github.com/react-querybuilder/react-querybuilder/blob/main/packages/core/src/defaults.ts#L232-L235)*
+> *Source: [/packages/core/src/defaults.ts#L281-L284](https://github.com/react-querybuilder/react-querybuilder/blob/main/packages/core/src/defaults.ts#L281-L284)*
 
 For more information about option list props like `combinators`, see [Working with option lists](/docs/tips/option-lists.md).
 
@@ -1064,11 +1066,19 @@ Returns the [`ValueEditor`](/docs/components/valueeditor.md) type for the given 
 
 `(field: string, operator: string, misc: { fieldData: Field }) => ValueSources | ValueSourceFullOptions`;
 
-Returns allowed value sources for a given `field` and `operator`. Must return array with `"value"`, `"field"`, or both. Array elements can be `FlexibleOption` objects with `name`/`value` of `"value"` or `"field"`.
+Returns allowed value sources for a given `field` and `operator`. Must return array with `"value"`, `"field"`, `"parameter"`, or any combination. Array elements can be `FlexibleOption` objects with `name`/`value` of `"value"`, `"field"`, or `"parameter"`.
 
 Defaults to `() => ["value"]`. First array element becomes the initial selection.
 
 `fieldData` provides the complete `Field` object for accessing custom properties.
+
+### `parameters`[​](#parameters "Direct link to parameters")
+
+`FlexibleOptionList<FullOption>`
+
+Option list of named query parameters made available to rules whose `valueSource` is `"parameter"` (see [the `"parameter"` value source](/docs/components/valueeditor.md#the-parameter-value-source)). When provided and non-empty, the value editor renders a `<select>` of these parameter names (a multiselect for `in`/`notIn` operators); when nullish or empty, it renders a free-form text input.
+
+Specify names **without** the parameter prefix (e.g. `[{ name: 'p1', label: 'Param 1' }]`); [`formatQuery`](/docs/utils/export.md) adds the dialect-appropriate prefix.
 
 ### `getValueEditorSeparator`[​](#getvalueeditorseparator "Direct link to getvalueeditorseparator")
 
@@ -2549,6 +2559,69 @@ note
 
 The `Field#valueSources` property can also be a function that takes an operator name as its parameter and returns the required array.
 
+### The `"parameter"` value source[​](#the-parameter-value-source "Direct link to the-parameter-value-source")
+
+In addition to `"value"` and `"field"`, the `valueSource` property accepts `"parameter"`. This lets a rule compare a field against a named query parameter (a placeholder resolved at execution time) rather than a literal value or another field.
+
+To enable it, include `"parameter"` in a field's `valueSources` (or the `getValueSources` prop):
+
+```
+const fields: Field[] = [{ name: 'f1', label: 'f1', valueSources: ['value', 'parameter'] }];
+```
+
+When the rule's `valueSource` is `"parameter"`, the value editor's behavior depends on the [`parameters` prop](/docs/components/querybuilder.md#parameters):
+
+* If `parameters` is provided (a non-empty option list), the editor renders a `<select>` of the available parameter names (a multiselect when the operator is `in`/`notIn`).
+* If `parameters` is nullish or empty, the editor renders a free-form text `<input>` for entering a parameter name.
+
+```
+<QueryBuilder
+
+  fields={fields}
+
+  parameters={[
+
+    { name: 'p1', label: 'Param 1' },
+
+    { name: 'p2', label: 'Param 2' },
+
+  ]}
+
+/>
+```
+
+tip
+
+Specify parameter names **without** the parameter prefix (e.g. `p1`, not `:p1`). [`formatQuery`](/docs/utils/export.md) adds the appropriate prefix (`:`, `@`, `$`, etc.) for the target dialect. If a stored value already includes the prefix, it is left as-is.
+
+The selected parameter name is stored directly in the rule's `value`:
+
+```
+{ "field": "f1", "operator": "=", "value": "p1", "valueSource": "parameter" }
+```
+
+#### Formatting parameter rules[​](#formatting-parameter-rules "Direct link to Formatting parameter rules")
+
+[`formatQuery`](/docs/utils/export.md) understands the `"parameter"` value source across output formats:
+
+* **SQL** — the prefixed name is emitted inline (e.g. `f1 = :p1`).
+* **`parameterized`** — the name is emitted inline (positional placeholders are *not* pushed to `params`).
+* **`parameterized_named`** — the name is registered as a key in `params` (with a `null` placeholder value, to be supplied at execution time).
+* **`cel`, `spel`, `jsonlogic`** — the name is treated as an identifier/variable reference.
+* Other formats emit the name as a literal.
+
+Passing a `parameters` list to `formatQuery` also enables validation: rules referencing a name not in the list are treated as invalid and dropped (or fall back per your options).
+
+```
+formatQuery(query, {
+
+  format: 'sql',
+
+  parameters: [{ name: 'p1', label: 'Param 1' }],
+
+});
+```
+
 ### Filtering the field list[​](#filtering-the-field-list "Direct link to Filtering the field list")
 
 Not all fields are compatible with each other, so each field may provide a `comparator` property specifying which fields appear in the value editor list. When `comparator` is a string, only fields with the same value as the current field in the property matching the `comparator` string are listed.
@@ -2752,6 +2825,10 @@ formatQuery(query, {
 
 // `(birthDate < date'1950-01-01' and mathNotDate = '1950-1-1')`
 ```
+
+### Non-value sources[​](#non-value-sources "Direct link to Non-value sources")
+
+The date/time rule processors only materialize a rule's value as a date when the rule's `valueSource` is the default `"value"`. Rules using the `"field"` or `"parameter"` value source are delegated to the default rule processor for the target format, so a field or [named parameter](/docs/components/valueeditor.md#the-parameter-value-source) reference is serialized identically to core (never coerced through the date library). Likewise, `QueryBuilderDateTime`'s value editor renders the standard field/parameter selector for those sources instead of the date/time editor.
 
 ### SQL[​](#sql "Direct link to SQL")
 
@@ -3858,8 +3935,12 @@ type ExpressionNode =
 
   | { kind: 'value'; value: unknown; valueType?: string }
 
+  | { kind: 'parameter'; parameter: string }
+
   | { kind: 'func'; fn: string; args: ExpressionNode[] };
 ```
+
+A `parameter` node references a named query parameter (specified without a prefix). Each [export format](#export) serializes it consistently with the core [`"parameter"` value source](/docs/utils/export.md#named-parameters-value-source): SQL-family formats emit a prefix-adjusted bind reference (`:rate`), CEL/SpEL emit a bare identifier, and all other formats emit the name as a literal.
 
 A rule carries expressions in two places. The left-hand side lives on the dedicated `lhs` property; the right-hand side reuses the existing `value`/`valueSource` mechanism:
 
@@ -5530,6 +5611,8 @@ The following standard classnames are not labeled below. For most of them, the e
 * `.dndOver` (applied to "hovered over" element while dragging)
 * `.dndCopy` (applied to "hovered over" element while dragging and the ["copy" modifier key is pressed](/docs/dnd.md#cloning-and-grouping))
 * `.dndGroup` (applied to "hovered over" element while dragging and the ["group" modifier key is pressed](/docs/dnd.md#cloning-and-grouping))
+* `.dndPreviewPosition` (applied to elements at the preview position during [update-while-dragging](/docs/dnd.md#updatewhiledragging))
+* `.dndHidden` (applied to hide elements during [update-while-dragging](/docs/dnd.md#updatewhiledragging))
 
 A full list of standard classnames is [below](#standard-classnames).
 
@@ -5681,7 +5764,7 @@ export const standardClassnames = {
 } as const;
 ```
 
-> *Source: [/packages/core/src/defaults.ts#L275-L320](https://github.com/react-querybuilder/react-querybuilder/blob/main/packages/core/src/defaults.ts#L275-L320)*
+> *Source: [/packages/core/src/defaults.ts#L324-L369](https://github.com/react-querybuilder/react-querybuilder/blob/main/packages/core/src/defaults.ts#L324-L369)*
 
 
 ---
@@ -11612,6 +11695,30 @@ p.sql === "(firstName = $1 and lastName = $2)"
 ```
 
 Previously, [manual post-processing](/docs/tips/custom-bind-variables.md) was necessary for this effect.
+
+### Named parameters (value source)[​](#named-parameters-value-source "Direct link to Named parameters (value source)")
+
+The `parameters` option supports rules whose `valueSource` is [`"parameter"`](/docs/components/valueeditor.md#the-parameter-value-source). Provide the same option list passed to the [`parameters` prop](/docs/components/querybuilder.md#parameters) (names without a prefix):
+
+```
+formatQuery(query, {
+
+  format: 'sql',
+
+  parameters: [{ name: 'p1', label: 'Param 1' }],
+
+});
+```
+
+Behavior by format:
+
+* **`sql`** — the prefixed name is emitted inline (e.g. `f1 = :p1`).
+* **`parameterized`** — the name is emitted inline; positional placeholders are *not* pushed to `params`.
+* **`parameterized_named`** — the name is registered as a `params` key with a `null` placeholder value (respecting `paramsKeepPrefix`), to be supplied at execution time. (`null` rather than `undefined`, so the key is preserved by `JSON.stringify`.)
+* **`cel`, `spel`, `jsonlogic`** — the name is treated as an identifier/variable reference.
+* Other formats emit the name as a literal.
+
+When `parameters` is supplied, rules referencing a name not in the list are treated as invalid (dropped or handled per your validation options).
 
 ### Concatenation operator[​](#concatenation-operator "Direct link to Concatenation operator")
 

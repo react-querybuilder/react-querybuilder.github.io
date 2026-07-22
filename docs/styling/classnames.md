@@ -18,6 +18,8 @@ The following standard classnames are not labeled below. For most of them, the e
 * `.dndOver` (applied to "hovered over" element while dragging)
 * `.dndCopy` (applied to "hovered over" element while dragging and the ["copy" modifier key is pressed](/docs/dnd.md#cloning-and-grouping))
 * `.dndGroup` (applied to "hovered over" element while dragging and the ["group" modifier key is pressed](/docs/dnd.md#cloning-and-grouping))
+* `.dndPreviewPosition` (applied to elements at the preview position during [update-while-dragging](/docs/dnd.md#updatewhiledragging))
+* `.dndHidden` (applied to hide elements during [update-while-dragging](/docs/dnd.md#updatewhiledragging))
 
 A full list of standard classnames is [below](#standard-classnames).
 
@@ -169,4 +171,4 @@ export const standardClassnames = {
 } as const;
 ```
 
-> *Source: [/packages/core/src/defaults.ts#L275-L320](https://github.com/react-querybuilder/react-querybuilder/blob/main/packages/core/src/defaults.ts#L275-L320)*
+> *Source: [/packages/core/src/defaults.ts#L324-L369](https://github.com/react-querybuilder/react-querybuilder/blob/main/packages/core/src/defaults.ts#L324-L369)*

@@ -47,8 +47,12 @@ type ExpressionNode =
 
   | { kind: 'value'; value: unknown; valueType?: string }
 
+  | { kind: 'parameter'; parameter: string }
+
   | { kind: 'func'; fn: string; args: ExpressionNode[] };
 ```
+
+A `parameter` node references a named query parameter (specified without a prefix). Each [export format](#export) serializes it consistently with the core [`"parameter"` value source](/docs/utils/export.md#named-parameters-value-source): SQL-family formats emit a prefix-adjusted bind reference (`:rate`), CEL/SpEL emit a bare identifier, and all other formats emit the name as a literal.
 
 A rule carries expressions in two places. The left-hand side lives on the dedicated `lhs` property; the right-hand side reuses the existing `value`/`valueSource` mechanism:
 

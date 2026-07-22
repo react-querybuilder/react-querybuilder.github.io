@@ -1440,6 +1440,30 @@ p.sql === "(firstName = $1 and lastName = $2)"
 
 Previously, [manual post-processing](/docs/tips/custom-bind-variables.md) was necessary for this effect.
 
+### Named parameters (value source)[​](#named-parameters-value-source "Direct link to Named parameters (value source)")
+
+The `parameters` option supports rules whose `valueSource` is [`"parameter"`](/docs/components/valueeditor.md#the-parameter-value-source). Provide the same option list passed to the [`parameters` prop](/docs/components/querybuilder.md#parameters) (names without a prefix):
+
+```
+formatQuery(query, {
+
+  format: 'sql',
+
+  parameters: [{ name: 'p1', label: 'Param 1' }],
+
+});
+```
+
+Behavior by format:
+
+* **`sql`** — the prefixed name is emitted inline (e.g. `f1 = :p1`).
+* **`parameterized`** — the name is emitted inline; positional placeholders are *not* pushed to `params`.
+* **`parameterized_named`** — the name is registered as a `params` key with a `null` placeholder value (respecting `paramsKeepPrefix`), to be supplied at execution time. (`null` rather than `undefined`, so the key is preserved by `JSON.stringify`.)
+* **`cel`, `spel`, `jsonlogic`** — the name is treated as an identifier/variable reference.
+* Other formats emit the name as a literal.
+
+When `parameters` is supplied, rules referencing a name not in the list are treated as invalid (dropped or handled per your validation options).
+
 ### Concatenation operator[​](#concatenation-operator "Direct link to Concatenation operator")
 
 Most SQL database dialects use the `||` operator to concatenate strings. SQL Server uses `+`, and MySQL uses the `CONCAT` function instead.

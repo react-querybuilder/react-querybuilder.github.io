@@ -138,7 +138,7 @@ export const defaultCombinators: DefaultCombinators = [
 ];
 ```
 
-> *Source: [/packages/core/src/defaults.ts#L232-L235](https://github.com/react-querybuilder/react-querybuilder/blob/main/packages/core/src/defaults.ts#L232-L235)*
+> *Source: [/packages/core/src/defaults.ts#L281-L284](https://github.com/react-querybuilder/react-querybuilder/blob/main/packages/core/src/defaults.ts#L281-L284)*
 
 For more information about option list props like `combinators`, see [Working with option lists](/docs/tips/option-lists.md).
 
@@ -250,11 +250,19 @@ Returns the [`ValueEditor`](/docs/components/valueeditor.md) type for the given 
 
 `(field: string, operator: string, misc: { fieldData: Field }) => ValueSources | ValueSourceFullOptions`;
 
-Returns allowed value sources for a given `field` and `operator`. Must return array with `"value"`, `"field"`, or both. Array elements can be `FlexibleOption` objects with `name`/`value` of `"value"` or `"field"`.
+Returns allowed value sources for a given `field` and `operator`. Must return array with `"value"`, `"field"`, `"parameter"`, or any combination. Array elements can be `FlexibleOption` objects with `name`/`value` of `"value"`, `"field"`, or `"parameter"`.
 
 Defaults to `() => ["value"]`. First array element becomes the initial selection.
 
 `fieldData` provides the complete `Field` object for accessing custom properties.
+
+### `parameters`[​](#parameters "Direct link to parameters")
+
+`FlexibleOptionList<FullOption>`
+
+Option list of named query parameters made available to rules whose `valueSource` is `"parameter"` (see [the `"parameter"` value source](/docs/components/valueeditor.md#the-parameter-value-source)). When provided and non-empty, the value editor renders a `<select>` of these parameter names (a multiselect for `in`/`notIn` operators); when nullish or empty, it renders a free-form text input.
+
+Specify names **without** the parameter prefix (e.g. `[{ name: 'p1', label: 'Param 1' }]`); [`formatQuery`](/docs/utils/export.md) adds the dialect-appropriate prefix.
 
 ### `getValueEditorSeparator`[​](#getvalueeditorseparator "Direct link to getvalueeditorseparator")
 
