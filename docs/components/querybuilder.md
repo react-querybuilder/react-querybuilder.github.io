@@ -266,6 +266,10 @@ Specify names **without** the parameter prefix (e.g. `() => [{ name: 'p1', label
 
 `fieldData` provides the complete `Field` object for accessing custom properties.
 
+tip
+
+See the [external parameter manager](/docs/tips/parameter-manager.md) example for a working demonstration of feeding an external component's state into `getParameters`.
+
 ### `getValueEditorSeparator`[​](#getvalueeditorseparator "Direct link to getvalueeditorseparator")
 
 `(field: string, operator: string, misc: { fieldData: Field }) => ReactNode`;

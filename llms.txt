@@ -58,6 +58,7 @@ Try the interactive Rules Engine demo with a musician-themed example, including 
 - [Managing operators](/docs/tips/managing-operators.md): Which operators are allowed for which fields, and how they are labeled
 - [Maximizing rendering performance](/docs/tips/maximizing-performance.md): How to avoid common pitfalls for a smoother user experience
 - [Working with option lists](/docs/tips/option-lists.md): Managing ambiguity in option list types
+- [External parameter manager](/docs/tips/parameter-manager.md): Feed an external parameter component into a query builder
 - [Path concepts](/docs/tips/path.md): Explanation of the "path" property of rules and groups
 - [Customization showcase](/docs/tips/showcase.md): Interesting/unconventional layouts or behavior
 - [Subqueries and nested data](/docs/tips/subqueries.md): Building queries for data with nested arrays and complex structures

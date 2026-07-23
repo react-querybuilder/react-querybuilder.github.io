@@ -58,6 +58,7 @@ Try the interactive Rules Engine demo with a musician-themed example, including 
 - [Managing operators](/docs/tips/managing-operators.md): Which operators are allowed for which fields, and how they are labeled
 - [Maximizing rendering performance](/docs/tips/maximizing-performance.md): How to avoid common pitfalls for a smoother user experience
 - [Working with option lists](/docs/tips/option-lists.md): Managing ambiguity in option list types
+- [External parameter manager](/docs/tips/parameter-manager.md): Feed an external parameter component into a query builder
 - [Path concepts](/docs/tips/path.md): Explanation of the "path" property of rules and groups
 - [Customization showcase](/docs/tips/showcase.md): Interesting/unconventional layouts or behavior
 - [Subqueries and nested data](/docs/tips/subqueries.md): Building queries for data with nested arrays and complex structures
@@ -1081,6 +1082,10 @@ Returns the named query parameters made available to rules whose `valueSource` i
 Specify names **without** the parameter prefix (e.g. `() => [{ name: 'p1', label: 'Param 1' }]`); [`formatQuery`](/docs/utils/export.md) adds the dialect-appropriate prefix.
 
 `fieldData` provides the complete `Field` object for accessing custom properties.
+
+tip
+
+See the [external parameter manager](/docs/tips/parameter-manager.md) example for a working demonstration of feeding an external component's state into `getParameters`.
 
 ### `getValueEditorSeparator`[​](#getvalueeditorseparator "Direct link to getvalueeditorseparator")
 
@@ -2623,6 +2628,10 @@ formatQuery(query, {
 
 });
 ```
+
+tip
+
+The [external parameter manager](/docs/tips/parameter-manager.md) example shows how to manage a list of named parameters outside the query builder and merge their values into a `"parameterized_named"` export.
 
 ### Filtering the field list[​](#filtering-the-field-list "Direct link to Filtering the field list")
 
@@ -8879,6 +8888,163 @@ This shorthand is convenient for simple option lists but lacks the flexibility o
 
 ---
 
+# External parameter manager
+
+This example wires an external "parameter manager" component to a query builder. The manager owns a user-supplied list of parameters—each with a **name** (like `p1`), an optional **label** (like `Param 1`), and an optional **value**. Its state is passed as the [`getParameters`](/docs/components/querybuilder.md#getparameters) prop, so rules whose [`valueSource`](/docs/components/valueeditor.md#the-parameter-value-source) is `"parameter"` present the managed names in their value editors.
+
+The rendered SQL comes from the [`"parameterized_named"`](/docs/utils/export.md#named-parameters) `formatQuery` export, which registers each referenced parameter as a `params` key with a `null` placeholder. The example merges the manager's values over those placeholders, leaving `null` for parameters without a supplied value.
+
+tip
+
+Parameter names are stored **without** a prefix (e.g. `p1`, not `:p1`); `formatQuery` adds the dialect-appropriate prefix. The merge below strips any prefix from the `params` keys before matching them to the manager's entries.
+
+```
+import { useState } from 'react';
+import type { Field, RuleGroupType } from 'react-querybuilder';
+import { formatQuery, QueryBuilder } from 'react-querybuilder';
+
+interface Parameter {
+  id: string;
+  name: string;
+  label?: string;
+  value?: string;
+}
+
+const genId = () => crypto.randomUUID();
+
+const fields: Field[] = [
+  { name: 'firstName', label: 'First Name', valueSources: ['value', 'parameter'] },
+  { name: 'lastName', label: 'Last Name', valueSources: ['value', 'parameter'] },
+];
+
+const initialQuery: RuleGroupType = {
+  combinator: 'and',
+  rules: [
+    { field: 'firstName', operator: '=', value: 'p1', valueSource: 'parameter' },
+    { field: 'lastName', operator: 'beginsWith', value: 'V' },
+  ],
+};
+
+const initialParameters: Parameter[] = [
+  { id: genId(), name: 'p1', label: 'Param 1', value: 'Steve' },
+  { id: genId(), name: 'p2', label: 'Param 2' },
+];
+
+// Strip a leading param prefix (":", "@", "$", etc.) from a params key.
+const stripPrefix = (key: string) => key.replace(/^[^A-Za-z0-9_]+/, '');
+
+// The external "parameter manager" component. It owns the list of
+// parameters and reports changes up to the parent via `onChange`.
+const ParameterManager = ({
+  parameters,
+  onChange,
+}: {
+  parameters: Parameter[];
+  onChange: (parameters: Parameter[]) => void;
+}) => {
+  const update = (index: number, key: keyof Parameter, value: string) => {
+    const next = parameters.map((p, i) => (i === index ? { ...p, [key]: value } : p));
+    onChange(next);
+  };
+  const remove = (index: number) => onChange(parameters.filter((_, i) => i !== index));
+  const add = () => onChange([...parameters, { id: genId(), name: `p${parameters.length + 1}` }]);
+
+  return (
+    <div style={{ marginBottom: '1rem' }}>
+      <h4>Parameter manager</h4>
+      <table>
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Label</th>
+            <th>Value</th>
+            <th />
+          </tr>
+        </thead>
+        <tbody>
+          {parameters.map((p, i) => (
+            <tr key={p.id}>
+              <td>
+                <input
+                  value={p.name}
+                  placeholder="p1"
+                  onChange={e => update(i, 'name', e.target.value)}
+                />
+              </td>
+              <td>
+                <input
+                  value={p.label ?? ''}
+                  placeholder="Param 1"
+                  onChange={e => update(i, 'label', e.target.value)}
+                />
+              </td>
+              <td>
+                <input
+                  value={p.value ?? ''}
+                  placeholder="(no value)"
+                  onChange={e => update(i, 'value', e.target.value)}
+                />
+              </td>
+              <td>
+                <button type="button" onClick={() => remove(i)}>
+                  ×
+                </button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+      <button type="button" onClick={add}>
+        Add parameter
+      </button>
+    </div>
+  );
+};
+
+export default () => {
+  const [query, setQuery] = useState(initialQuery);
+  const [parameters, setParameters] = useState(initialParameters);
+
+  // Only expose named parameters (label falls back to the name).
+  const getParameters = () =>
+    parameters.filter(p => p.name).map(p => ({ name: p.name, label: p.label || p.name }));
+
+  // Look up a supplied value by (prefix-less) parameter name.
+  const valueByName = new Map(parameters.map(p => [p.name, p.value]));
+
+  const { sql, params } = formatQuery(query, 'parameterized_named');
+
+  // Merge the manager's values over the `null` placeholders.
+  const mergedParams = Object.fromEntries(
+    Object.keys(params).map(key => {
+      const value = valueByName.get(stripPrefix(key));
+      return [key, value ? value : null];
+    })
+  );
+
+  return (
+    <div>
+      <ParameterManager parameters={parameters} onChange={setParameters} />
+      <QueryBuilder
+        fields={fields}
+        query={query}
+        onQueryChange={setQuery}
+        getParameters={getParameters}
+      />
+      <h4>SQL</h4>
+      <pre>{sql}</pre>
+      <h4>Parameters</h4>
+      <pre>{JSON.stringify(mergedParams, null, 2)}</pre>
+    </div>
+  );
+};
+```
+
+[Open Sandbox](https://codesandbox.io/api/v1/sandboxes/define?undefined\&environment=server "Open in CodeSandbox")
+
+
+---
+
 # Path concepts
 
 While the `id` property uniquely identifies rules and groups, it doesn't indicate their position within the query hierarchy. React Query Builder uses a "path" concept to locate and update query objects based on their structural position.
@@ -11721,6 +11887,10 @@ Behavior by format:
 * Other formats emit the name as a literal.
 
 When `getParameters` is supplied, rules referencing a name not in the list are treated as invalid (dropped or handled per your validation options).
+
+tip
+
+The [external parameter manager](/docs/tips/parameter-manager.md) example demonstrates merging user-supplied values over the `null` placeholders produced by the `"parameterized_named"` format.
 
 ### Concatenation operator[​](#concatenation-operator "Direct link to Concatenation operator")
 

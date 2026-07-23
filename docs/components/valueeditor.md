@@ -203,6 +203,10 @@ formatQuery(query, {
 });
 ```
 
+tip
+
+The [external parameter manager](/docs/tips/parameter-manager.md) example shows how to manage a list of named parameters outside the query builder and merge their values into a `"parameterized_named"` export.
+
 ### Filtering the field list[​](#filtering-the-field-list "Direct link to Filtering the field list")
 
 Not all fields are compatible with each other, so each field may provide a `comparator` property specifying which fields appear in the value editor list. When `comparator` is a string, only fields with the same value as the current field in the property matching the `comparator` string are listed.

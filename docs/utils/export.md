@@ -1464,6 +1464,10 @@ Behavior by format:
 
 When `getParameters` is supplied, rules referencing a name not in the list are treated as invalid (dropped or handled per your validation options).
 
+tip
+
+The [external parameter manager](/docs/tips/parameter-manager.md) example demonstrates merging user-supplied values over the `null` placeholders produced by the `"parameterized_named"` format.
+
 ### Concatenation operator[​](#concatenation-operator "Direct link to Concatenation operator")
 
 Most SQL database dialects use the `||` operator to concatenate strings. SQL Server uses `+`, and MySQL uses the `CONCAT` function instead.
