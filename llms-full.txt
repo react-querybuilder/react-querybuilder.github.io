@@ -1072,13 +1072,15 @@ Defaults to `() => ["value"]`. First array element becomes the initial selection
 
 `fieldData` provides the complete `Field` object for accessing custom properties.
 
-### `parameters`[​](#parameters "Direct link to parameters")
+### `getParameters`[​](#getparameters "Direct link to getparameters")
 
-`FlexibleOptionList<FullOption>`
+`(field: string, operator: string, misc: { fieldData: Field }) => OptionList | null`
 
-Option list of named query parameters made available to rules whose `valueSource` is `"parameter"` (see [the `"parameter"` value source](/docs/components/valueeditor.md#the-parameter-value-source)). When provided and non-empty, the value editor renders a `<select>` of these parameter names (a multiselect for `in`/`notIn` operators); when nullish or empty, it renders a free-form text input.
+Returns the named query parameters made available to rules whose `valueSource` is `"parameter"` (see [the `"parameter"` value source](/docs/components/valueeditor.md#the-parameter-value-source)). When the returned list is non-empty, the value editor renders a `<select>` of these parameter names (a multiselect for `in`/`notIn` operators); when it is nullish or empty, the editor renders a free-form text input. Defaults to an empty list.
 
-Specify names **without** the parameter prefix (e.g. `[{ name: 'p1', label: 'Param 1' }]`); [`formatQuery`](/docs/utils/export.md) adds the dialect-appropriate prefix.
+Specify names **without** the parameter prefix (e.g. `() => [{ name: 'p1', label: 'Param 1' }]`); [`formatQuery`](/docs/utils/export.md) adds the dialect-appropriate prefix.
+
+`fieldData` provides the complete `Field` object for accessing custom properties.
 
 ### `getValueEditorSeparator`[​](#getvalueeditorseparator "Direct link to getvalueeditorseparator")
 
@@ -2569,17 +2571,17 @@ To enable it, include `"parameter"` in a field's `valueSources` (or the `getValu
 const fields: Field[] = [{ name: 'f1', label: 'f1', valueSources: ['value', 'parameter'] }];
 ```
 
-When the rule's `valueSource` is `"parameter"`, the value editor's behavior depends on the [`parameters` prop](/docs/components/querybuilder.md#parameters):
+When the rule's `valueSource` is `"parameter"`, the value editor's behavior depends on the [`getParameters` prop](/docs/components/querybuilder.md#getparameters):
 
-* If `parameters` is provided (a non-empty option list), the editor renders a `<select>` of the available parameter names (a multiselect when the operator is `in`/`notIn`).
-* If `parameters` is nullish or empty, the editor renders a free-form text `<input>` for entering a parameter name.
+* If `getParameters` resolves to a non-empty option list, the editor renders a `<select>` of the available parameter names (a multiselect when the operator is `in`/`notIn`).
+* If `getParameters` resolves to nullish or empty, the editor renders a free-form text `<input>` for entering a parameter name.
 
 ```
 <QueryBuilder
 
   fields={fields}
 
-  parameters={[
+  getParameters={() => [
 
     { name: 'p1', label: 'Param 1' },
 
@@ -2610,14 +2612,14 @@ The selected parameter name is stored directly in the rule's `value`:
 * **`cel`, `spel`, `jsonlogic`** — the name is treated as an identifier/variable reference.
 * Other formats emit the name as a literal.
 
-Passing a `parameters` list to `formatQuery` also enables validation: rules referencing a name not in the list are treated as invalid and dropped (or fall back per your options).
+Passing a `getParameters` function to `formatQuery` also enables validation: rules referencing a name not in the list are treated as invalid and dropped (or fall back per your options).
 
 ```
 formatQuery(query, {
 
   format: 'sql',
 
-  parameters: [{ name: 'p1', label: 'Param 1' }],
+  getParameters: () => [{ name: 'p1', label: 'Param 1' }],
 
 });
 ```
@@ -11698,14 +11700,14 @@ Previously, [manual post-processing](/docs/tips/custom-bind-variables.md) was ne
 
 ### Named parameters (value source)[​](#named-parameters-value-source "Direct link to Named parameters (value source)")
 
-The `parameters` option supports rules whose `valueSource` is [`"parameter"`](/docs/components/valueeditor.md#the-parameter-value-source). Provide the same option list passed to the [`parameters` prop](/docs/components/querybuilder.md#parameters) (names without a prefix):
+The `getParameters` option supports rules whose `valueSource` is [`"parameter"`](/docs/components/valueeditor.md#the-parameter-value-source). Provide the same function passed to the [`getParameters` prop](/docs/components/querybuilder.md#getparameters) (names without a prefix):
 
 ```
 formatQuery(query, {
 
   format: 'sql',
 
-  parameters: [{ name: 'p1', label: 'Param 1' }],
+  getParameters: () => [{ name: 'p1', label: 'Param 1' }],
 
 });
 ```
@@ -11718,7 +11720,7 @@ Behavior by format:
 * **`cel`, `spel`, `jsonlogic`** — the name is treated as an identifier/variable reference.
 * Other formats emit the name as a literal.
 
-When `parameters` is supplied, rules referencing a name not in the list are treated as invalid (dropped or handled per your validation options).
+When `getParameters` is supplied, rules referencing a name not in the list are treated as invalid (dropped or handled per your validation options).
 
 ### Concatenation operator[​](#concatenation-operator "Direct link to Concatenation operator")
 

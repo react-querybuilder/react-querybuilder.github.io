@@ -256,13 +256,15 @@ Defaults to `() => ["value"]`. First array element becomes the initial selection
 
 `fieldData` provides the complete `Field` object for accessing custom properties.
 
-### `parameters`[​](#parameters "Direct link to parameters")
+### `getParameters`[​](#getparameters "Direct link to getparameters")
 
-`FlexibleOptionList<FullOption>`
+`(field: string, operator: string, misc: { fieldData: Field }) => OptionList | null`
 
-Option list of named query parameters made available to rules whose `valueSource` is `"parameter"` (see [the `"parameter"` value source](/docs/components/valueeditor.md#the-parameter-value-source)). When provided and non-empty, the value editor renders a `<select>` of these parameter names (a multiselect for `in`/`notIn` operators); when nullish or empty, it renders a free-form text input.
+Returns the named query parameters made available to rules whose `valueSource` is `"parameter"` (see [the `"parameter"` value source](/docs/components/valueeditor.md#the-parameter-value-source)). When the returned list is non-empty, the value editor renders a `<select>` of these parameter names (a multiselect for `in`/`notIn` operators); when it is nullish or empty, the editor renders a free-form text input. Defaults to an empty list.
 
-Specify names **without** the parameter prefix (e.g. `[{ name: 'p1', label: 'Param 1' }]`); [`formatQuery`](/docs/utils/export.md) adds the dialect-appropriate prefix.
+Specify names **without** the parameter prefix (e.g. `() => [{ name: 'p1', label: 'Param 1' }]`); [`formatQuery`](/docs/utils/export.md) adds the dialect-appropriate prefix.
+
+`fieldData` provides the complete `Field` object for accessing custom properties.
 
 ### `getValueEditorSeparator`[​](#getvalueeditorseparator "Direct link to getvalueeditorseparator")
 

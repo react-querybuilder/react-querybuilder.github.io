@@ -150,17 +150,17 @@ To enable it, include `"parameter"` in a field's `valueSources` (or the `getValu
 const fields: Field[] = [{ name: 'f1', label: 'f1', valueSources: ['value', 'parameter'] }];
 ```
 
-When the rule's `valueSource` is `"parameter"`, the value editor's behavior depends on the [`parameters` prop](/docs/components/querybuilder.md#parameters):
+When the rule's `valueSource` is `"parameter"`, the value editor's behavior depends on the [`getParameters` prop](/docs/components/querybuilder.md#getparameters):
 
-* If `parameters` is provided (a non-empty option list), the editor renders a `<select>` of the available parameter names (a multiselect when the operator is `in`/`notIn`).
-* If `parameters` is nullish or empty, the editor renders a free-form text `<input>` for entering a parameter name.
+* If `getParameters` resolves to a non-empty option list, the editor renders a `<select>` of the available parameter names (a multiselect when the operator is `in`/`notIn`).
+* If `getParameters` resolves to nullish or empty, the editor renders a free-form text `<input>` for entering a parameter name.
 
 ```
 <QueryBuilder
 
   fields={fields}
 
-  parameters={[
+  getParameters={() => [
 
     { name: 'p1', label: 'Param 1' },
 
@@ -191,14 +191,14 @@ The selected parameter name is stored directly in the rule's `value`:
 * **`cel`, `spel`, `jsonlogic`** — the name is treated as an identifier/variable reference.
 * Other formats emit the name as a literal.
 
-Passing a `parameters` list to `formatQuery` also enables validation: rules referencing a name not in the list are treated as invalid and dropped (or fall back per your options).
+Passing a `getParameters` function to `formatQuery` also enables validation: rules referencing a name not in the list are treated as invalid and dropped (or fall back per your options).
 
 ```
 formatQuery(query, {
 
   format: 'sql',
 
-  parameters: [{ name: 'p1', label: 'Param 1' }],
+  getParameters: () => [{ name: 'p1', label: 'Param 1' }],
 
 });
 ```

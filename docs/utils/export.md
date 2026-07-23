@@ -1442,14 +1442,14 @@ Previously, [manual post-processing](/docs/tips/custom-bind-variables.md) was ne
 
 ### Named parameters (value source)[​](#named-parameters-value-source "Direct link to Named parameters (value source)")
 
-The `parameters` option supports rules whose `valueSource` is [`"parameter"`](/docs/components/valueeditor.md#the-parameter-value-source). Provide the same option list passed to the [`parameters` prop](/docs/components/querybuilder.md#parameters) (names without a prefix):
+The `getParameters` option supports rules whose `valueSource` is [`"parameter"`](/docs/components/valueeditor.md#the-parameter-value-source). Provide the same function passed to the [`getParameters` prop](/docs/components/querybuilder.md#getparameters) (names without a prefix):
 
 ```
 formatQuery(query, {
 
   format: 'sql',
 
-  parameters: [{ name: 'p1', label: 'Param 1' }],
+  getParameters: () => [{ name: 'p1', label: 'Param 1' }],
 
 });
 ```
@@ -1462,7 +1462,7 @@ Behavior by format:
 * **`cel`, `spel`, `jsonlogic`** — the name is treated as an identifier/variable reference.
 * Other formats emit the name as a literal.
 
-When `parameters` is supplied, rules referencing a name not in the list are treated as invalid (dropped or handled per your validation options).
+When `getParameters` is supplied, rules referencing a name not in the list are treated as invalid (dropped or handled per your validation options).
 
 ### Concatenation operator[​](#concatenation-operator "Direct link to Concatenation operator")
 
