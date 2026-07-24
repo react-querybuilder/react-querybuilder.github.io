@@ -4589,7 +4589,7 @@ parseMongoDB({ $expr: { $gte: [{ $pow: ['$x', 2] }, 9] } }, { getExpression });
 
 ### CEL[​](#cel "Direct link to CEL")
 
-`expressionParserCEL` is the ready-to-use handler for [`parseCEL`](/docs/utils/import.md#cel), bound to the built-in CEL inverse. It handles arithmetic, function-call, and `min`/`max` template operands:
+`expressionParserCEL` is the ready-to-use handler for [`parseCEL`](/docs/utils/import.md#common-expression-language-cel), bound to the built-in CEL inverse. It handles arithmetic, function-call, and `min`/`max` template operands:
 
 ```
 import { parseCEL } from '@react-querybuilder/core/parseCEL';
@@ -4629,7 +4629,7 @@ Unlike the other formats, `abs`/`upper`/`lower` are **not** invertible on the CE
 
 ### SpEL[​](#spel "Direct link to SpEL")
 
-`expressionParserSpEL` is the ready-to-use handler for [`parseSpEL`](/docs/utils/import.md#spel), bound to the built-in SpEL inverse. It handles infix arithmetic operands:
+`expressionParserSpEL` is the ready-to-use handler for [`parseSpEL`](/docs/utils/import.md#spring-expression-language-spel), bound to the built-in SpEL inverse. It handles infix arithmetic operands:
 
 ```
 import { parseSpEL } from '@react-querybuilder/core/parseSpEL';
