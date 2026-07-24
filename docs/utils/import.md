@@ -70,10 +70,12 @@ Click the "Import SQL" button in [the demo](/demo) to try it out.
 
 ### Options[​](#options "Direct link to Options")
 
-Beyond standard [configuration](#configuration) options, `parseSQL` accepts these two options for handling named or anonymous bind variables in SQL strings:
+Beyond standard [configuration](#configuration) options, `parseSQL` accepts these options for handling named or anonymous bind variables in SQL strings:
 
 * `params` (`any[] | Record<string, any>`): An array of parameter values or a parameter-to-value mapping object.
 * `paramPrefix` (`string`): Ignores this string at the beginning of parameter identifiers when matching to parameter names in the `params` object.
+* `parseParameters` (`boolean | { prefix?: string | string[]; positional?: boolean }`): Preserves unresolved bind variables as parameter rules (`valueSource: 'parameter'`) instead of resolving them via `params`. Pass `true` to accept the default named prefix `':'` and positional `?`, or an object to configure one or more named `prefix`es (e.g. `'@'`, `'$'`) and toggle `positional` (default enabled). Positional `?` placeholders are named by 1-based ordinal (`?` → `1`). `params` substitution takes precedence when both are set.
+* `getExpression` (`(node, ctx) => ExpressionNode | null`): A handler that converts an arithmetic/function operand subtree into an [expression](/docs/expr.md) node (`valueSource: 'expression'`, or a `lhs` when on the left of a comparison). Returning `null` drops the rule. Use [`expressionParserSQL`](/docs/expr.md#import-parsing) from `@react-querybuilder/expr` for the built-in SQL inverse, or `getExpressionParserSQL` to add custom functions/operators.
 
 ### Usage[​](#usage "Direct link to Usage")
 
@@ -303,6 +305,20 @@ tip
 
 Valid MongoDB query strings may not strictly conform to JSON. To handle extended formats, pre-parse query strings with a library like [mongodb-query-parser](https://www.npmjs.com/package/mongodb-query-parser) before passing them to `parseMongoDB`.
 
+### Expressions[​](#expressions "Direct link to Expressions")
+
+`parseMongoDB` accepts a `getExpression` option (`(node, ctx) => ExpressionNode | null`) that converts a MongoDB `$expr` aggregation-expression operand into an [expression](/docs/expr.md) node. An expression on the right of a comparison becomes the rule's `value` with `valueSource: 'expression'`; an expression on the left sets `field: ''` and stores the tree in `lhs`; inclusive-`between`/`notBetween` bounds become a two-element `value`. Only `$expr` operands are routed through this handler; bare field references and literals fall through to the stock logic. Returning `null` drops the rule. Use [`expressionParserMongoDB`](/docs/expr.md#import-parsing) from `@react-querybuilder/expr` for the built-in MongoDB inverse, or `getExpressionParserMongoDB` to add custom operations.
+
+```
+import { parseMongoDB } from '@react-querybuilder/core/parseMongoDB';
+
+import { expressionParserMongoDB } from '@react-querybuilder/expr';
+
+
+
+const query = parseMongoDB(mongoDbQuery, { getExpression: expressionParserMongoDB });
+```
+
 ## JsonLogic[​](#jsonlogic "Direct link to JsonLogic")
 
 ```
@@ -373,6 +389,20 @@ Output (`RuleGroupType`):
   ]
 
 }
+```
+
+### Expressions[​](#expressions-1 "Direct link to Expressions")
+
+`parseJsonLogic` accepts a `getExpression` option (`(node, ctx) => ExpressionNode | null`) that converts an arithmetic/function operand subtree into an [expression](/docs/expr.md) node. An expression on the right of a comparison becomes the rule's `value` with `valueSource: 'expression'`; an expression on the left sets `field: ''` and stores the tree in `lhs`; inclusive-`between`/`notBetween` bounds become a two-element `value`. Returning `null` drops the rule. Use [`expressionParserJsonLogic`](/docs/expr.md#import-parsing) from `@react-querybuilder/expr` for the built-in JsonLogic inverse, or `getExpressionParserJsonLogic` to add custom operations.
+
+```
+import { parseJsonLogic } from '@react-querybuilder/core/parseJsonLogic';
+
+import { expressionParserJsonLogic } from '@react-querybuilder/expr';
+
+
+
+const query = parseJsonLogic(jsonLogic, { getExpression: expressionParserJsonLogic });
 ```
 
 ### Custom operations[​](#custom-operations "Direct link to Custom operations")
@@ -483,6 +513,20 @@ Output (`RuleGroupType`):
 }
 ```
 
+### Expressions[​](#expressions-2 "Direct link to Expressions")
+
+`parseSpEL` accepts a `getExpression` option (`(node, ctx) => ExpressionNode | null`) that converts an arithmetic operand subtree into an [expression](/docs/expr.md) node. An expression on the right of a comparison becomes the rule's `value` with `valueSource: 'expression'`; an expression on the left sets `field: ''` and stores the tree in `lhs`; inclusive-`between`/`notBetween` bounds become a two-element `value`. Returning `null` drops the rule. Use [`expressionParserSpEL`](/docs/expr.md#import-parsing) from `@react-querybuilder/expr` for the built-in SpEL inverse, or `getExpressionParserSpEL` to override the arithmetic mappings. Note that only infix arithmetic is invertible—function/method calls (`abs`/`min`/`max`/`upper`/`lower`/custom) are dropped on import; see the [expr docs](/docs/expr.md#spel) for details.
+
+```
+import { parseSpEL } from '@react-querybuilder/core/parseSpEL';
+
+import { expressionParserSpEL } from '@react-querybuilder/expr';
+
+
+
+const query = parseSpEL(spelQuery, { getExpression: expressionParserSpEL });
+```
+
 ## Common Expression Language (CEL)[​](#common-expression-language-cel "Direct link to Common Expression Language (CEL)")
 
 ```
@@ -585,6 +629,20 @@ Output (`RuleGroupType`):
 
 To assist with processing the AST fragments, all types, type guard functions, and other utilities used internally by `parseCEL` are exported.
 
+### Expressions[​](#expressions-3 "Direct link to Expressions")
+
+`parseCEL` accepts a `getExpression` option (`(node, ctx) => ExpressionNode | null`) that converts an arithmetic/function operand subtree into an [expression](/docs/expr.md) node. An expression on the right of a comparison becomes the rule's `value` with `valueSource: 'expression'`; an expression on the left sets `field: ''` and stores the tree in `lhs`; inclusive-`between`/`notBetween` bounds become a two-element `value`. Returning `null` drops the rule. Use [`expressionParserCEL`](/docs/expr.md#import-parsing) from `@react-querybuilder/expr` for the built-in CEL inverse, or `getExpressionParserCEL` to add custom functions. Note that `abs`/`upper`/`lower` are not invertible on the CEL side—see the [expr docs](/docs/expr.md#cel) for details.
+
+```
+import { parseCEL } from '@react-querybuilder/core/parseCEL';
+
+import { expressionParserCEL } from '@react-querybuilder/expr';
+
+
+
+const query = parseCEL(celQuery, { getExpression: expressionParserCEL });
+```
+
 ## JSONata[​](#jsonata "Direct link to JSONata")
 
 ```
@@ -640,6 +698,20 @@ Output (`RuleGroupType`):
 ```
 
 JSONata lists are always translated to arrays. The [`listsAsArrays` option](#lists-as-arrays) is ignored (effectively always `true`).
+
+### Expressions[​](#expressions-4 "Direct link to Expressions")
+
+`parseJSONata` accepts a `getExpression` option (`(node, ctx) => ExpressionNode | null`) that converts an arithmetic/function operand subtree into an [expression](/docs/expr.md) node. An expression on the right of a comparison becomes the rule's `value` with `valueSource: 'expression'`; an expression on the left sets `field: ''` and stores the tree in `lhs`; inclusive-`between`/`notBetween` bounds become a two-element `value`. Returning `null` drops the rule. Use [`expressionParserJSONata`](/docs/expr.md#import-parsing) from `@react-querybuilder/expr` for the built-in JSONata inverse, or `getExpressionParserJSONata` to add custom functions.
+
+```
+import { parseJSONata } from '@react-querybuilder/core/parseJSONata';
+
+import { expressionParserJSONata } from '@react-querybuilder/expr';
+
+
+
+const query = parseJSONata(jsonataQuery, { getExpression: expressionParserJSONata });
+```
 
 ## Cypher[​](#cypher "Direct link to Cypher")
 
