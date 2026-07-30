@@ -861,6 +861,55 @@ Output (`RuleGroupType`):
 }
 ```
 
+## react-awesome-query-builder[​](#react-awesome-query-builder "Direct link to react-awesome-query-builder")
+
+`parseRAQB` converts a [react-awesome-query-builder](https://github.com/ukrbublik/react-awesome-query-builder) (RAQB) query tree to an RQB query. It is *not* part of this package—since most projects need it exactly once, it lives in the separate [`@react-querybuilder/migrate-raqb`](https://github.com/react-querybuilder/migrate-raqb) package.
+
+* npm
+* Bun
+* Yarn
+* pnpm
+
+```
+npm i @react-querybuilder/migrate-raqb
+```
+
+```
+bun add @react-querybuilder/migrate-raqb
+```
+
+```
+yarn add @react-querybuilder/migrate-raqb
+```
+
+```
+pnpm add @react-querybuilder/migrate-raqb
+```
+
+```
+import { parseRAQB, parseRAQBFields } from '@react-querybuilder/migrate-raqb';
+
+
+
+const fields = parseRAQBFields(raqbConfig.fields);
+
+const query = parseRAQB(Utils.getTree(immutableTree), { fields });
+```
+
+Output (`RuleGroupType`):
+
+```
+{
+
+  "combinator": "and",
+
+  "rules": [{ "field": "price", "operator": ">", "value": 10 }]
+
+}
+```
+
+See [Migrating from react-awesome-query-builder](/docs/tips/migrate-from-raqb.md) for the full concept mapping, operator translation table, and options.
+
 ## Configuration[​](#configuration "Direct link to Configuration")
 
 ### Lists as arrays[​](#lists-as-arrays "Direct link to Lists as arrays")

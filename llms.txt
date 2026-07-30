@@ -50,6 +50,7 @@ Try the interactive Rules Engine demo with a musician-themed example, including 
 - [Arbitrary updates](/docs/tips/arbitrary-updates.md): Non-standard query management from custom components
 - [Async option list loading](/docs/tips/async-option-lists.md): Augment value selectors or value editors with async option list loading
 - [Common mistakes](/docs/tips/common-mistakes.md): How to resolve some frequently-reported issues
+- [Comparison with other libraries](/docs/tips/comparison.md): How React Query Builder compares to react-awesome-query-builder
 - [Custom bind variables](/docs/tips/custom-bind-variables.md): Altering the SQL for certain RDBMS's
 - [Custom components with fallbacks](/docs/tips/custom-with-fallback.md): Augmenting the default components
 - [External controls](/docs/tips/external-controls.md): Managing queries outside the main component
@@ -57,6 +58,7 @@ Try the interactive Rules Engine demo with a musician-themed example, including 
 - [Managing fields](/docs/tips/managing-fields.md): Generate a field array from database table/view specification
 - [Managing operators](/docs/tips/managing-operators.md): Which operators are allowed for which fields, and how they are labeled
 - [Maximizing rendering performance](/docs/tips/maximizing-performance.md): How to avoid common pitfalls for a smoother user experience
+- [Migrating from react-awesome-query-builder](/docs/tips/migrate-from-raqb.md): Convert RAQB configs and query trees to React Query Builder
 - [Working with option lists](/docs/tips/option-lists.md): Managing ambiguity in option list types
 - [External parameter manager](/docs/tips/parameter-manager.md): Feed an external parameter component into a query builder
 - [Path concepts](/docs/tips/path.md): Explanation of the "path" property of rules and groups

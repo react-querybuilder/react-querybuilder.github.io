@@ -50,6 +50,7 @@ Try the interactive Rules Engine demo with a musician-themed example, including 
 - [Arbitrary updates](/docs/tips/arbitrary-updates.md): Non-standard query management from custom components
 - [Async option list loading](/docs/tips/async-option-lists.md): Augment value selectors or value editors with async option list loading
 - [Common mistakes](/docs/tips/common-mistakes.md): How to resolve some frequently-reported issues
+- [Comparison with other libraries](/docs/tips/comparison.md): How React Query Builder compares to react-awesome-query-builder
 - [Custom bind variables](/docs/tips/custom-bind-variables.md): Altering the SQL for certain RDBMS's
 - [Custom components with fallbacks](/docs/tips/custom-with-fallback.md): Augmenting the default components
 - [External controls](/docs/tips/external-controls.md): Managing queries outside the main component
@@ -57,6 +58,7 @@ Try the interactive Rules Engine demo with a musician-themed example, including 
 - [Managing fields](/docs/tips/managing-fields.md): Generate a field array from database table/view specification
 - [Managing operators](/docs/tips/managing-operators.md): Which operators are allowed for which fields, and how they are labeled
 - [Maximizing rendering performance](/docs/tips/maximizing-performance.md): How to avoid common pitfalls for a smoother user experience
+- [Migrating from react-awesome-query-builder](/docs/tips/migrate-from-raqb.md): Convert RAQB configs and query trees to React Query Builder
 - [Working with option lists](/docs/tips/option-lists.md): Managing ambiguity in option list types
 - [External parameter manager](/docs/tips/parameter-manager.md): Feed an external parameter component into a query builder
 - [Path concepts](/docs/tips/path.md): Explanation of the "path" property of rules and groups
@@ -4926,6 +4928,8 @@ export default () => {
 
 Explore all React Query Builder options in the [main component documentation](/docs/components/querybuilder.md). Try different configurations, export/import formats, and features in the interactive [demo](/demo).
 
+Coming from another library? See [how React Query Builder compares](/docs/tips/comparison.md), and the guide for [migrating from react-awesome-query-builder](/docs/tips/migrate-from-raqb.md).
+
 ## Training[​](#training "Direct link to Training")
 
 For an extended tutorial on configuration and customization of `react-querybuilder`, including information about integrating it with a backend API and advanced reporting components (grids, maps, charts, etc.), check out the course [Building Advanced Admin Reporting in React](https://www.newline.co/courses/building-advanced-admin-reporting-in-react), taught by this library's maintainer at [newline](https://www.newline.co/).
@@ -7511,6 +7515,76 @@ const App = () => {
 
 ---
 
+# Comparison with other libraries
+
+The query builder library most often compared to React Query Builder (RQB) is [react-awesome-query-builder](https://github.com/ukrbublik/react-awesome-query-builder) (RAQB). Both render an interactive UI for building filter criteria, and both can export those criteria to several query languages, but they take meaningfully different approaches.
+
+This page summarizes the differences as of RQB v8 and RAQB v6.6.15 (May 2025). If you're moving an existing RAQB implementation to RQB, see [Migrating from react-awesome-query-builder](/docs/tips/migrate-from-raqb.md).
+
+## Philosophy[​](#philosophy "Direct link to Philosophy")
+
+|                 | React Query Builder                                                                      | react-awesome-query-builder                                                      |
+| --------------- | ---------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------- |
+| Query storage   | Plain JSON ([`RuleGroupType`](/docs/typescript.md#rules-and-groups)), serializable as-is | [immutable.js](https://immutable-js.com/) tree; plain JSON via `Utils.getTree()` |
+| Configuration   | Discrete props (`fields`, `operators`, `combinators`, `controlElements`, etc.)           | One monolithic `Config` object (types, widgets, operators, funcs, settings)      |
+| Packaging       | Composable packages — core, React, UI styles, and optional feature packages              | Core package plus UI-specific packages                                           |
+| Non-React usage | `@react-querybuilder/core` has no React dependency (server-safe)                         | Core depends on React                                                            |
+
+RQB's plain-JSON query format means you can store queries in a database, send them over the wire, diff them, and hand-edit them without any conversion step. RQB's discrete props mean you only configure (and only bundle) the parts you use.
+
+## Query model[​](#query-model "Direct link to Query model")
+
+| Aspect         | React Query Builder                                                                                                                           | react-awesome-query-builder                                         |
+| -------------- | --------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------- |
+| Group children | `rules`                                                                                                                                       | `children1` (array, or keyed object when `children1AsArray: false`) |
+| Combinators    | `combinator` on the group, *or* [independent combinators](/docs/components/querybuilder.md#independent-combinators) interleaved between rules | `conjunction` on the group only                                     |
+| Negation       | `not` on groups                                                                                                                               | `not` on groups                                                     |
+| Rule value     | Scalar or array, depending on the operator                                                                                                    | Always an array (one entry per operand)                             |
+| Subqueries     | [Match modes](/docs/tips/subqueries.md) — `all`, `some`, `none`, `atLeast`, `atMost`, `exactly` (with threshold)                              | `!group` fields with `some`/`all`/`none` and count operators        |
+| Disabled rules | `disabled`                                                                                                                                    | `isLocked`                                                          |
+| Muted rules    | [`muted`](/docs/utils/export.md#muted-rules-and-groups) (kept in the query, excluded from exports)                                            | —                                                                   |
+| Ternary/CASE   | —                                                                                                                                             | `switch_group` / `case_group`                                       |
+| Value sources  | `value`, `field`, [expressions](/docs/expr.md), [parameters](/docs/tips/parameter-manager.md)                                                 | `value`, `field`, `func`                                            |
+| Left-hand side | Expressions supported on the LHS as well as the RHS                                                                                           | `fieldSrc: "func"`                                                  |
+
+## Formats[​](#formats "Direct link to Formats")
+
+RQB's [`formatQuery`](/docs/utils/export.md) supports considerably more export targets, and its [parsers](/docs/utils/import.md) support more import sources.
+
+| Direction | React Query Builder                                                                                                                                                                                       | react-awesome-query-builder                                          |
+| --------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------- |
+| Export    | JSON, SQL (plain/parameterized/named), MongoDB, CEL, JsonLogic, SpEL, ElasticSearch, JSONata, LDAP, natural language, Drizzle, TanStack DB, Prisma, Sequelize, Cypher, GraphQL, SPARQL, Gremlin, and more | SQL, MongoDB, JsonLogic, SpEL, ElasticSearch (partial), query string |
+| Import    | SQL, CEL, JsonLogic, MongoDB, SpEL, JSONata, Cypher, GraphQL, SPARQL, Gremlin, **RAQB**                                                                                                                   | JsonLogic, SpEL, SQL (separate package)                              |
+
+## Ecosystem[​](#ecosystem "Direct link to Ecosystem")
+
+| Aspect               | React Query Builder                                                                           | react-awesome-query-builder                          |
+| -------------------- | --------------------------------------------------------------------------------------------- | ---------------------------------------------------- |
+| UI style packs       | Ant Design, Bootstrap, Bulma, Chakra UI, Fluent UI, Mantine, MUI/Material, PrimeReact, Tremor | Ant Design, MUI, Material (v4), Bootstrap, Fluent UI |
+| React Native         | `@react-querybuilder/native`                                                                  | —                                                    |
+| Drag-and-drop        | [`@react-querybuilder/dnd`](/docs/dnd.md) (opt-in)                                            | Built in                                             |
+| Date/time            | [`@react-querybuilder/datetime`](/docs/datetime.md) (relative dates, per-dialect formatting)  | Built in (widgets and functions)                     |
+| Expressions          | [`@react-querybuilder/expr`](/docs/expr.md)                                                   | Built in (config `funcs`)                            |
+| Rules engine         | [`@react-querybuilder/rules-engine`](/docs/rules-engine.md)                                   | —                                                    |
+| Accessibility        | ARIA attributes, keyboard navigation, `data-testid` hooks                                     | Not documented                                       |
+| Internationalization | `translations` prop accepting strings or JSX                                                  | i18next-based locale packs                           |
+| Validation           | Per-field `validator` plus [`defaultValidator`](/docs/utils/validation.md)                    | `sanitizeTree` / `validateTree` / `isValidTree`      |
+| Styling              | Unstyled by default with CSS custom properties; official style packs                          | Bundled SCSS per UI package                          |
+
+## Feature-by-feature notes[​](#feature-by-feature-notes "Direct link to Feature-by-feature notes")
+
+Most RAQB concepts have a direct RQB counterpart. These are the exceptions:
+
+* **Ternary (`switch_group`)** — RAQB can build CASE/WHEN-style expressions. RQB has no equivalent in the query builder itself; conditional logic is generally modeled with [`@react-querybuilder/rules-engine`](/docs/rules-engine.md) instead.
+* **`proximity` operator** — RAQB's full-text proximity operator (and its `operatorOptions`) has no RQB equivalent.
+* **`is_empty` / `is_not_empty`** — RQB expresses these as `=` and `!=` against an empty string.
+* **Locking** — RQB models this with the `disabled` property rather than a separate `locked` property, but the behavior and UI are equivalent. The [`showLockButtons`](/docs/components/querybuilder.md#showlockbuttons) prop displays "Lock rule"/"Lock group" toggle buttons, which set `disabled` on the rule or group. As in RAQB, a locked group disables its header elements and all descendants. RQB has no equivalent to RAQB's `canDeleteLocked` setting.
+* **Date/time functions** — RAQB models `NOW`, `TODAY`, `RELATIVE_DATETIME`, etc. as functions. RQB treats the same concept as a *value*: [`@react-querybuilder/datetime`](/docs/datetime.md) relative date/time values, which each rule processor serializes symbolically (e.g. `current_timestamp - interval '7 days'`).
+* **Cardinality operators** — RQB's match modes are a superset of RAQB's `!group` count operators, except that RQB has no strict-inequality modes (RAQB's `less`/`greater` counts).
+
+
+---
+
 # Custom bind variables
 
 tip
@@ -8774,6 +8848,800 @@ function App() {
 
 }
 ```
+
+
+---
+
+# Migrating from react-awesome-query-builder
+
+> *Refer to the [TypeScript reference](/docs/typescript.md) page for information about the types and interfaces referenced below.*
+
+This guide covers moving an existing [react-awesome-query-builder](https://github.com/ukrbublik/react-awesome-query-builder) (RAQB) implementation to React Query Builder (RQB). For a broader feature-level overview, see [Comparison with other libraries](/docs/tips/comparison.md).
+
+Two utilities do most of the work:
+
+* `parseRAQB` converts a saved RAQB query tree to an RQB query object.
+* `parseRAQBFields` converts an RAQB `Config` (or just its `fields`) to an RQB `fields` array.
+
+Both are exported from [`@react-querybuilder/migrate-raqb`](https://github.com/react-querybuilder/migrate-raqb), a standalone package outside the main React Query Builder repository. Since migration is generally a one-time task, these utilities are packaged separately to keep them out of your production bundle.
+
+* npm
+* Bun
+* Yarn
+* pnpm
+
+```
+npm i @react-querybuilder/migrate-raqb
+```
+
+```
+bun add @react-querybuilder/migrate-raqb
+```
+
+```
+yarn add @react-querybuilder/migrate-raqb
+```
+
+```
+pnpm add @react-querybuilder/migrate-raqb
+```
+
+```
+import { parseRAQB, parseRAQBFields } from '@react-querybuilder/migrate-raqb';
+```
+
+The package has no runtime dependencies—only a peer dependency on `@react-querybuilder/core` (v8.21.2 or later). It adds no dependency on RAQB or immutable.js.
+
+info
+
+`@react-querybuilder/migrate-raqb` requires React Query Builder v8. If you're migrating from RAQB, migrate straight to [the latest version](/docs/next/tips/migrate-from-raqb)—there's no reason to land on v7 first. Run the conversion under v8, save the resulting queries, and the output is plain JSON that works anywhere.
+
+tip
+
+Once your queries are converted and saved in RQB format, uninstall `@react-querybuilder/migrate-raqb`. Nothing in your application needs it at runtime.
+
+## Concept mapping[​](#concept-mapping "Direct link to Concept mapping")
+
+| RAQB                                | React Query Builder                                                                        |
+| ----------------------------------- | ------------------------------------------------------------------------------------------ |
+| `Config`                            | Discrete props: `fields`, `operators`, `combinators`, `controlElements`                    |
+| `Config.fields`                     | [`fields`](/docs/tips/managing-fields.md)                                                  |
+| `Query` + `Builder` render prop     | A single [`<QueryBuilder />`](/docs/components/querybuilder.md) element                    |
+| immutable tree + `Utils.getTree()`  | Plain JSON query object, used directly                                                     |
+| `group` node                        | Rule group (an object with a `rules` array)                                                |
+| `properties.conjunction`            | `combinator`                                                                               |
+| `properties.not`                    | `not`                                                                                      |
+| `rule` node                         | Rule (`{ field, operator, value }`)                                                        |
+| `properties.valueSrc`               | `valueSource`                                                                              |
+| `properties.isLocked`               | `disabled` (see [`showLockButtons`](/docs/components/querybuilder.md#showlockbuttons))     |
+| `rule_group` (`!group` field)       | Rule with a [match mode](/docs/tips/subqueries.md) and a nested group as its value         |
+| `switch_group` / `case_group`       | No equivalent — see [Unsupported constructs](#unsupported-constructs)                      |
+| Widgets                             | [`valueEditorType` / `inputType`](/docs/tips/managing-fields.md) or a custom `valueEditor` |
+| `funcs`                             | [`@react-querybuilder/expr`](/docs/expr.md)                                                |
+| `sqlFormat`, `mongodbFormat`, etc.  | [`formatQuery`](/docs/utils/export.md)                                                     |
+| `loadFromJsonLogic`, `loadFromSpel` | [`parseJsonLogic`, `parseSpEL`](/docs/utils/import.md)                                     |
+
+## Rendering the component[​](#rendering-the-component "Direct link to Rendering the component")
+
+RAQB splits rendering across `<Query>`, a `renderBuilder` callback, and `<Builder>`, and keeps the query in an immutable.js tree that must be converted before it can be saved. RQB renders a single element and stores the query as plain JSON.
+
+Before (RAQB)
+
+```
+import { useCallback, useState } from 'react';
+
+import type {
+
+  BuilderProps,
+
+  Config,
+
+  ImmutableTree,
+
+  JsonGroup,
+
+} from '@react-awesome-query-builder/ui';
+
+import { BasicConfig, Builder, Query, Utils as QbUtils } from '@react-awesome-query-builder/ui';
+
+import '@react-awesome-query-builder/ui/css/styles.css';
+
+
+
+const config: Config = {
+
+  ...BasicConfig,
+
+  fields: {
+
+    price: { label: 'Price', type: 'number' },
+
+    color: {
+
+      label: 'Color',
+
+      type: 'select',
+
+      fieldSettings: {
+
+        listValues: [
+
+          { value: 'yellow', title: 'Yellow' },
+
+          { value: 'green', title: 'Green' },
+
+        ],
+
+      },
+
+    },
+
+  },
+
+  settings: {
+
+    ...BasicConfig.settings,
+
+    showNot: true,
+
+    showLock: true,
+
+    maxNesting: 3,
+
+    addRuleLabel: 'New rule',
+
+  },
+
+};
+
+
+
+const initialTree: JsonGroup = { id: QbUtils.uuid(), type: 'group' };
+
+
+
+export const App = () => {
+
+  const [tree, setTree] = useState(() => QbUtils.loadTree(initialTree));
+
+
+
+  const onChange = useCallback((immutableTree: ImmutableTree) => {
+
+    setTree(immutableTree);
+
+    // Convert before saving — the state itself is an immutable.js tree
+
+    console.log(QbUtils.getTree(immutableTree));
+
+  }, []);
+
+
+
+  const renderBuilder = useCallback(
+
+    (props: BuilderProps) => (
+
+      <div className="query-builder-container">
+
+        <div className="query-builder qb-lite">
+
+          <Builder {...props} />
+
+        </div>
+
+      </div>
+
+    ),
+
+    []
+
+  );
+
+
+
+  return (
+
+    <>
+
+      <Query {...config} value={tree} onChange={onChange} renderBuilder={renderBuilder} />
+
+      <pre>{QbUtils.sqlFormat(tree, config)}</pre>
+
+    </>
+
+  );
+
+};
+```
+
+After (RQB)
+
+```
+import { useState } from 'react';
+
+import type { Field, RuleGroupType } from 'react-querybuilder';
+
+import { formatQuery, QueryBuilder } from 'react-querybuilder';
+
+import 'react-querybuilder/dist/query-builder.css';
+
+
+
+const fields: Field[] = [
+
+  { name: 'price', label: 'Price', inputType: 'number' },
+
+  {
+
+    name: 'color',
+
+    label: 'Color',
+
+    valueEditorType: 'select',
+
+    values: [
+
+      { name: 'yellow', label: 'Yellow' },
+
+      { name: 'green', label: 'Green' },
+
+    ],
+
+  },
+
+];
+
+
+
+const initialQuery: RuleGroupType = { combinator: 'and', rules: [] };
+
+
+
+export const App = () => {
+
+  // Already plain JSON — save it as-is
+
+  const [query, setQuery] = useState(initialQuery);
+
+
+
+  return (
+
+    <>
+
+      <QueryBuilder
+
+        fields={fields}
+
+        query={query}
+
+        onQueryChange={setQuery}
+
+        showNotToggle
+
+        showLockButtons
+
+        maxLevels={3}
+
+        translations={{ addRule: { label: 'New rule' } }}
+
+      />
+
+      <pre>{formatQuery(query, 'sql')}</pre>
+
+    </>
+
+  );
+
+};
+```
+
+Notable differences:
+
+* Configuration is spread across discrete props instead of one `Config` object, so there's no base config to spread (no `BasicConfig`) and nothing to keep in state alongside the query.
+* `onQueryChange` receives the query object directly, so it can be passed straight to a `useState` setter and saved without conversion.
+* There is no `renderBuilder` indirection or required wrapper markup. Use [`controlClassnames`](/docs/components/querybuilder.md#controlclassnames) and [`controlElements`](/docs/components/querybuilder.md#controlelements) to customize markup and styling.
+* Export functions take the query object, not a tree plus a config.
+
+### Settings[​](#settings "Direct link to Settings")
+
+RAQB's `config.settings` correspond to individual `<QueryBuilder />` props:
+
+| RAQB setting                                         | RQB prop                                                                                                                                                        |
+| ---------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `showNot`                                            | [`showNotToggle`](/docs/components/querybuilder.md#shownottoggle)                                                                                               |
+| `showLock`                                           | [`showLockButtons`](/docs/components/querybuilder.md#showlockbuttons)                                                                                           |
+| `canReorder` / `canRegroup`                          | [`enableDragAndDrop`](/docs/components/querybuilder.md#enabledraganddrop) (requires [`@react-querybuilder/dnd`](/docs/dnd.md))                                  |
+| `maxNesting`                                         | [`maxLevels`](/docs/components/querybuilder.md#maxlevels)                                                                                                       |
+| `maxNumberOfRules`                                   | Return `false` from [`onAddRule`](/docs/components/querybuilder.md#onaddrule)                                                                                   |
+| `immutableGroupsMode` and friends                    | [`disabled`](/docs/components/querybuilder.md#disabled) (all or by path)                                                                                        |
+| `clearValueOnChangeField` / `clearValueOnChangeOp`   | [`resetOnFieldChange`](/docs/components/querybuilder.md#resetonfieldchange) / [`resetOnOperatorChange`](/docs/components/querybuilder.md#resetonoperatorchange) |
+| `setOpOnChangeField`                                 | [`getDefaultOperator`](/docs/components/querybuilder.md#getdefaultoperator), [`autoSelectOperator`](/docs/components/querybuilder.md#autoselectoperator)        |
+| `defaultField` / `defaultOperator`                   | [`getDefaultField`](/docs/components/querybuilder.md#getdefaultfield) / [`getDefaultOperator`](/docs/components/querybuilder.md#getdefaultoperator)             |
+| `defaultConjunction`                                 | First entry of [`combinators`](/docs/components/querybuilder.md#combinators), or the `combinator` of your initial query                                         |
+| `addRuleLabel`, `valuePlaceholder`, and other labels | [`translations`](/docs/components/querybuilder.md#translations)                                                                                                 |
+| `fieldSeparator`                                     | Handled at conversion time by `parseRAQBFields` (field names are flattened)                                                                                     |
+
+## Converting the config[​](#converting-the-config "Direct link to Converting the config")
+
+`parseRAQBFields` accepts either a full RAQB `Config` object or just the `fields` map, and returns an RQB `fields` array.
+
+```
+import { parseRAQBFields } from '@react-querybuilder/migrate-raqb';
+
+
+
+const fields = parseRAQBFields({
+
+  price: {
+
+    label: 'Price',
+
+    type: 'number',
+
+    fieldSettings: { min: 0, max: 100 },
+
+  },
+
+  color: {
+
+    label: 'Color',
+
+    type: 'select',
+
+    fieldSettings: {
+
+      listValues: [
+
+        { value: 'yellow', title: 'Yellow' },
+
+        { value: 'green', title: 'Green' },
+
+      ],
+
+    },
+
+  },
+
+});
+```
+
+Result
+
+```
+[
+
+  { "name": "price", "label": "Price", "inputType": "number" },
+
+  {
+
+    "name": "color",
+
+    "label": "Color",
+
+    "valueEditorType": "select",
+
+    "values": [
+
+      { "name": "yellow", "label": "Yellow" },
+
+      { "name": "green", "label": "Green" }
+
+    ]
+
+  }
+
+]
+```
+
+Translation details:
+
+* Nested `!struct` fields are flattened to dot-separated names, matching the field paths stored in RAQB query trees. The separator comes from `settings.fieldSeparator` (default `"."`), or the `fieldSeparator` option.
+* `!group` fields become fields with `matchModes` and `subproperties`, which is RQB's [subquery](/docs/tips/subqueries.md) representation.
+* `type` maps to `inputType` (`number`, `date`, `time`, `datetime-local`, etc.) or `valueEditorType` (`select`, `multiselect`, `checkbox`).
+* `fieldSettings.listValues` and `fieldSettings.treeValues` map to `values`. Tree values are flattened.
+* `operators`, `defaultOperator`, `excludeOperators`, `valueSources`, and `defaultValue` are translated to their RQB equivalents.
+* Fields marked `hideForSelect` are omitted unless you pass `includeHidden: true`.
+* Export-time settings (`fieldName`, `tableName`, `jsonLogicVar`, `isSpelVariable`) and `fieldSettings.validateValue` are not translated.
+
+### `parseRAQBFields` options[​](#parseraqbfields-options "Direct link to parseraqbfields-options")
+
+* `fieldSeparator` (`string`): Character used to join nested field names.
+* `operatorMap` (`Record<string, string>`): Additional or overriding operator name mappings. Should match the `operatorMap` passed to `parseRAQB`.
+* `includeHidden` (`boolean`): Include fields marked `hideForSelect`. Defaults to `false`.
+* `onUnsupported` (`(info: RAQBUnsupportedInfo) => void`): Called for each construct that could not be fully translated.
+
+## Converting queries[​](#converting-queries "Direct link to Converting queries")
+
+`parseRAQB` accepts RAQB's **plain-JSON** tree — the output of `Utils.getTree(immutableTree)` — or a JSON string of the same. Immutable.js trees are not accepted; passing one throws an error explaining the fix.
+
+```
+// In your RAQB app, save the plain JSON form:
+
+const jsonTree = QbUtils.getTree(immutableTree);
+```
+
+```
+import { parseRAQB } from '@react-querybuilder/migrate-raqb';
+
+
+
+const query = parseRAQB(jsonTree);
+```
+
+Example
+
+```
+parseRAQB({
+
+  type: 'group',
+
+  properties: { conjunction: 'AND' },
+
+  children1: [
+
+    {
+
+      type: 'rule',
+
+      properties: { field: 'price', operator: 'greater', value: [10], valueSrc: ['value'] },
+
+    },
+
+    {
+
+      type: 'rule',
+
+      properties: { field: 'color', operator: 'select_any_in', value: [['yellow', 'green']] },
+
+    },
+
+  ],
+
+});
+```
+
+Result
+
+```
+{
+
+  "combinator": "and",
+
+  "rules": [
+
+    { "field": "price", "operator": ">", "value": 10 },
+
+    { "field": "color", "operator": "in", "value": "yellow,green" }
+
+  ]
+
+}
+```
+
+Both `children1` shapes are supported: the default array form and the keyed-object form produced when `children1AsArray` is `false`.
+
+### Operator mapping[​](#operator-mapping "Direct link to Operator mapping")
+
+| RAQB                                                           | RQB                                                             |
+| -------------------------------------------------------------- | --------------------------------------------------------------- |
+| `equal` / `not_equal`                                          | `=` / `!=`                                                      |
+| `less` / `less_or_equal`                                       | `<` / `<=`                                                      |
+| `greater` / `greater_or_equal`                                 | `>` / `>=`                                                      |
+| `like` / `not_like`                                            | `contains` / `doesNotContain`                                   |
+| `starts_with` / `ends_with`                                    | `beginsWith` / `endsWith`                                       |
+| `between` / `not_between`                                      | `between` / `notBetween`                                        |
+| `is_null` / `is_not_null`                                      | `null` / `notNull`                                              |
+| `is_empty` / `is_not_empty`                                    | `=` / `!=` with an empty string                                 |
+| `select_equals` / `select_not_equals`                          | `=` / `!=`                                                      |
+| `select_any_in` / `select_not_any_in`                          | `in` / `notIn`                                                  |
+| `multiselect_equals` / `multiselect_not_equals`                | `=` / `!=` (array value kept)                                   |
+| `multiselect_contains` / `multiselect_not_contains`            | `contains` / `doesNotContain`                                   |
+| `some` / `all` / `none`                                        | Match modes `some` / `all` / `none`                             |
+| `!group` counts `equal` / `greater_or_equal` / `less_or_equal` | Match modes `exactly` / `atLeast` / `atMost` with a `threshold` |
+
+Add to or override this map with the `operatorMap` option.
+
+### `parseRAQB` options[​](#parseraqb-options "Direct link to parseraqb-options")
+
+Beyond the standard [import configuration](/docs/utils/import.md#configuration) options (`fields`, `listsAsArrays`, `generateIDs`, `independentCombinators`, etc.), `parseRAQB` accepts:
+
+* `operatorMap` (`Record<string, DefaultOperatorName>`): Additional or overriding RAQB-to-RQB operator mappings, merged over the defaults.
+* `functionMap` (`Record<string, string>`): Additional or overriding RAQB-to-`expr` function name mappings, merged over the defaults.
+* `funcArgOrder` (`Record<string, string[]>`): Explicit argument order per RAQB function name. By default, argument order follows the key order of the serialized function object.
+* `relativeDateTimes` (`boolean`): Convert RAQB's built-in date/time functions to relative date/time values instead of expressions. Defaults to `true`. See [Date and time functions](#date-and-time-functions).
+* `onUnsupported` (`(info: RAQBUnsupportedInfo) => void`): Called for each construct that could not be converted.
+
+As with other parsers, passing `fields` restricts the output to rules whose fields exist in the list.
+
+## Functions and expressions[​](#functions-and-expressions "Direct link to Functions and expressions")
+
+RAQB's `valueSrc: "func"` operands convert to RQB [expressions](/docs/expr.md). Right-hand side functions become `valueSource: "expression"` with an expression object as the value; a function on the *left* side (`fieldSrc: "func"`) becomes the rule's `lhs` property.
+
+Example
+
+```
+parseRAQB({
+
+  type: 'group',
+
+  properties: { conjunction: 'AND' },
+
+  children1: [
+
+    {
+
+      type: 'rule',
+
+      properties: {
+
+        field: 'name',
+
+        operator: 'equal',
+
+        valueSrc: ['func'],
+
+        value: [{ func: 'LOWER', args: { str: { value: 'Steve', valueSrc: 'value' } } }],
+
+      },
+
+    },
+
+  ],
+
+});
+```
+
+Result
+
+```
+{
+
+  "combinator": "and",
+
+  "rules": [
+
+    {
+
+      "field": "name",
+
+      "operator": "=",
+
+      "valueSource": "expression",
+
+      "value": { "kind": "func", "fn": "lower", "args": [{ "kind": "value", "value": "Steve" }] }
+
+    }
+
+  ]
+
+}
+```
+
+caution
+
+Queries containing expressions require [`@react-querybuilder/expr`](/docs/expr.md) to render, validate, or serialize. Wrap your query builder in `QueryBuilderExpressions` and register the export processor as described in the [expressions documentation](/docs/expr.md). Without that package, expression values will not display or export correctly.
+
+RAQB's `LOWER` and `UPPER` map to `expr`'s `lower` and `upper`, and `LINEAR_REGRESSION` is expanded to the equivalent arithmetic expression. Every other RAQB function—apart from the date/time functions described below—is passed through under its original name and reported to `onUnsupported`. To render or export those, either register matching function metadata with `@react-querybuilder/expr` or map them to existing functions with `functionMap`.
+
+## Date and time functions[​](#date-and-time-functions "Direct link to Date and time functions")
+
+RAQB's built-in date/time functions don't really compute anything—they describe a date relative to "now". RQB represents that concept as a *value* rather than an expression, so `parseRAQB` converts them to [`@react-querybuilder/datetime`](/docs/datetime.md)'s relative date/time value shape (`{ mode: "relative", anchor, offset, unit }`), which every date/time rule processor serializes symbolically (e.g. `current_timestamp - interval '7 days'`).
+
+| RAQB                                      | RQB value                                          |
+| ----------------------------------------- | -------------------------------------------------- |
+| `NOW()`                                   | `{ anchor: 'now', offset: 0 }`                     |
+| `TODAY()` / `START_OF_TODAY()`            | `{ anchor: 'startOfDay', offset: 0 }`              |
+| `TRUNCATE_DATETIME(NOW(), dim)`           | `{ anchor: 'startOf<Dim>', offset: 0 }`            |
+| `RELATIVE_DATE(TIME)(date, op, val, dim)` | `{ anchor: <from date>, offset: ±val, unit: dim }` |
+
+Example
+
+```
+parseRAQB({
+
+  type: 'group',
+
+  properties: { conjunction: 'AND' },
+
+  children1: [
+
+    {
+
+      type: 'rule',
+
+      properties: {
+
+        field: 'created',
+
+        operator: 'between',
+
+        valueSrc: ['func', 'func'],
+
+        value: [
+
+          {
+
+            func: 'RELATIVE_DATETIME',
+
+            args: { op: { value: 'minus' }, val: { value: 7 }, dim: { value: 'day' } },
+
+          },
+
+          { func: 'NOW', args: {} },
+
+        ],
+
+      },
+
+    },
+
+  ],
+
+});
+```
+
+Result
+
+```
+{
+
+  "combinator": "and",
+
+  "rules": [
+
+    {
+
+      "field": "created",
+
+      "operator": "between",
+
+      "value": [
+
+        { "mode": "relative", "anchor": "now", "offset": -7, "unit": "day" },
+
+        { "mode": "relative", "anchor": "now", "offset": 0, "unit": "day" }
+
+      ]
+
+    }
+
+  ]
+
+}
+```
+
+With `@react-querybuilder/datetime`'s SQL rule processor, that query exports as `"created" between current_timestamp - interval '7 days' and current_timestamp`.
+
+A few RAQB calls fall outside what relative values can express, and are converted to expressions instead (and reported to `onUnsupported`):
+
+* A `"second"` dimension. RQB's smallest relative unit is `minute`.
+* Truncation to `hour`, `minute`, or `second`. RQB truncates only to day, week, month, or year.
+* Truncation applied *after* an offset, e.g. `TRUNCATE_DATETIME(RELATIVE_DATETIME(NOW(), 'minus', 3, 'day'), 'month')`. RQB applies the anchor first and the offset second, so only the reverse nesting is representable.
+
+Pass `relativeDateTimes: false` to convert date/time functions to expressions like any other function.
+
+## Unsupported constructs[​](#unsupported-constructs "Direct link to Unsupported constructs")
+
+`parseRAQB` never throws on unrecognized content (aside from immutable.js input). Anything it can't convert is skipped, and a partial query is always returned. Use `onUnsupported` to log or surface what was dropped.
+
+```
+const unsupported: RAQBUnsupportedInfo[] = [];
+
+
+
+const query = parseRAQB(jsonTree, {
+
+  onUnsupported: info => unsupported.push(info),
+
+});
+```
+
+Reported constructs include:
+
+* **`switch_group` / `case_group`** (RAQB's ternary mode). RQB has no equivalent; consider [`@react-querybuilder/rules-engine`](/docs/rules-engine.md) for conditional logic.
+* **`proximity`** and its `operatorOptions`, which have no RQB counterpart.
+* **`!group` strict-inequality count operators** (`less`, `greater`), since RQB match modes cover only `exactly`, `atLeast`, and `atMost`.
+* **Functions with no `@react-querybuilder/expr` equivalent**, which pass through by name.
+
+## Putting it together[​](#putting-it-together "Direct link to Putting it together")
+
+```
+import { QueryBuilder } from 'react-querybuilder';
+
+import { parseRAQB, parseRAQBFields } from '@react-querybuilder/migrate-raqb';
+
+import raqbConfig from './raqbConfig';
+
+import savedTree from './savedQuery.json';
+
+
+
+const fields = parseRAQBFields(raqbConfig);
+
+const defaultQuery = parseRAQB(savedTree, { fields });
+
+
+
+export const App = () => <QueryBuilder fields={fields} defaultQuery={defaultQuery} />;
+```
+
+## Converting back to RAQB[​](#converting-back-to-raqb "Direct link to Converting back to RAQB")
+
+The reverse conversion is useful for a phased migration where both query builders must read the same stored queries. `@react-querybuilder/migrate-raqb` exports `formatRAQB` for this purpose. (There is no `"raqb"` `formatQuery` export format; `formatRAQB` wraps `formatQuery`'s `ruleGroupProcessor` option, which takes precedence over `format`.)
+
+```
+import { formatRAQB } from '@react-querybuilder/migrate-raqb';
+
+import { Utils } from '@react-awesome-query-builder/core';
+
+
+
+const jsonTree = formatRAQB(query, { fields });
+
+const immutableTree = Utils.checkTree(Utils.loadTree(jsonTree), raqbConfig);
+```
+
+Pass `fields` for the most faithful output—several RAQB operators collapse to a single RQB operator, and the field's `valueEditorType` is used to disambiguate them.
+
+`formatRAQBFields`, the inverse of `parseRAQBFields`, is exported from the same package:
+
+```
+import { formatRAQBFields } from '@react-querybuilder/migrate-raqb';
+
+
+
+const raqbConfig = { ...BasicConfig, fields: formatRAQBFields(fields) };
+```
+
+`formatRAQB` accepts all [`formatQuery` options](/docs/utils/export.md) except `format`, `ruleGroupProcessor`, and `fallbackExpression`, plus `fallbackTree` (the tree returned when the query is empty or fails validation) and:
+
+| Option                  | Default | Description                                                                                            |
+| ----------------------- | ------- | ------------------------------------------------------------------------------------------------------ |
+| `raqbOperatorMap`       | `{}`    | Additional/overriding RQB-to-RAQB operator mappings, keyed by RQB operator name.                       |
+| `raqbFunctionMap`       | `{}`    | Additional/overriding expression-function-to-RAQB function name mappings.                              |
+| `raqbFuncArgOrder`      | `{}`    | Argument names per RAQB function name. Defaults cover RAQB's built-ins; others get `arg0`, `arg1`, ... |
+| `raqbFieldSeparator`    | `"."`   | Separator used to qualify sub-query rule fields with their parent `!group` field name.                 |
+| `raqbRelativeDateTimes` | `true`  | Convert relative date/time values to RAQB's built-in date/time functions.                              |
+| `raqbValueTypes`        | `false` | Emit `valueType` entries inferred from each field's `inputType`/`valueEditorType`.                     |
+
+The mapping is the inverse of the tables above, with these caveats:
+
+* RQB's `doesNotBeginWith` and `doesNotEndWith` have no RAQB default equivalent (there is no `not_starts_with`/`not_ends_with`); rules using them are omitted unless you supply a `raqbOperatorMap` entry.
+* The `"parameter"` value source has no RAQB counterpart, so those rules are omitted.
+* `in`/`notIn` map to `select_any_in`/`select_not_any_in`, which RAQB only allows for `select` and `multiselect` fields. On a plain text field RAQB's `checkTree` will reject the rule.
+* Field-to-field comparisons are more restricted in RAQB: its `field` widget for the `text` type supports only `equal`, `not_equal`, and `proximity`, so `contains`/`beginsWith`/`endsWith`/`<`/`>` against another field are rejected.
+* RAQB clamps inverted ranges, so a `between` rule with `preserveValueOrder` and out-of-order bounds (e.g. `[100, 0]`) becomes `[100, 100]` once loaded.
+* `bigint` values are narrowed to `number`, since RAQB trees must be JSON-serializable.
+* `endOf*` relative date/time anchors are emitted as plain values, since RAQB's built-in functions only truncate to the *start* of a period.
+* RAQB defines no `XOR` conjunction. `xor` combinators are emitted as `"XOR"` rather than silently degraded, so RAQB's `checkTree` will flag them unless a matching custom conjunction is configured.
+* RAQB's several operators that collapse to one RQB operator (`equal`/`select_equals`/`multiselect_equals` → `=`) are disambiguated using each field's `valueEditorType`, so pass `fields` for the most faithful output.
+* When `validator` results invalidate the entire query, `formatRAQB` returns `fallbackTree` (`raqbFallback`, an empty `AND` group, by default). If you call `formatQuery` directly with `defaultRuleGroupProcessorRAQB`, pass `fallbackExpression: raqbFallback as unknown as string`—`formatQuery` short-circuits *before* the rule group processor runs, and its own default fallback is a SQL string.
+
+To combine RAQB output with other `formatQuery` behavior, or to supply a custom `ruleProcessor`, use `defaultRuleGroupProcessorRAQB` directly. RAQB options then move into `context`:
+
+```
+import { formatQuery } from 'react-querybuilder';
+
+import { defaultRuleGroupProcessorRAQB, raqbFallback } from '@react-querybuilder/migrate-raqb';
+
+
+
+const jsonTree = formatQuery(query, {
+
+  ruleGroupProcessor: defaultRuleGroupProcessorRAQB,
+
+  fields,
+
+  context: { raqbValueTypes: true },
+
+  fallbackExpression: raqbFallback as unknown as string,
+
+});
+```
+
+RAQB's last stable release was 6.6.15 in May 2025; these utilities exist to give RAQB users a straightforward path to React Query Builder.
 
 
 ---
@@ -11501,6 +12369,150 @@ Output (string):
 .has('firstName', 'Steve').has('lastName', 'Vai')
 ```
 
+### react-awesome-query-builder[​](#react-awesome-query-builder "Direct link to react-awesome-query-builder")
+
+Generate a [react-awesome-query-builder](https://github.com/ukrbublik/react-awesome-query-builder) (RAQB) query tree in its plain-JSON form, suitable for RAQB's `Utils.loadTree()`.
+
+This is *not* a built-in export format. Since most projects need it exactly once, it lives in the separate [`@react-querybuilder/migrate-raqb`](https://github.com/react-querybuilder/migrate-raqb) package, which exports a `formatRAQB` function.
+
+* npm
+* Bun
+* Yarn
+* pnpm
+
+```
+npm i @react-querybuilder/migrate-raqb
+```
+
+```
+bun add @react-querybuilder/migrate-raqb
+```
+
+```
+yarn add @react-querybuilder/migrate-raqb
+```
+
+```
+pnpm add @react-querybuilder/migrate-raqb
+```
+
+```
+import { Utils } from '@react-awesome-query-builder/core';
+
+import { formatRAQB } from '@react-querybuilder/migrate-raqb';
+
+
+
+const jsonTree = formatRAQB(query, { fields });
+
+const immutableTree = Utils.checkTree(Utils.loadTree(jsonTree), config);
+```
+
+This is the inverse of `parseRAQB`. See [Migrating from react-awesome-query-builder](/docs/tips/migrate-from-raqb.md) for the full concept mapping.
+
+Output (object):
+
+```
+{
+
+  "type": "group",
+
+  "properties": { "conjunction": "AND", "not": false },
+
+  "children1": [
+
+    {
+
+      "type": "rule",
+
+      "properties": {
+
+        "field": "firstName",
+
+        "operator": "equal",
+
+        "value": ["Steve"],
+
+        "valueSrc": ["value"]
+
+      }
+
+    },
+
+    {
+
+      "type": "rule",
+
+      "properties": {
+
+        "field": "lastName",
+
+        "operator": "equal",
+
+        "value": ["Vai"],
+
+        "valueSrc": ["value"]
+
+      }
+
+    }
+
+  ]
+
+}
+```
+
+A companion function, `formatRAQBFields`, converts an RQB `fields` array to the `fields` section of an RAQB `Config`:
+
+```
+import { formatRAQBFields } from '@react-querybuilder/migrate-raqb';
+
+
+
+const config = { ...BasicConfig, fields: formatRAQBFields(fields) };
+```
+
+`formatRAQB` accepts all `formatQuery` options except `format`, `ruleGroupProcessor`, and `fallbackExpression`, plus the RAQB-specific options below and `fallbackTree` (the tree returned when the query is empty or fails validation).
+
+```
+const jsonTree = formatRAQB(query, { fields, raqbFieldSeparator: '.', raqbValueTypes: true });
+```
+
+| Option                  | Default | Description                                                                                            |
+| ----------------------- | ------- | ------------------------------------------------------------------------------------------------------ |
+| `raqbOperatorMap`       | `{}`    | Additional/overriding RQB-to-RAQB operator mappings, keyed by RQB operator name.                       |
+| `raqbFunctionMap`       | `{}`    | Additional/overriding expression-function-to-RAQB function name mappings.                              |
+| `raqbFuncArgOrder`      | `{}`    | Argument names per RAQB function name. Defaults cover RAQB's built-ins; others get `arg0`, `arg1`, ... |
+| `raqbFieldSeparator`    | `"."`   | Separator used to qualify sub-query rule fields with their parent `!group` field name.                 |
+| `raqbRelativeDateTimes` | `true`  | Convert relative date/time values to RAQB's built-in date/time functions.                              |
+| `raqbValueTypes`        | `false` | Emit `valueType` entries inferred from each field's `inputType`/`valueEditorType`.                     |
+
+To combine RAQB output with other `formatQuery` behavior, or to supply a custom `ruleProcessor`, use the underlying `defaultRuleGroupProcessorRAQB` with the [`ruleGroupProcessor`](#rule-group-processor) option, which takes precedence over `format`. RAQB options then move into `context`, and `raqbFallback` should be passed as `fallbackExpression` if a `validator` can invalidate the whole query.
+
+```
+import { defaultRuleGroupProcessorRAQB, raqbFallback } from '@react-querybuilder/migrate-raqb';
+
+
+
+const jsonTree = formatQuery(query, {
+
+  ruleGroupProcessor: defaultRuleGroupProcessorRAQB,
+
+  fields,
+
+  context: { raqbValueTypes: true },
+
+  fallbackExpression: raqbFallback as unknown as string,
+
+});
+```
+
+note
+
+RAQB's default configuration has no equivalent for RQB's `doesNotBeginWith`/`doesNotEndWith` operators, the `"parameter"` value source, or `endOf*` relative date/time anchors. Rules using them are omitted (or, for `endOf*` anchors, emitted as plain values). Use `raqbOperatorMap` to map them onto custom RAQB operators.
+
+RAQB also restricts some constructs that RQB permits—notably `in`/`notIn` on non-`select` fields and most field-to-field comparisons. See [Migrating from react-awesome-query-builder](/docs/tips/migrate-from-raqb.md#converting-back-to-raqb) for the full list.
+
 ### Diagnostics[​](#diagnostics "Direct link to Diagnostics")
 
 Generate a diagnostics result object using the "diagnostics" format. The output includes an annotated copy of the query tree, a flat diagnostics array, aggregate statistics, and a per-field summary.
@@ -14156,6 +15168,55 @@ Output (`RuleGroupType`):
 
 }
 ```
+
+## react-awesome-query-builder[​](#react-awesome-query-builder "Direct link to react-awesome-query-builder")
+
+`parseRAQB` converts a [react-awesome-query-builder](https://github.com/ukrbublik/react-awesome-query-builder) (RAQB) query tree to an RQB query. It is *not* part of this package—since most projects need it exactly once, it lives in the separate [`@react-querybuilder/migrate-raqb`](https://github.com/react-querybuilder/migrate-raqb) package.
+
+* npm
+* Bun
+* Yarn
+* pnpm
+
+```
+npm i @react-querybuilder/migrate-raqb
+```
+
+```
+bun add @react-querybuilder/migrate-raqb
+```
+
+```
+yarn add @react-querybuilder/migrate-raqb
+```
+
+```
+pnpm add @react-querybuilder/migrate-raqb
+```
+
+```
+import { parseRAQB, parseRAQBFields } from '@react-querybuilder/migrate-raqb';
+
+
+
+const fields = parseRAQBFields(raqbConfig.fields);
+
+const query = parseRAQB(Utils.getTree(immutableTree), { fields });
+```
+
+Output (`RuleGroupType`):
+
+```
+{
+
+  "combinator": "and",
+
+  "rules": [{ "field": "price", "operator": ">", "value": 10 }]
+
+}
+```
+
+See [Migrating from react-awesome-query-builder](/docs/tips/migrate-from-raqb.md) for the full concept mapping, operator translation table, and options.
 
 ## Configuration[​](#configuration "Direct link to Configuration")
 

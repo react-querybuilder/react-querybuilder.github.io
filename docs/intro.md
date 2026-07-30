@@ -176,6 +176,8 @@ export default () => {
 
 Explore all React Query Builder options in the [main component documentation](/docs/components/querybuilder.md). Try different configurations, export/import formats, and features in the interactive [demo](/demo).
 
+Coming from another library? See [how React Query Builder compares](/docs/tips/comparison.md), and the guide for [migrating from react-awesome-query-builder](/docs/tips/migrate-from-raqb.md).
+
 ## Training[​](#training "Direct link to Training")
 
 For an extended tutorial on configuration and customization of `react-querybuilder`, including information about integrating it with a backend API and advanced reporting components (grids, maps, charts, etc.), check out the course [Building Advanced Admin Reporting in React](https://www.newline.co/courses/building-advanced-admin-reporting-in-react), taught by this library's maintainer at [newline](https://www.newline.co/).
