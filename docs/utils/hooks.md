@@ -24,6 +24,40 @@ As a React hook, this function must follow the [appropriate rules](https://react
 
 **To access the current query from an event handler, use `props.schema.getQuery()` instead.**
 
+### `useQueryBuilderHistory`[​](#usequerybuilderhistory "Direct link to usequerybuilderhistory")
+
+Records undo/redo history for the query builder with the given `qbId`, and returns controls for navigating it. Available from the `react-querybuilder/history` entry point.
+
+Unlike the other hooks in this section, it does not need to be rendered beneath a `QueryBuilder`, which is what allows external toolbars and keyboard shortcut handlers to drive a query builder's history.
+
+```
+function useQueryBuilderHistory(
+
+  qbId: string,
+
+  options?: { maxHistory?: number; coalesceMs?: number }
+
+): {
+
+  undo: () => void;
+
+  redo: () => void;
+
+  clear: () => void;
+
+  canUndo: boolean;
+
+  canRedo: boolean;
+
+  past: RuleGroupTypeAny[];
+
+  future: RuleGroupTypeAny[];
+
+};
+```
+
+See [Undo/redo](/docs/tips/undo-redo.md) for the full guide.
+
 ### `useQueryBuilderSelector`[​](#usequerybuilderselector "Direct link to usequerybuilderselector")
 
 tip
@@ -54,6 +88,24 @@ const CustomValueEditor = (props: ValueEditorProps) => {
   // anything else in your render function.
 
 };
+```
+
+### `getDispatchQueryById`[​](#getdispatchquerybyid "Direct link to getdispatchquerybyid")
+
+Not a hook, but the write-side counterpart to the selectors above. Returns the `dispatchQuery` function for the mounted query builder with the given `qbId`, or `undefined` if no such query builder is mounted.
+
+```
+function getDispatchQueryById(qbId: string): DispatchQueryFn | undefined;
+```
+
+Updating a query through this function is equivalent to a user edit: the query is applied to the internal store *and* the query builder's `onQueryChange` callback fires, so it works whether the query builder is [controlled or uncontrolled](/docs/components/querybuilder.md#query). That makes it possible to drive a query builder from outside its own component tree—an external toolbar, a keyboard shortcut handler, or the undo/redo controls in [`react-querybuilder/history`](/docs/tips/undo-redo.md), which use it to apply restored queries.
+
+Requires an explicit [`qbId`](/docs/components/querybuilder.md#qbid) prop, since automatically generated identifiers are not discoverable from outside the component.
+
+```
+const dispatchQuery = getDispatchQueryById('main');
+
+dispatchQuery?.(add(currentQuery, { field: 'firstName', operator: '=', value: '' }, []));
 ```
 
 ## Component logic[​](#component-logic "Direct link to Component logic")

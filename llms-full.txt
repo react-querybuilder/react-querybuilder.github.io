@@ -24,6 +24,7 @@
 - [Rule](/docs/components/rule.md): Layout and config component for rules
 - [RuleGroup](/docs/components/rulegroup.md): Recursive layout and config component for groups
 - [ShiftActions](/docs/components/shiftactions.md): Shift up/down buttons
+- [UndoRedoActions](/docs/components/undoredoactions.md): Undo/redo buttons
 - [ValueEditor](/docs/components/valueeditor.md): Dynamic editor component
 - [ValueSelector](/docs/components/valueselector.md): Versatile selector component
 
@@ -64,6 +65,7 @@ Try the interactive Rules Engine demo with a musician-themed example, including 
 - [Path concepts](/docs/tips/path.md): Explanation of the "path" property of rules and groups
 - [Customization showcase](/docs/tips/showcase.md): Interesting/unconventional layouts or behavior
 - [Subqueries and nested data](/docs/tips/subqueries.md): Building queries for data with nested arrays and complex structures
+- [Undo / redo](/docs/tips/undo-redo.md): Recording and navigating query history
 
 ### Utilities
 
@@ -576,6 +578,10 @@ import LockIcon from '@mui/icons-material/Lock';
 
 import LockOpenIcon from '@mui/icons-material/LockOpen';
 
+import RedoIcon from '@mui/icons-material/Redo';
+
+import UndoIcon from '@mui/icons-material/Undo';
+
 import Button from '@mui/material/Button';
 
 import Checkbox from '@mui/material/Checkbox';
@@ -640,6 +646,8 @@ const muiComponents = {
 
   RadioGroup,
 
+  RedoIcon, // (after 8.22.0)
+
   Select,
 
   Switch,
@@ -647,6 +655,8 @@ const muiComponents = {
   TextareaAutosize,
 
   TextField, // (Use `Input` instead of `TextField` in versions lower than 7.7.1)
+
+  UndoIcon, // (after 8.22.0)
 
 };
 
@@ -937,7 +947,7 @@ export const defaultOperators: DefaultOperators = [
 ];
 ```
 
-> *Source: [/packages/core/src/defaults.ts#L176-L195](https://github.com/react-querybuilder/react-querybuilder/blob/main/packages/core/src/defaults.ts#L176-L195)*
+> *Source: [/packages/core/src/defaults.ts#L178-L197](https://github.com/react-querybuilder/react-querybuilder/blob/main/packages/core/src/defaults.ts#L178-L197)*
 
 For more information about option list props like `operators`, see [Working with option lists](/docs/tips/option-lists.md).
 
@@ -957,7 +967,7 @@ export const defaultCombinators: DefaultCombinators = [
 ];
 ```
 
-> *Source: [/packages/core/src/defaults.ts#L281-L284](https://github.com/react-querybuilder/react-querybuilder/blob/main/packages/core/src/defaults.ts#L281-L284)*
+> *Source: [/packages/core/src/defaults.ts#L283-L286](https://github.com/react-querybuilder/react-querybuilder/blob/main/packages/core/src/defaults.ts#L283-L286)*
 
 For more information about option list props like `combinators`, see [Working with option lists](/docs/tips/option-lists.md).
 
@@ -1326,6 +1336,10 @@ export const defaultTranslations: BaseTranslationsFull = {
 
   shiftActionDown: { label: '˅', title: 'Shift down' } as const,
 
+  undo: { label: '↶', title: 'Undo' } as const,
+
+  redo: { label: '↷', title: 'Redo' } as const,
+
   dragHandle: { label: '⁞⁞', title: 'Drag handle' } as const,
 
   lockRule: { label: '🔓', title: 'Lock rule' } as const,
@@ -1349,7 +1363,7 @@ export const defaultTranslations: BaseTranslationsFull = {
 } satisfies BaseTranslationsFull;
 ```
 
-> *Source: [/packages/core/src/defaults.ts#L89-L131](https://github.com/react-querybuilder/react-querybuilder/blob/main/packages/core/src/defaults.ts#L89-L131)*
+> *Source: [/packages/core/src/defaults.ts#L89-L133](https://github.com/react-querybuilder/react-querybuilder/blob/main/packages/core/src/defaults.ts#L89-L133)*
 
 ### `showCombinatorsBetweenRules`[​](#showcombinatorsbetweenrules "Direct link to showcombinatorsbetweenrules")
 
@@ -1388,6 +1402,25 @@ Displays "Mute rule" and "Mute group" buttons. By default, the `muted` property 
 `boolean` (default `false`) *[Click here for demo](/demo#showShiftActions=true)*
 
 Displays "shift up"/"shift down" buttons at the front of each rule and group (except root), stacked vertically by default. Upper button shifts up one position, lower button shifts down. Configure button labels via `translations.shiftActionUp` and `translations.shiftActionDown`.
+
+### `showUndoRedo`[​](#showundoredo "Direct link to showundoredo")
+
+`boolean` (default `false`) *[Click here for demo](/demo#showUndoRedo=true)*
+
+Displays "undo"/"redo" buttons at the end of the outermost group's header.
+
+Defaults to `true` for any query builder descending from [`QueryBuilderHistory`](/docs/tips/undo-redo.md) (pass `showUndoRedo={false}` on either component to opt out), mirroring how [`enableDragAndDrop`](#enabledraganddrop) defaults to `true` under `QueryBuilderDnD`.
+
+caution
+
+This prop has no effect on its own, because the buttons it displays come from the [`undoRedoActions`](/docs/components/querybuilder-controlelements.md#undoredoactions) control element, which defaults to `null`. Provide one of the following:
+
+* `QueryBuilderHistory` from [`react-querybuilder/history`](/docs/tips/undo-redo.md) higher in the component tree, which supplies the default [`UndoRedoActions`](/docs/components/undoredoactions.md) and records the history it navigates. This is the recommended approach.
+* Your own `controlElements.undoRedoActions` component, which is then responsible for calling `useQueryBuilderHistory(props.schema.qbId)` itself.
+
+With neither in place, `showUndoRedo` logs an error and renders nothing.
+
+Configure button labels via `translations.undo` and `translations.redo`. See [Undo/redo](/docs/tips/undo-redo.md) for the full guide.
 
 ### `resetOnFieldChange`[​](#resetonfieldchange "Direct link to resetonfieldchange")
 
@@ -1552,6 +1585,24 @@ Enables debug logging with the [`onLog` function](#onlog).
 
 Receives logging messages when [`debugMode`](#debugmode) is enabled.
 
+### `qbId`[​](#qbid "Direct link to qbid")
+
+`string`
+
+Identifier for this query builder instance within React Query Builder's internal Redux store. Useful for addressing a specific query builder from outside its own component tree, e.g. an external toolbar or a keyboard shortcut handler (see [Undo/redo](/docs/tips/undo-redo.md)).
+
+If not provided, an identifier is generated automatically. Only evaluated when the component mounts—subsequent changes are ignored (and logged in non-production modes).
+
+If another *mounted* query builder is already using the same `qbId`, this query builder falls back to a generated identifier and logs an error in non-production modes. Reusing a `qbId` *after* the previous query builder has unmounted is supported (see [`preserveQueryStateOnUnmount`](#preservequerystateonunmount)).
+
+### `preserveQueryStateOnUnmount`[​](#preservequerystateonunmount "Direct link to preservequerystateonunmount")
+
+`boolean` (default `false`)
+
+By default, when the last query builder using a given [`qbId`](#qbid) unmounts, its query is removed from the internal Redux store. Pass `true` to retain the query state after unmount, which allows a subsequent query builder with the same `qbId` to pick up where the previous one left off.
+
+Only meaningful in conjunction with an explicit `qbId`, since automatically generated identifiers are never reused.
+
 ### `idGenerator`[​](#idgenerator "Direct link to idgenerator")
 
 `() => string` (default `generateID`)
@@ -1672,6 +1723,7 @@ The following control overrides are supported via the `Controls` interface. Sett
 | [`ruleGroupBodyElements`](#rulegroupbodyelements)     | `React.ComponentType<RuleGroupProps & ReturnType<typeof useRuleGroup>>`                           |
 | [`ruleGroupHeaderElements`](#rulegroupheaderelements) | `React.ComponentType<RuleGroupProps & ReturnType<typeof useRuleGroup>>`                           |
 | [`shiftActions`](#shiftactions)                       | `React.ComponentType<ShiftActionsProps> \| null`                                                  |
+| [`undoRedoActions`](#undoredoactions)                 | `React.ComponentType<UndoRedoActionsProps> \| null`                                               |
 | [`valueEditor`](#valueeditor)                         | `React.ComponentType<ValueEditorProps> \| null`                                                   |
 | [`valueSelector`](#valueselector)                     | `React.ComponentType<ValueSelectorProps>`                                                         |
 | [`valueSourceSelector`](#valuesourceselector)         | `React.ComponentType<ValueSourceSelectorProps> \| null`                                           |
@@ -2199,6 +2251,32 @@ Per the `ShiftActionsProps` interface:
 | `shiftUpDisabled`   | `boolean`                                       | Whether shifting the rule/group up is disallowed                                                              |
 | `shiftDownDisabled` | `boolean`                                       | Whether shifting the rule/group down is disallowed                                                            |
 
+### `undoRedoActions`[​](#undoredoactions "Direct link to undoredoactions")
+
+Undoes/redoes changes to the query. Rendered in the header of the outermost group when [`showUndoRedo`](/docs/components/querybuilder.md#showundoredo) is `true`.
+
+Unlike every other control element, this one defaults to `null`—undo/redo requires the history recorder from `react-querybuilder/history`. Rendering `QueryBuilderHistory` supplies the default implementation, [`UndoRedoActions`](/docs/components/undoredoactions.md). See [Undo/redo](/docs/tips/undo-redo.md).
+
+A custom component provided here is responsible for calling `useQueryBuilderHistory(props.schema.qbId)` itself, since rendering that hook is also what opts a query builder in to history recording.
+
+Props for `undoRedoActions`
+
+Per the `UndoRedoActionsProps` interface:
+
+| Prop          | Type                                    | Description                                                                     |
+| ------------- | --------------------------------------- | ------------------------------------------------------------------------------- |
+| `labels`      | `{ undo: ReactNode; redo: ReactNode; }` | `translations.undo.label` and `translations.redo.label`, e.g. "↶" and "↷"       |
+| `titles`      | `{ undo: string; redo: string; }`       | `translations.undo.title` and `translations.redo.title`, e.g. "Undo" and "Redo" |
+| `className`   | `string`                                | CSS `classNames` to be applied to the container                                 |
+| `classNames`  | `{ undo: string; redo: string; }`       | CSS `classNames` to be applied to each button                                   |
+| `ruleOrGroup` | `RuleGroupTypeAny`                      | The outermost group                                                             |
+| `level`       | `number`                                | The `level` of the group (always `0`)                                           |
+| `context`     | `any`                                   | Container for custom props that are passed to all components                    |
+| `validation`  | `boolean \| ValidationResult`           | Validation result of the group                                                  |
+| `disabled`    | `boolean`                               | Whether the query builder is disabled                                           |
+| `path`        | `Path`                                  | [Path](/docs/tips/path.md) of the group (always `[]`)                           |
+| `schema`      | `Schema`                                | Query [schema](/docs/typescript.md#miscellaneous)                               |
+
 ### `valueEditor`[​](#valueeditor "Direct link to valueeditor")
 
 Updates the `value` property for the current rule. Defaults to [`ValueEditor`](/docs/components/valueeditor.md).
@@ -2422,6 +2500,95 @@ Renders a `<div>` containing two `<button>` elements that are stacked vertically
 * **Down button**: Shifts the rule/group below the next rule or into the next group as the first member
 
 For example, if a subgroup immediately follows a rule, shifting the rule down will move it into that subgroup as the first element, rather than positioning it below the subgroup.
+
+
+---
+
+# UndoRedoActions
+
+Renders a `<div>` containing two buttons—"undo" and "redo"—in the header of the outermost group when [`showUndoRedo`](/docs/components/querybuilder.md#showundoredo) is `true`.
+
+The buttons themselves are rendered with the [`actionElement`](/docs/components/querybuilder-controlelements.md#actionelement) control element, so they inherit the same styling and behavior as every other action button, including replacements provided by the [compatibility packages](/docs/compat.md).
+
+info
+
+You generally won't import or configure this component directly—rendering `QueryBuilderHistory` supplies it automatically, and defaults descendant query builders' `showUndoRedo` prop to `true`:
+
+```
+import { QueryBuilder } from 'react-querybuilder';
+
+import { QueryBuilderHistory } from 'react-querybuilder/history';
+
+
+
+<QueryBuilderHistory>
+
+  <QueryBuilder fields={fields} />
+
+</QueryBuilderHistory>;
+```
+
+Pass `showUndoRedo={false}` to a `QueryBuilder` (or to `QueryBuilderHistory` itself) to opt a query builder tree back out while still recording history.
+
+See [Undo/redo](/docs/tips/undo-redo.md) for the full guide.
+
+To use it without `QueryBuilderHistory`, assign it to the [`undoRedoActions`](/docs/components/querybuilder-controlelements.md#undoredoactions) control element yourself. It registers its own history recording, so no provider is required. The buttons still occupy the same slot in the outermost group's header:
+
+```
+import { UndoRedoActions } from 'react-querybuilder/history';
+
+
+
+<QueryBuilder
+
+  fields={fields}
+
+  showUndoRedo
+
+  controlElements={{ undoRedoActions: UndoRedoActions }}
+
+/>;
+```
+
+To place undo/redo controls anywhere else—a toolbar above the query builder, for example—build your own with the [`useQueryBuilderHistory`](/docs/tips/undo-redo.md#usequerybuilderhistory) hook instead.
+
+## Behavior[​](#behavior "Direct link to Behavior")
+
+* The "undo" button is disabled when there is nothing to undo, and likewise for "redo".
+* Both buttons are disabled when the query builder is [`disabled`](/docs/components/querybuilder.md#disabled).
+* Rendering this component is what opts its query builder in to history recording, since it calls [`useQueryBuilderHistory`](/docs/tips/undo-redo.md#usequerybuilderhistory) with the query builder's `qbId`. A query builder that never renders undo/redo controls (and never uses the hook) retains no history.
+
+## Labels and titles[​](#labels-and-titles "Direct link to Labels and titles")
+
+Configure the button text and tooltips with the [`translations`](/docs/components/querybuilder.md#translations) prop:
+
+```
+<QueryBuilder
+
+  showUndoRedo
+
+  translations={{
+
+    undo: { label: 'Undo', title: 'Undo the last change' },
+
+    redo: { label: 'Redo', title: 'Redo the last undone change' },
+
+  }}
+
+/>
+```
+
+The default labels are `"↶"` (U+21B6) and `"↷"` (U+21B7). These glyphs do not mirror automatically in right-to-left layouts, so swap them in your translations if appropriate.
+
+## Classnames[​](#classnames "Direct link to Classnames")
+
+| Classname               | Applied to            |
+| ----------------------- | --------------------- |
+| `.undoRedoActions`      | The container `<div>` |
+| `.undoRedoActions-undo` | The "undo" button     |
+| `.undoRedoActions-redo` | The "redo" button     |
+
+Each button also receives the `controlClassnames.actionElement` classname, like every other action button.
 
 
 ---
@@ -5896,6 +6063,7 @@ The following standard classnames are not labeled below. For most of them, the e
 * `.rule.queryBuilder-valid` (green outline for valid rules)
 * `.rule.queryBuilder-invalid` (red outline for invalid rules)
 * `.shiftActions` (orange outline for the wrapper `<div>` around the "Shift up"/"Shift down" buttons)
+* `.undoRedoActions` (the wrapper `<div>` around the ["undo"/"redo" buttons](/docs/tips/undo-redo.md))
 * `.rule-hasSubQuery` (applied to rules that render a subquery)
 * `.queryBuilder-loading` (applied to rules/groups while an [async promise is pending](/docs/tips/async-option-lists.md))
 * `.dndDragging` (applied to "preview" element while dragging)
@@ -5926,6 +6094,8 @@ Disable application of all standard classnames with the [`suppressStandardClassn
 <!-- -->
 
 .ruleGroup-combinators (and)\[ ].ruleGroup-notToggle.ruleGroup-addRule.ruleGroup-addGroup.ruleGroup-lock
+
+.undoRedoActions-undo.undoRedoActions-redo
 
 ˄˅
 
@@ -6008,6 +6178,12 @@ export const standardClassnames = {
 
   shiftActions: 'shiftActions',
 
+  undoRedoActions: 'undoRedoActions',
+
+  undoAction: 'undoRedoActions-undo',
+
+  redoAction: 'undoRedoActions-redo',
+
   dndDragging: 'dndDragging',
 
   dndOver: 'dndOver',
@@ -6055,7 +6231,7 @@ export const standardClassnames = {
 } as const;
 ```
 
-> *Source: [/packages/core/src/defaults.ts#L324-L369](https://github.com/react-querybuilder/react-querybuilder/blob/main/packages/core/src/defaults.ts#L324-L369)*
+> *Source: [/packages/core/src/defaults.ts#L326-L374](https://github.com/react-querybuilder/react-querybuilder/blob/main/packages/core/src/defaults.ts#L326-L374)*
 
 
 ---
@@ -7911,9 +8087,229 @@ Other examples of the "fallback" technique can be seen in the [Limit rule groups
 
 React Query Builder exports the same [query tools](/docs/utils/misc.md#query-tools) used internally for managing query updates. You can use these functions outside the `<QueryBuilder />` component for greater UI design flexibility while maintaining full query management capabilities.
 
-This example hides the default add/remove buttons and implements external controls above the query builder. The query methods (`add`, `remove`, `update`, and `move`) are called from event handlers, with their return values updating the shared state variable to keep everything synchronized.
+Both examples below hide the default add/remove buttons and implement external controls above the query builder. The query methods (`add`, `remove`, `update`, and `move`) are called from event handlers, each returning a new query that replaces the current one.
+
+## Uncontrolled component[​](#uncontrolled-component "Direct link to Uncontrolled component")
+
+Give the query builder an explicit [`qbId`](/docs/components/querybuilder.md#qbid) and the external controls can address it by that identifier, reading and updating its query without your component owning the state.
+
+* [`useQueryBuilderSelector`](/docs/utils/hooks.md#usequerybuilderselector) with [`getQuerySelectorById`](/docs/utils/hooks.md#usequerybuilderselector) reads the current query and re-renders the controls whenever it changes—including changes made from within the query builder itself.
+* [`getDispatchQueryById`](/docs/utils/hooks.md#getdispatchquerybyid) applies a new query exactly as a user edit would, so `onQueryChange` still fires if you supply it.
+
+Both need access to the internal store, which is why `QueryBuilderStateProvider` wraps the pair. The query builder renders its own provider internally, so this only extends that same store to components *outside* it.
+
+<!-- -->
+
+<!-- -->
+
+#### Demo[​](#demo "Direct link to Demo")
+
+https\://example.com
+
+AND (and)
+
+First Name (firstName)=Steve
+
+Last Name (lastName)=Vai
+
+#### Code[​](#code "Direct link to Code")
 
 ```
+import type { ChangeEvent } from 'react';
+
+import {
+
+  add,
+
+  defaultCombinators,
+
+  Field,
+
+  getDispatchQueryById,
+
+  getQuerySelectorById,
+
+  move,
+
+  QueryBuilder,
+
+  QueryBuilderStateProvider,
+
+  remove,
+
+  RuleGroupType,
+
+  update,
+
+  useQueryBuilderSelector,
+
+} from 'react-querybuilder';
+
+import 'react-querybuilder/dist/query-builder.css';
+
+
+
+const fields: Field[] = [
+
+  { name: 'firstName', label: 'First Name' },
+
+  { name: 'lastName', label: 'Last Name' },
+
+];
+
+
+
+const initialQuery: RuleGroupType = {
+
+  combinator: 'and',
+
+  rules: [
+
+    { field: 'firstName', operator: '=', value: 'Steve' },
+
+    { field: 'lastName', operator: '=', value: 'Vai' },
+
+  ],
+
+};
+
+
+
+const qbId = 'external-controls';
+
+
+
+const ExternalControls = () => {
+
+  const query = useQueryBuilderSelector(getQuerySelectorById(qbId)) as RuleGroupType;
+
+  const dispatchQuery = (q: RuleGroupType) => getDispatchQueryById(qbId)?.(q);
+
+
+
+  // The query builder registers its query as it mounts, so there is one render before it exists
+
+  if (!query) return null;
+
+
+
+  // add
+
+  const addRule = () =>
+
+    dispatchQuery(add(query, { field: 'firstName', operator: '=', value: 'Steve' }, []));
+
+
+
+  // remove
+
+  const removeFirstRule = () => dispatchQuery(remove(query, [0]));
+
+
+
+  // update
+
+  const updateCombinator = (e: ChangeEvent<HTMLSelectElement>) =>
+
+    dispatchQuery(update(query, 'combinator', e.target.value, []));
+
+
+
+  // move
+
+  const moveBottomRuleToTop = () => dispatchQuery(move(query, [query.rules.length - 1], [0]));
+
+
+
+  return (
+
+    <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '0.5rem' }}>
+
+      <button onClick={addRule} title="Add a rule at the bottom of the group">
+
+        Add rule
+
+      </button>
+
+      <button onClick={removeFirstRule} title="Remove the top-most rule">
+
+        Remove first rule
+
+      </button>
+
+      <button onClick={moveBottomRuleToTop} title="Move the bottom-most rule to the top">
+
+        Move bottom rule to top
+
+      </button>
+
+      <select value={query.combinator} onChange={updateCombinator} title="Update the combinator">
+
+        {defaultCombinators.map(c => (
+
+          <option key={c.name} value={c.name}>
+
+            Update combinator to {c.label}
+
+          </option>
+
+        ))}
+
+      </select>
+
+    </div>
+
+  );
+
+};
+
+
+
+export default () => (
+
+  <QueryBuilderStateProvider>
+
+    <ExternalControls />
+
+    <QueryBuilder
+
+      qbId={qbId}
+
+      fields={fields}
+
+      defaultQuery={initialQuery}
+
+      controlElements={{
+
+        // These declarations prevent the "+ Rule", "+ Group",
+
+        // and "x" (rule removal) buttons from rendering:
+
+        addGroupAction: null,
+
+        addRuleAction: null,
+
+        removeRuleAction: null,
+
+      }}
+
+    />
+
+  </QueryBuilderStateProvider>
+
+);
+```
+
+tip
+
+`getDispatchQueryById` returns `undefined` when no query builder with the given `qbId` is mounted, hence the optional call. Calling it from event handlers (rather than capturing it during render) means the controls always dispatch to the currently mounted query builder.
+
+## Controlled component[​](#controlled-component "Direct link to Controlled component")
+
+When your component already owns the query, the same query tools apply—call them from event handlers and assign the result to your state variable to keep everything synchronized.
+
+```
+import type { ChangeEvent } from 'react';
 import { useState } from 'react';
 import {
   add,
@@ -7939,8 +8335,6 @@ const initialQuery: RuleGroupType = {
     { field: 'lastName', operator: '=', value: 'Vai' },
   ],
 };
-
-const NullComponent = () => null;
 
 export default () => {
   const [query, setQuery] = useState(initialQuery);
@@ -7986,9 +8380,9 @@ export default () => {
         controlElements={{
           // These declarations prevent the "+ Rule", "+ Group",
           // and "x" (rule removal) buttons from rendering:
-          addGroupAction: NullComponent,
-          addRuleAction: NullComponent,
-          removeRuleAction: NullComponent,
+          addGroupAction: null,
+          addRuleAction: null,
+          removeRuleAction: null,
         }}
       />
     </div>
@@ -10970,6 +11364,256 @@ In unsupported formats, rules with valid `match` properties are treated as inval
 3. ElasticSearch nested queries only support `"some"` and `"none"` match modes. [↩](#user-content-fnref-3)
 
 4. PostgreSQL does not support named parameters [↩](#user-content-fnref-4)
+
+
+---
+
+# Undo / redo
+
+React Query Builder can record a history of query changes and step backward and forward through it. History is opt-in and lives in a separate entry point, so applications that don't use it pay nothing for it.
+
+* npm
+* Bun
+* Yarn
+* pnpm
+
+```
+npm install react-querybuilder
+```
+
+```
+bun add react-querybuilder
+```
+
+```
+yarn add react-querybuilder
+```
+
+```
+pnpm add react-querybuilder
+```
+
+```
+import { QueryBuilder } from 'react-querybuilder';
+
+import { QueryBuilderHistory } from 'react-querybuilder/history';
+
+
+
+const App = () => (
+
+  <QueryBuilderHistory>
+
+    <QueryBuilder fields={fields} />
+
+  </QueryBuilderHistory>
+
+);
+```
+
+That's the whole setup. `QueryBuilderHistory` records changes for descendant query builders and defaults their [`showUndoRedo`](/docs/components/querybuilder.md#showundoredo) prop to `true`, which displays undo/redo controls at the end of the outermost group's header. Pass `showUndoRedo={false}` to a particular `QueryBuilder`, or to `QueryBuilderHistory` itself, to opt out while still recording history.
+
+tip
+
+Unlike most undo/redo recipes, this works in [uncontrolled mode](/docs/components/querybuilder.md#defaultquery)—you don't need to lift the query into your own state.
+
+## How it works[​](#how-it-works "Direct link to How it works")
+
+Every query change—no matter which button, editor, or drag-and-drop interaction caused it—flows through a single action in React Query Builder's internal Redux store. The history recorder listens for that action, so recording requires no instrumentation of individual controls.
+
+Because query updates use [Immer](https://immerjs.github.io/immer/), snapshots share structure with one another: an undo entry is a reference to a previous query object, not a deep copy, so keeping many of them is inexpensive. Snapshots also retain rule `id`s, which means undo preserves React keys and drag-and-drop state.
+
+## Options[​](#options "Direct link to Options")
+
+Both options can be set on `QueryBuilderHistory`:
+
+```
+<QueryBuilderHistory maxHistory={50} coalesceMs={500}>
+
+  <QueryBuilder fields={fields} />
+
+</QueryBuilderHistory>
+```
+
+### `maxHistory`[​](#maxhistory "Direct link to maxhistory")
+
+`number` (default `50`)
+
+Maximum number of undo steps to retain. Older entries are discarded.
+
+### `coalesceMs`[​](#coalescems "Direct link to coalescems")
+
+`number` (default `500`)
+
+Consecutive changes to the same property of the same rule within this many milliseconds are merged into a single undo step. Typing `hello` into a value editor therefore produces one undo entry that restores the original value, rather than five entries that remove one character at a time.
+
+Set to `0` to record every change separately.
+
+Structural changes—adding, removing, moving, or reordering rules and groups—never merge with each other, so each one is always its own undo step.
+
+note
+
+Coalescing relies on the structural sharing that Immer guarantees: nodes that didn't change keep their identity. If your application rebuilds the query wholesale between changes—deep-cloning it, round-tripping it through JSON, or re-parsing it from a string—then no two consecutive queries share any identity and every change becomes its own history entry. Undo/redo still works correctly; it's just less granular.
+
+## Custom controls[​](#custom-controls "Direct link to Custom controls")
+
+`useQueryBuilderHistory` gives you the same controls that power the default buttons. It takes a query builder's [`qbId`](/docs/components/querybuilder.md#qbid) and can be used anywhere—including *outside* the query builder's component tree, which is what makes external toolbars possible.
+
+```
+import { QueryBuilder } from 'react-querybuilder';
+
+import { QueryBuilderHistory, useQueryBuilderHistory } from 'react-querybuilder/history';
+
+
+
+const Toolbar = ({ qbId }: { qbId: string }) => {
+
+  const { undo, redo, clear, canUndo, canRedo, past, future } = useQueryBuilderHistory(qbId);
+
+
+
+  return (
+
+    <div>
+
+      <button type="button" onClick={undo} disabled={!canUndo}>
+
+        Undo
+
+      </button>
+
+      <button type="button" onClick={redo} disabled={!canRedo}>
+
+        Redo
+
+      </button>
+
+      <button type="button" onClick={clear} disabled={!canUndo && !canRedo}>
+
+        Clear history
+
+      </button>
+
+      <span>
+
+        {past.length} undo / {future.length} redo
+
+      </span>
+
+    </div>
+
+  );
+
+};
+
+
+
+const App = () => (
+
+  <QueryBuilderHistory>
+
+    <Toolbar qbId="main" />
+
+    <QueryBuilder qbId="main" fields={fields} />
+
+  </QueryBuilderHistory>
+
+);
+```
+
+Note the explicit `qbId` on both components. Without it, the query builder generates an identifier internally that outside code has no way to discover.
+
+### `useQueryBuilderHistory`[​](#usequerybuilderhistory "Direct link to usequerybuilderhistory")
+
+```
+useQueryBuilderHistory(qbId: string, options?: { maxHistory?: number; coalesceMs?: number })
+```
+
+| Property  | Type                 | Description                                                   |
+| --------- | -------------------- | ------------------------------------------------------------- |
+| `undo`    | `() => void`         | Restores the previous query. No-op when `canUndo` is `false`. |
+| `redo`    | `() => void`         | Restores the most recently undone query.                      |
+| `clear`   | `() => void`         | Discards all history without changing the current query.      |
+| `canUndo` | `boolean`            | Whether there is anything to undo.                            |
+| `canRedo` | `boolean`            | Whether there is anything to redo.                            |
+| `past`    | `RuleGroupTypeAny[]` | Previous queries, oldest first.                               |
+| `future`  | `RuleGroupTypeAny[]` | Undone queries, newest first.                                 |
+
+Options passed here override those from the nearest `QueryBuilderHistory` ancestor.
+
+info
+
+Rendering this hook is what opts a query builder in to history recording. A query builder that neither uses the hook nor renders undo/redo controls retains no history at all, which is what keeps the feature free for everyone else.
+
+## Keyboard shortcuts[​](#keyboard-shortcuts "Direct link to Keyboard shortcuts")
+
+Keyboard shortcuts aren't built in, because a library-level listener would hijack the browser's native text undo inside the query builder's own inputs and could conflict with your application's shortcuts. Wiring them up yourself is straightforward:
+
+```
+import { useEffect } from 'react';
+
+import { useQueryBuilderHistory } from 'react-querybuilder/history';
+
+
+
+const useUndoRedoShortcuts = (qbId: string) => {
+
+  const { undo, redo } = useQueryBuilderHistory(qbId);
+
+
+
+  useEffect(() => {
+
+    const onKeyDown = (event: KeyboardEvent) => {
+
+      if (!(event.metaKey || event.ctrlKey) || event.key.toLowerCase() !== 'z') return;
+
+      // Leave text inputs alone so native undo keeps working while editing a value
+
+      const target = event.target as HTMLElement | null;
+
+      if (target?.tagName === 'INPUT' || target?.tagName === 'TEXTAREA') return;
+
+      event.preventDefault();
+
+      if (event.shiftKey) {
+
+        redo();
+
+      } else {
+
+        undo();
+
+      }
+
+    };
+
+
+
+    document.addEventListener('keydown', onKeyDown);
+
+    return () => document.removeEventListener('keydown', onKeyDown);
+
+  }, [redo, undo]);
+
+};
+```
+
+## Multiple query builders[​](#multiple-query-builders "Direct link to Multiple query builders")
+
+Each query builder has its own independent history, keyed by `qbId`. Undoing in one has no effect on any other.
+
+## History lifetime[​](#history-lifetime "Direct link to History lifetime")
+
+History belongs to the query builder, not to whichever component displays it. Several consumers can share one `qbId`—the built-in undo/redo buttons alongside an external toolbar, for example—and one of them unmounting leaves the history intact for the rest.
+
+When the last query builder using a given `qbId` unmounts, both its query and its history are discarded. To preserve them—so that remounting a query builder with the same `qbId` resumes where it left off—use [`preserveQueryStateOnUnmount`](/docs/components/querybuilder.md#preservequerystateonunmount), which retains the history along with the query.
+
+## Alternative: controlled mode[​](#alternative-controlled-mode "Direct link to Alternative: controlled mode")
+
+If your application already keeps the query in its own state, you can implement undo/redo without this entry point by maintaining `past`/`present`/`future` stacks and snapshotting the previous query on each `onQueryChange`. Because query update functions return the *same* object reference when an operation is a no-op, you can skip recording those by comparing references.
+
+This approach requires [controlled mode](/docs/components/querybuilder.md#query) and doesn't benefit from coalescing, so `QueryBuilderHistory` is generally the better option unless you have lifted the query into your own state for other reasons.
 
 
 ---
@@ -13957,6 +14601,40 @@ As a React hook, this function must follow the [appropriate rules](https://react
 
 **To access the current query from an event handler, use `props.schema.getQuery()` instead.**
 
+### `useQueryBuilderHistory`[​](#usequerybuilderhistory "Direct link to usequerybuilderhistory")
+
+Records undo/redo history for the query builder with the given `qbId`, and returns controls for navigating it. Available from the `react-querybuilder/history` entry point.
+
+Unlike the other hooks in this section, it does not need to be rendered beneath a `QueryBuilder`, which is what allows external toolbars and keyboard shortcut handlers to drive a query builder's history.
+
+```
+function useQueryBuilderHistory(
+
+  qbId: string,
+
+  options?: { maxHistory?: number; coalesceMs?: number }
+
+): {
+
+  undo: () => void;
+
+  redo: () => void;
+
+  clear: () => void;
+
+  canUndo: boolean;
+
+  canRedo: boolean;
+
+  past: RuleGroupTypeAny[];
+
+  future: RuleGroupTypeAny[];
+
+};
+```
+
+See [Undo/redo](/docs/tips/undo-redo.md) for the full guide.
+
 ### `useQueryBuilderSelector`[​](#usequerybuilderselector "Direct link to usequerybuilderselector")
 
 tip
@@ -13987,6 +14665,24 @@ const CustomValueEditor = (props: ValueEditorProps) => {
   // anything else in your render function.
 
 };
+```
+
+### `getDispatchQueryById`[​](#getdispatchquerybyid "Direct link to getdispatchquerybyid")
+
+Not a hook, but the write-side counterpart to the selectors above. Returns the `dispatchQuery` function for the mounted query builder with the given `qbId`, or `undefined` if no such query builder is mounted.
+
+```
+function getDispatchQueryById(qbId: string): DispatchQueryFn | undefined;
+```
+
+Updating a query through this function is equivalent to a user edit: the query is applied to the internal store *and* the query builder's `onQueryChange` callback fires, so it works whether the query builder is [controlled or uncontrolled](/docs/components/querybuilder.md#query). That makes it possible to drive a query builder from outside its own component tree—an external toolbar, a keyboard shortcut handler, or the undo/redo controls in [`react-querybuilder/history`](/docs/tips/undo-redo.md), which use it to apply restored queries.
+
+Requires an explicit [`qbId`](/docs/components/querybuilder.md#qbid) prop, since automatically generated identifiers are not discoverable from outside the component.
+
+```
+const dispatchQuery = getDispatchQueryById('main');
+
+dispatchQuery?.(add(currentQuery, { field: 'firstName', operator: '=', value: '' }, []));
 ```
 
 ## Component logic[​](#component-logic "Direct link to Component logic")

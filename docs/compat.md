@@ -285,6 +285,10 @@ import LockIcon from '@mui/icons-material/Lock';
 
 import LockOpenIcon from '@mui/icons-material/LockOpen';
 
+import RedoIcon from '@mui/icons-material/Redo';
+
+import UndoIcon from '@mui/icons-material/Undo';
+
 import Button from '@mui/material/Button';
 
 import Checkbox from '@mui/material/Checkbox';
@@ -349,6 +353,8 @@ const muiComponents = {
 
   RadioGroup,
 
+  RedoIcon, // (after 8.22.0)
+
   Select,
 
   Switch,
@@ -356,6 +362,8 @@ const muiComponents = {
   TextareaAutosize,
 
   TextField, // (Use `Input` instead of `TextField` in versions lower than 7.7.1)
+
+  UndoIcon, // (after 8.22.0)
 
 };
 

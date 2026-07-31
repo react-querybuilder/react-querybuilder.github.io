@@ -24,6 +24,7 @@
 - [Rule](/docs/components/rule.md): Layout and config component for rules
 - [RuleGroup](/docs/components/rulegroup.md): Recursive layout and config component for groups
 - [ShiftActions](/docs/components/shiftactions.md): Shift up/down buttons
+- [UndoRedoActions](/docs/components/undoredoactions.md): Undo/redo buttons
 - [ValueEditor](/docs/components/valueeditor.md): Dynamic editor component
 - [ValueSelector](/docs/components/valueselector.md): Versatile selector component
 
@@ -64,6 +65,7 @@ Try the interactive Rules Engine demo with a musician-themed example, including 
 - [Path concepts](/docs/tips/path.md): Explanation of the "path" property of rules and groups
 - [Customization showcase](/docs/tips/showcase.md): Interesting/unconventional layouts or behavior
 - [Subqueries and nested data](/docs/tips/subqueries.md): Building queries for data with nested arrays and complex structures
+- [Undo / redo](/docs/tips/undo-redo.md): Recording and navigating query history
 
 ### Utilities
 

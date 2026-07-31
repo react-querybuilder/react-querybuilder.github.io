@@ -118,7 +118,7 @@ export const defaultOperators: DefaultOperators = [
 ];
 ```
 
-> *Source: [/packages/core/src/defaults.ts#L176-L195](https://github.com/react-querybuilder/react-querybuilder/blob/main/packages/core/src/defaults.ts#L176-L195)*
+> *Source: [/packages/core/src/defaults.ts#L178-L197](https://github.com/react-querybuilder/react-querybuilder/blob/main/packages/core/src/defaults.ts#L178-L197)*
 
 For more information about option list props like `operators`, see [Working with option lists](/docs/tips/option-lists.md).
 
@@ -138,7 +138,7 @@ export const defaultCombinators: DefaultCombinators = [
 ];
 ```
 
-> *Source: [/packages/core/src/defaults.ts#L281-L284](https://github.com/react-querybuilder/react-querybuilder/blob/main/packages/core/src/defaults.ts#L281-L284)*
+> *Source: [/packages/core/src/defaults.ts#L283-L286](https://github.com/react-querybuilder/react-querybuilder/blob/main/packages/core/src/defaults.ts#L283-L286)*
 
 For more information about option list props like `combinators`, see [Working with option lists](/docs/tips/option-lists.md).
 
@@ -507,6 +507,10 @@ export const defaultTranslations: BaseTranslationsFull = {
 
   shiftActionDown: { label: '˅', title: 'Shift down' } as const,
 
+  undo: { label: '↶', title: 'Undo' } as const,
+
+  redo: { label: '↷', title: 'Redo' } as const,
+
   dragHandle: { label: '⁞⁞', title: 'Drag handle' } as const,
 
   lockRule: { label: '🔓', title: 'Lock rule' } as const,
@@ -530,7 +534,7 @@ export const defaultTranslations: BaseTranslationsFull = {
 } satisfies BaseTranslationsFull;
 ```
 
-> *Source: [/packages/core/src/defaults.ts#L89-L131](https://github.com/react-querybuilder/react-querybuilder/blob/main/packages/core/src/defaults.ts#L89-L131)*
+> *Source: [/packages/core/src/defaults.ts#L89-L133](https://github.com/react-querybuilder/react-querybuilder/blob/main/packages/core/src/defaults.ts#L89-L133)*
 
 ### `showCombinatorsBetweenRules`[​](#showcombinatorsbetweenrules "Direct link to showcombinatorsbetweenrules")
 
@@ -569,6 +573,25 @@ Displays "Mute rule" and "Mute group" buttons. By default, the `muted` property 
 `boolean` (default `false`) *[Click here for demo](/demo#showShiftActions=true)*
 
 Displays "shift up"/"shift down" buttons at the front of each rule and group (except root), stacked vertically by default. Upper button shifts up one position, lower button shifts down. Configure button labels via `translations.shiftActionUp` and `translations.shiftActionDown`.
+
+### `showUndoRedo`[​](#showundoredo "Direct link to showundoredo")
+
+`boolean` (default `false`) *[Click here for demo](/demo#showUndoRedo=true)*
+
+Displays "undo"/"redo" buttons at the end of the outermost group's header.
+
+Defaults to `true` for any query builder descending from [`QueryBuilderHistory`](/docs/tips/undo-redo.md) (pass `showUndoRedo={false}` on either component to opt out), mirroring how [`enableDragAndDrop`](#enabledraganddrop) defaults to `true` under `QueryBuilderDnD`.
+
+caution
+
+This prop has no effect on its own, because the buttons it displays come from the [`undoRedoActions`](/docs/components/querybuilder-controlelements.md#undoredoactions) control element, which defaults to `null`. Provide one of the following:
+
+* `QueryBuilderHistory` from [`react-querybuilder/history`](/docs/tips/undo-redo.md) higher in the component tree, which supplies the default [`UndoRedoActions`](/docs/components/undoredoactions.md) and records the history it navigates. This is the recommended approach.
+* Your own `controlElements.undoRedoActions` component, which is then responsible for calling `useQueryBuilderHistory(props.schema.qbId)` itself.
+
+With neither in place, `showUndoRedo` logs an error and renders nothing.
+
+Configure button labels via `translations.undo` and `translations.redo`. See [Undo/redo](/docs/tips/undo-redo.md) for the full guide.
 
 ### `resetOnFieldChange`[​](#resetonfieldchange "Direct link to resetonfieldchange")
 
@@ -732,6 +755,24 @@ Enables debug logging with the [`onLog` function](#onlog).
 `(message: any) => void` (default `console.log`)
 
 Receives logging messages when [`debugMode`](#debugmode) is enabled.
+
+### `qbId`[​](#qbid "Direct link to qbid")
+
+`string`
+
+Identifier for this query builder instance within React Query Builder's internal Redux store. Useful for addressing a specific query builder from outside its own component tree, e.g. an external toolbar or a keyboard shortcut handler (see [Undo/redo](/docs/tips/undo-redo.md)).
+
+If not provided, an identifier is generated automatically. Only evaluated when the component mounts—subsequent changes are ignored (and logged in non-production modes).
+
+If another *mounted* query builder is already using the same `qbId`, this query builder falls back to a generated identifier and logs an error in non-production modes. Reusing a `qbId` *after* the previous query builder has unmounted is supported (see [`preserveQueryStateOnUnmount`](#preservequerystateonunmount)).
+
+### `preserveQueryStateOnUnmount`[​](#preservequerystateonunmount "Direct link to preservequerystateonunmount")
+
+`boolean` (default `false`)
+
+By default, when the last query builder using a given [`qbId`](#qbid) unmounts, its query is removed from the internal Redux store. Pass `true` to retain the query state after unmount, which allows a subsequent query builder with the same `qbId` to pick up where the previous one left off.
+
+Only meaningful in conjunction with an explicit `qbId`, since automatically generated identifiers are never reused.
 
 ### `idGenerator`[​](#idgenerator "Direct link to idgenerator")
 

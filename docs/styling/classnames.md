@@ -12,6 +12,7 @@ The following standard classnames are not labeled below. For most of them, the e
 * `.rule.queryBuilder-valid` (green outline for valid rules)
 * `.rule.queryBuilder-invalid` (red outline for invalid rules)
 * `.shiftActions` (orange outline for the wrapper `<div>` around the "Shift up"/"Shift down" buttons)
+* `.undoRedoActions` (the wrapper `<div>` around the ["undo"/"redo" buttons](/docs/tips/undo-redo.md))
 * `.rule-hasSubQuery` (applied to rules that render a subquery)
 * `.queryBuilder-loading` (applied to rules/groups while an [async promise is pending](/docs/tips/async-option-lists.md))
 * `.dndDragging` (applied to "preview" element while dragging)
@@ -42,6 +43,8 @@ Disable application of all standard classnames with the [`suppressStandardClassn
 <!-- -->
 
 .ruleGroup-combinators (and)\[ ].ruleGroup-notToggle.ruleGroup-addRule.ruleGroup-addGroup.ruleGroup-lock
+
+.undoRedoActions-undo.undoRedoActions-redo
 
 ˄˅
 
@@ -124,6 +127,12 @@ export const standardClassnames = {
 
   shiftActions: 'shiftActions',
 
+  undoRedoActions: 'undoRedoActions',
+
+  undoAction: 'undoRedoActions-undo',
+
+  redoAction: 'undoRedoActions-redo',
+
   dndDragging: 'dndDragging',
 
   dndOver: 'dndOver',
@@ -171,4 +180,4 @@ export const standardClassnames = {
 } as const;
 ```
 
-> *Source: [/packages/core/src/defaults.ts#L324-L369](https://github.com/react-querybuilder/react-querybuilder/blob/main/packages/core/src/defaults.ts#L324-L369)*
+> *Source: [/packages/core/src/defaults.ts#L326-L374](https://github.com/react-querybuilder/react-querybuilder/blob/main/packages/core/src/defaults.ts#L326-L374)*

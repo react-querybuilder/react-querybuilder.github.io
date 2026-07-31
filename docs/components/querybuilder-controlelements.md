@@ -47,6 +47,7 @@ The following control overrides are supported via the `Controls` interface. Sett
 | [`ruleGroupBodyElements`](#rulegroupbodyelements)     | `React.ComponentType<RuleGroupProps & ReturnType<typeof useRuleGroup>>`                           |
 | [`ruleGroupHeaderElements`](#rulegroupheaderelements) | `React.ComponentType<RuleGroupProps & ReturnType<typeof useRuleGroup>>`                           |
 | [`shiftActions`](#shiftactions)                       | `React.ComponentType<ShiftActionsProps> \| null`                                                  |
+| [`undoRedoActions`](#undoredoactions)                 | `React.ComponentType<UndoRedoActionsProps> \| null`                                               |
 | [`valueEditor`](#valueeditor)                         | `React.ComponentType<ValueEditorProps> \| null`                                                   |
 | [`valueSelector`](#valueselector)                     | `React.ComponentType<ValueSelectorProps>`                                                         |
 | [`valueSourceSelector`](#valuesourceselector)         | `React.ComponentType<ValueSourceSelectorProps> \| null`                                           |
@@ -573,6 +574,32 @@ Per the `ShiftActionsProps` interface:
 | `shiftDown`         | `() => void`                                    | Method to shift the rule/group down one place                                                                 |
 | `shiftUpDisabled`   | `boolean`                                       | Whether shifting the rule/group up is disallowed                                                              |
 | `shiftDownDisabled` | `boolean`                                       | Whether shifting the rule/group down is disallowed                                                            |
+
+### `undoRedoActions`[​](#undoredoactions "Direct link to undoredoactions")
+
+Undoes/redoes changes to the query. Rendered in the header of the outermost group when [`showUndoRedo`](/docs/components/querybuilder.md#showundoredo) is `true`.
+
+Unlike every other control element, this one defaults to `null`—undo/redo requires the history recorder from `react-querybuilder/history`. Rendering `QueryBuilderHistory` supplies the default implementation, [`UndoRedoActions`](/docs/components/undoredoactions.md). See [Undo/redo](/docs/tips/undo-redo.md).
+
+A custom component provided here is responsible for calling `useQueryBuilderHistory(props.schema.qbId)` itself, since rendering that hook is also what opts a query builder in to history recording.
+
+Props for `undoRedoActions`
+
+Per the `UndoRedoActionsProps` interface:
+
+| Prop          | Type                                    | Description                                                                     |
+| ------------- | --------------------------------------- | ------------------------------------------------------------------------------- |
+| `labels`      | `{ undo: ReactNode; redo: ReactNode; }` | `translations.undo.label` and `translations.redo.label`, e.g. "↶" and "↷"       |
+| `titles`      | `{ undo: string; redo: string; }`       | `translations.undo.title` and `translations.redo.title`, e.g. "Undo" and "Redo" |
+| `className`   | `string`                                | CSS `classNames` to be applied to the container                                 |
+| `classNames`  | `{ undo: string; redo: string; }`       | CSS `classNames` to be applied to each button                                   |
+| `ruleOrGroup` | `RuleGroupTypeAny`                      | The outermost group                                                             |
+| `level`       | `number`                                | The `level` of the group (always `0`)                                           |
+| `context`     | `any`                                   | Container for custom props that are passed to all components                    |
+| `validation`  | `boolean \| ValidationResult`           | Validation result of the group                                                  |
+| `disabled`    | `boolean`                               | Whether the query builder is disabled                                           |
+| `path`        | `Path`                                  | [Path](/docs/tips/path.md) of the group (always `[]`)                           |
+| `schema`      | `Schema`                                | Query [schema](/docs/typescript.md#miscellaneous)                               |
 
 ### `valueEditor`[​](#valueeditor "Direct link to valueeditor")
 
