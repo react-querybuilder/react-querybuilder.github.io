@@ -108,6 +108,70 @@ const dispatchQuery = getDispatchQueryById('main');
 dispatchQuery?.(add(currentQuery, { field: 'firstName', operator: '=', value: '' }, []));
 ```
 
+### `useQueryManager`[​](#usequerymanager "Direct link to usequerymanager")
+
+Subscribes to a [`QueryManager`](/docs/utils/query-management.md#query-manager) and returns its current query alongside the manager itself, re-rendering whenever the query changes. Returns a `[query, manager]` tuple.
+
+```
+function useQueryManager<RG, F, O, C>(
+
+  manager: QueryManager<RG, F, O, C>
+
+): [RG, QueryManager<RG, F, O, C>];
+
+function useQueryManager<RG, F, O, C>(
+
+  query?: RG,
+
+  options?: QueryManagerOptions<F, O, C>
+
+): [RG, QueryManager<RG, F, O, C>];
+```
+
+Unlike every other hook in this section, `useQueryManager` does *not* use Redux and does not need to be rendered beneath a `QueryBuilder`. `QueryManager` maintains its own state, so queries managed this way are invisible to [`useQueryBuilderQuery`](#usequerybuilderquery), [`useQueryBuilderSelector`](#usequerybuilderselector), [`useQueryBuilderHistory`](#usequerybuilderhistory), and [`getDispatchQueryById`](#getdispatchquerybyid). Use it to build a headless or fully custom interface; it is not a replacement for the [`QueryBuilder`](/docs/components/querybuilder.md) component.
+
+Pass an existing manager to control its lifetime yourself:
+
+```
+const qm = useMemo(() => new QueryManager(initialQuery, { fields }), []);
+
+
+
+const CustomUI = () => {
+
+  const [query] = useQueryManager(qm);
+
+  // ...
+
+};
+```
+
+Or let the hook create one. The manager is created on the first render and never recreated, so `query` is an *initial* value and `options` are captured once—later changes to either argument are ignored:
+
+```
+const CustomUI = () => {
+
+  const [query, qm] = useQueryManager(initialQuery, { fields });
+
+
+
+  return (
+
+    <>
+
+      <button onClick={() => qm.add(qm.createRule())}>Add rule</button>
+
+      <pre>{JSON.stringify(query, null, 2)}</pre>
+
+    </>
+
+  );
+
+};
+```
+
+Since the manager is stable, its methods are safe to call from event handlers and to use in dependency arrays. A [batch](/docs/utils/query-management.md#batching) triggers a single re-render regardless of how many changes it contains, and mutations that resolve to a no-op trigger none.
+
 ## Component logic[​](#component-logic "Direct link to Component logic")
 
 The core logic of each component is encapsulated in a reusable hook. Each main component is little more than a call to its respective hook plus the JSX that uses the properties returned from that hook. This enables creating a custom presentation layer without copying logic code from the default components.
@@ -128,6 +192,8 @@ function useRule(props: RuleProps): {
 };
 ```
 
+The configuration-dependent half of its result—field data, operators, value editor type, value list, value sources, match modes, and validation result—is derived by the framework-agnostic `deriveRuleContext` utility from `@react-querybuilder/core`. [`QueryManager.getRuleContext()`](/docs/utils/query-management.md#rule-configuration) calls the same utility, so non-React implementations resolve rules identically. Its `classNames` and `outerClassName` come from the equally framework-agnostic [`deriveRuleClassNames`/`deriveRuleOuterClassName`](/docs/utils/query-management.md#classnames).
+
 ### `useRuleGroup`[​](#userulegroup "Direct link to userulegroup")
 
 Called by the [`RuleGroup`](/docs/components/rulegroup.md) component. See [source code](https://github.com/react-querybuilder/react-querybuilder/blob/main/packages/react-querybuilder/src/hooks/useRuleGroup.ts) for returned properties.
@@ -139,6 +205,8 @@ function useRuleGroup(props: RuleGroupProps): {
 
 };
 ```
+
+Its `classNames` and `outerClassName` come from [`deriveRuleGroupClassNames`/`deriveRuleGroupOuterClassName`](/docs/utils/query-management.md#classnames), and its combinator resolution from `getRuleGroupCombinator` (see [`QueryManager.getRuleGroupContext()`](/docs/utils/query-management.md#rule-configuration)).
 
 ### `useValueEditor`[​](#usevalueeditor "Direct link to usevalueeditor")
 
@@ -167,6 +235,8 @@ This hook updates the `value` as a side effect when these conditions are true:
 * `value` is an array or a string containing a comma (`,`) and at least one non-whitespace character on either side.
 
 If all of these conditions are met, `handleOnChange` will be called with the first element of the array, or any characters before the first comma if `value` is a string.
+
+Everything except that side effect is derived by the framework-agnostic [value editor utilities](/docs/utils/query-management.md#value-editors) from `@react-querybuilder/core`, so an implementation in another framework can reuse the logic without reimplementing it.
 
 ### `useValueSelector`[​](#usevalueselector "Direct link to usevalueselector")
 
