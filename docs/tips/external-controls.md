@@ -1,6 +1,6 @@
 # External controls
 
-React Query Builder exports the same [query tools](/docs/utils/misc.md#query-tools) used internally for managing query updates. You can use these functions outside the `<QueryBuilder />` component for greater UI design flexibility while maintaining full query management capabilities.
+React Query Builder exports the same [query tools](/docs/utils/query-management.md#query-tools) used internally for managing query updates. You can use these functions outside the `<QueryBuilder />` component for greater UI design flexibility while maintaining full query management capabilities.
 
 Both examples below hide the default add/remove buttons and implement external controls above the query builder. The query methods (`add`, `remove`, `update`, and `move`) are called from event handlers, each returning a new query that replaces the current one.
 

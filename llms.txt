@@ -73,6 +73,7 @@ Try the interactive Rules Engine demo with a musician-themed example, including 
 - [Hooks](/docs/utils/hooks.md): Reuse React Query Builder's logic in your own components
 - [Import](/docs/utils/import.md): Convert SQL and other formats to query builder objects
 - [Miscellaneous](/docs/utils/misc.md): Assorted utilities and other exports
+- [Query management](/docs/utils/query-management.md): Programmatic query manipulation
 - [Validation](/docs/utils/validation.md): Query validation methods and configuration
 
 ## Optional
