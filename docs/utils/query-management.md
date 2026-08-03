@@ -60,7 +60,7 @@ export interface AddOptions extends AbortOptions {
 }
 ```
 
-> *Source: [/packages/core/src/utils/queryTools.ts#L162-L180](https://github.com/react-querybuilder/react-querybuilder/blob/main/packages/core/src/utils/queryTools.ts#L162-L180)*
+> *Source: [/packages/core/src/utils/queryTools.ts#L173-L191](https://github.com/react-querybuilder/react-querybuilder/blob/main/packages/core/src/utils/queryTools.ts#L173-L191)*
 
 ### `remove`[​](#remove "Direct link to remove")
 
@@ -152,7 +152,7 @@ export interface UpdateOptions extends AbortOptions {
 }
 ```
 
-> *Source: [/packages/core/src/utils/queryTools.ts#L275-L303](https://github.com/react-querybuilder/react-querybuilder/blob/main/packages/core/src/utils/queryTools.ts#L275-L303)*
+> *Source: [/packages/core/src/utils/queryTools.ts#L286-L314](https://github.com/react-querybuilder/react-querybuilder/blob/main/packages/core/src/utils/queryTools.ts#L286-L314)*
 
 ### `move`[​](#move "Direct link to move")
 
@@ -196,7 +196,7 @@ export interface MoveOptions extends AbortOptions {
 }
 ```
 
-> *Source: [/packages/core/src/utils/queryTools.ts#L744-L759](https://github.com/react-querybuilder/react-querybuilder/blob/main/packages/core/src/utils/queryTools.ts#L744-L759)*
+> *Source: [/packages/core/src/utils/queryTools.ts#L763-L778](https://github.com/react-querybuilder/react-querybuilder/blob/main/packages/core/src/utils/queryTools.ts#L763-L778)*
 
 ### `insert`[​](#insert "Direct link to insert")
 
@@ -274,7 +274,7 @@ export interface InsertOptions extends AbortOptions {
 }
 ```
 
-> *Source: [/packages/core/src/utils/queryTools.ts#L929-L961](https://github.com/react-querybuilder/react-querybuilder/blob/main/packages/core/src/utils/queryTools.ts#L929-L961)*
+> *Source: [/packages/core/src/utils/queryTools.ts#L971-L1003](https://github.com/react-querybuilder/react-querybuilder/blob/main/packages/core/src/utils/queryTools.ts#L971-L1003)*
 
 ### `group`[​](#group "Direct link to group")
 
@@ -318,7 +318,7 @@ export interface GroupOptions extends AbortOptions {
 }
 ```
 
-> *Source: [/packages/core/src/utils/queryTools.ts#L1079-L1094](https://github.com/react-querybuilder/react-querybuilder/blob/main/packages/core/src/utils/queryTools.ts#L1079-L1094)*
+> *Source: [/packages/core/src/utils/queryTools.ts#L1121-L1136](https://github.com/react-querybuilder/react-querybuilder/blob/main/packages/core/src/utils/queryTools.ts#L1121-L1136)*
 
 ### Aborted operations[​](#aborted-operations "Direct link to Aborted operations")
 
@@ -358,7 +358,7 @@ export interface AbortOptions extends GuardOptions {
 }
 ```
 
-> *Source: [/packages/core/src/utils/queryTools.ts#L111-L118](https://github.com/react-querybuilder/react-querybuilder/blob/main/packages/core/src/utils/queryTools.ts#L111-L118)*
+> *Source: [/packages/core/src/utils/queryTools.ts#L122-L129](https://github.com/react-querybuilder/react-querybuilder/blob/main/packages/core/src/utils/queryTools.ts#L122-L129)*
 
 `reason` is one of:
 
@@ -607,6 +607,26 @@ export interface QueryManagerOptions<
 
   respectDisabled?: boolean;
 
+  /**
+
+   * Paths that are disabled without the corresponding rule or group carrying a `disabled`
+
+   * property. This mirrors the array form of the `QueryBuilder` `disabled` prop
+
+   * (e.g. `disabled={[[2]]}`), which disables nodes by position rather than by data.
+
+   *
+
+   * A path is treated as disabled if it appears here or descends from a path that does. Honored
+
+   * only when `respectDisabled` is `true`; as with the `disabled` property, a node's own
+
+   * `disabled` can always be changed so it is never permanently locked.
+
+   */
+
+  disabledPaths?: Path[];
+
   /** Abort every mutation, as though the entire query were disabled. Defaults to `false`. */
 
   queryDisabled?: boolean;
@@ -661,10 +681,24 @@ export interface QueryManagerOptions<
 
   idGenerator?: () => string;
 
+  /**
+
+   * Clock used to time history coalescing. Defaults to `Date.now`.
+
+   *
+
+   * @internal Test seam. Exists so that history recording can be compared against the
+
+   * `react-querybuilder/history` implementation without depending on wall-clock timing.
+
+   */
+
+  now?: () => number;
+
 }
 ```
 
-> *Source: [/packages/core/src/utils/QueryManager.ts#L166-L275](https://github.com/react-querybuilder/react-querybuilder/blob/main/packages/core/src/utils/QueryManager.ts#L166-L275)*
+> *Source: [/packages/core/src/utils/QueryManager.ts#L166-L292](https://github.com/react-querybuilder/react-querybuilder/blob/main/packages/core/src/utils/QueryManager.ts#L166-L292)*
 
 The constructor also accepts the [guard options](#guards) `respectDisabled` (defaulting to **`true`** here, matching the `QueryBuilder` component), `queryDisabled`, and `maxLevels`, plus `resetOnFieldChange` (default `true`) and `resetOnOperatorChange` (default `false`), which mirror the props of the same names.
 
