@@ -489,6 +489,22 @@ export interface QueryManagerOptions<
 
   autoSelectValue?: boolean;
 
+  /**
+
+   * Translations, accepting the same shape as the `translations` prop. Only the placeholder
+
+   * properties of `fields`, `operators`, and `values` are used, and only when the corresponding
+
+   * `autoSelect*` option is `false`; the remaining keys describe UI elements that have no
+
+   * meaning outside the `QueryBuilder` component. Labels are typed as `unknown` so the React
+
+   * `Translations` type, whose labels are `ReactNode`, can be passed as-is.
+
+   */
+
+  translations?: Partial<BaseTranslations<unknown>>;
+
   /** The default `field` for rules created by {@link QueryManager.createRule}. */
 
   getDefaultField?: string | ((fieldsData: FullOptionList<F>) => string);
@@ -698,7 +714,7 @@ export interface QueryManagerOptions<
 }
 ```
 
-> *Source: [/packages/core/src/utils/QueryManager.ts#L166-L292](https://github.com/react-querybuilder/react-querybuilder/blob/main/packages/core/src/utils/QueryManager.ts#L166-L292)*
+> *Source: [/packages/core/src/utils/QueryManager.ts#L167-L301](https://github.com/react-querybuilder/react-querybuilder/blob/main/packages/core/src/utils/QueryManager.ts#L167-L301)*
 
 The constructor also accepts the [guard options](#guards) `respectDisabled` (defaulting to **`true`** here, matching the `QueryBuilder` component), `queryDisabled`, and `maxLevels`, plus `resetOnFieldChange` (default `true`) and `resetOnOperatorChange` (default `false`), which mirror the props of the same names.
 
@@ -924,6 +940,22 @@ These methods resolve the same field/operator configuration the `QueryBuilder` c
 * `getValues(field, operator): FullOptionList<Option>` — The value option list.
 * `getValueEditorType(field, operator): ValueEditorType` — The value editor type.
 
+When `autoSelectField`, `autoSelectOperator`, or `autoSelectValue` is `false`, an empty placeholder option is prepended to the corresponding list. Pass the `translations` option to control those placeholders exactly as the `translations` prop does for the `QueryBuilder` component—only the placeholder properties of `fields`, `operators`, and `values` are used, since the remaining keys describe UI elements that have no meaning outside the component. This matters beyond presentation: `placeholderName` becomes the `field`, `operator`, or `value` written into rules created by the manager, so a manager paired with a component should receive the same translations.
+
+```
+const q = new QueryManager(undefined, {
+
+  fields,
+
+  autoSelectField: false,
+
+  translations: { fields: { placeholderName: '#', placeholderLabel: 'Select a field' } },
+
+});
+
+q.createRule(); // => { field: '#', ... }
+```
+
 `getRuleContext(pathOrID)` resolves all of the above for a specific rule at once, plus its validation result, returning `null` when the target can't be resolved or isn't a rule.
 
 ```
@@ -963,10 +995,6 @@ const ctx = q.getRuleContext([0]);
 
 // => { fieldData: { name: 'firstName', ... }, valueEditorType: 'text', valueSources: ['value'], ... }
 ```
-
-note
-
-`QueryManager` has no `getInputType` option, so `inputType` reflects only a field's own `inputType` property and is otherwise `null`.
 
 `getRuleGroupContext(pathOrID)` is the equivalent for groups, defaulting to the root group. It returns `null` when the target can't be resolved or isn't a group.
 
