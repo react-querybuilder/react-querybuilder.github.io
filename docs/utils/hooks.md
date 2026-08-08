@@ -172,6 +172,16 @@ const CustomUI = () => {
 
 Since the manager is stable, its methods are safe to call from event handlers and to use in dependency arrays. A [batch](/docs/utils/query-management.md#batching) triggers a single re-render regardless of how many changes it contains, and mutations that resolve to a no-op trigger none.
 
+To change the configuration after the first render, call [`reconfigure`](/docs/utils/query-management.md#reconfiguration) on the manager. The hook subscribes to the manager's config version in addition to its query, so a reconfiguration re-renders the component even though the query object is unchanged.
+
+```
+useEffect(() => {
+
+  qm.reconfigure({ translations });
+
+}, [qm, translations]);
+```
+
 ## Component logic[​](#component-logic "Direct link to Component logic")
 
 The core logic of each component is encapsulated in a reusable hook. Each main component is little more than a call to its respective hook plus the JSX that uses the properties returned from that hook. This enables creating a custom presentation layer without copying logic code from the default components.
