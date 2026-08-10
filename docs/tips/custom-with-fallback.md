@@ -206,60 +206,6 @@ export default function App() {
 
 The interactive demo below shows how each field type behaves: the "Name" field displays a text input, "Date of Birth" shows a standard date picker, and "Date Range" presents a date range picker.
 
-App.tsx
-
-CustomValueEditor.tsx
-
-fields.ts
-
-initialQuery.ts
-
-styles.css
-
-```
-import { format, parse } from 'date-fns';
-import DatePicker from 'react-datepicker';
-import 'react-datepicker/dist/react-datepicker.css';
-import { ValueEditor, ValueEditorProps } from 'react-querybuilder';
-
-const dateFormat = 'yyyy-MM-dd';
-
-export const CustomValueEditor = (props: ValueEditorProps) => {
-  if (props.fieldData.datatype === 'date') {
-    return (
-      <div>
-        <DatePicker
-          dateFormat={dateFormat}
-          selected={!props.value ? null : parse(props.value, dateFormat, new Date())}
-          onChange={(d: Date) => props.handleOnChange(d ? format(d, dateFormat) : null)}
-        />
-      </div>
-    );
-  } else if (props.fieldData.datatype === 'dateRange') {
-    const [startDate, endDate] = props.value.split(',');
-    return (
-      <div>
-        <DatePicker
-          selectsRange
-          dateFormat={dateFormat}
-          startDate={!startDate ? null : parse(startDate, dateFormat, new Date())}
-          endDate={!endDate ? null : parse(endDate, dateFormat, new Date())}
-          onChange={(range: [Date, Date]) => {
-            const [s, e] = range;
-            props.handleOnChange(
-              [!s ? '' : format(s, dateFormat), !e ? '' : format(e, dateFormat)].join(',')
-            );
-          }}
-        />
-      </div>
-    );
-  }
-  return <ValueEditor {...props} />;
-};
-```
-
-[Open Sandbox](https://codesandbox.io/api/v1/sandboxes/define?undefined\&environment=server "Open in CodeSandbox")
-
 note
 
 Other examples of the "fallback" technique can be seen in the [Limit rule groups](/docs/tips/limit-groups.md#conditionally-allow-new-groups) page and [these](https://stackoverflow.com/questions/68447510/react-query-builder-question-is-there-a-way-to-disable-a-field-option-when-addi/69443288#69443288) [two](https://stackoverflow.com/questions/61768845/progamatically-show-hide-operator-rule-and-group-button-in-react-querybuilder/69443467#69443467) StackOverflow answers.

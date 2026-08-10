@@ -35,61 +35,13 @@ pnpm add react-querybuilder
 
 Create a basic query builder by rendering `QueryBuilder` with no props. Import the official stylesheet (available in `.css` and `.scss` formats).
 
-```
-import { QueryBuilder } from 'react-querybuilder';
-import 'react-querybuilder/dist/query-builder.css';
-
-export default () => <QueryBuilder />;
-```
-
-[Open Sandbox](https://codesandbox.io/api/v1/sandboxes/define?undefined\&environment=server "Open in CodeSandbox")
-
 This query builder works but isn't very useful yet. To get real value from it, you need to define fields for users to select from. Pass an array of field objects to the `fields` prop.
 
 In the query builder below, click the "+ Rule" button and then the field selector to see the field choices.
 
-```
-import { QueryBuilder } from 'react-querybuilder';
-import 'react-querybuilder/dist/query-builder.css';
-
-const fields: Field[] = [
-  { name: 'firstName', label: 'First Name' },
-  { name: 'lastName', label: 'Last Name' },
-];
-
-export default () => <QueryBuilder fields={fields} />;
-```
-
-[Open Sandbox](https://codesandbox.io/api/v1/sandboxes/define?undefined\&environment=server "Open in CodeSandbox")
-
 Much better! However, you'll likely want to monitor and control user interactions with the query builder. Let's add state management using React's `useState` hook to store the query object and make it accessible to other components.
 
 The `query` state variable gets passed to the `query` prop, and the `setQuery` setter function handles the `onQueryChange` callback. We'll also initialize the query with some example rules, ensuring each rule's `field` property matches a field `name` from our fields array.
-
-```
-import { useState } from 'react';
-import { Field, QueryBuilder, RuleGroupType } from 'react-querybuilder';
-import 'react-querybuilder/dist/query-builder.css';
-
-const fields: Field[] = [
-  { name: 'firstName', label: 'First Name' },
-  { name: 'lastName', label: 'Last Name' },
-];
-
-export default () => {
-  const [query, setQuery] = useState<RuleGroupType>({
-    combinator: 'and',
-    rules: [
-      { field: 'firstName', operator: '=', value: 'Steve' },
-      { field: 'lastName', operator: '=', value: 'Vai' },
-    ],
-  });
-
-  return <QueryBuilder fields={fields} query={query} onQueryChange={setQuery} />;
-};
-```
-
-[Open Sandbox](https://codesandbox.io/api/v1/sandboxes/define?undefined\&environment=server "Open in CodeSandbox")
 
 Non-TypeScript version
 
@@ -138,39 +90,6 @@ export default () => {
 ## Exporting queries[​](#exporting-queries "Direct link to Exporting queries")
 
 Use the `formatQuery` function to convert query objects to formats like [SQL](https://en.wikipedia.org/wiki/SQL), [MongoDB](https://www.mongodb.com/), and [CEL](https://cel.dev) ([full documentation](/docs/utils/export.md)). The example below shows real-time SQL generation—modify the query and watch the SQL update automatically.
-
-```
-import { useState } from 'react';
-import { Field, formatQuery, QueryBuilder, RuleGroupType } from 'react-querybuilder';
-import 'react-querybuilder/dist/query-builder.css';
-
-const fields: Field[] = [
-  { name: 'firstName', label: 'First Name' },
-  { name: 'lastName', label: 'Last Name' },
-];
-
-export default () => {
-  const [query, setQuery] = useState<RuleGroupType>({
-    combinator: 'and',
-    rules: [
-      { field: 'firstName', operator: 'beginsWith', value: 'Stev' },
-      { field: 'lastName', operator: 'in', value: 'Vai,Vaughan' },
-    ],
-  });
-
-  return (
-    <>
-      <QueryBuilder fields={fields} query={query} onQueryChange={setQuery} />
-      <h4>
-        SQL as result of <code>formatQuery(query, 'sql')</code>:
-      </h4>
-      <pre>{formatQuery(query, 'sql')}</pre>
-    </>
-  );
-};
-```
-
-[Open Sandbox](https://codesandbox.io/api/v1/sandboxes/define?undefined\&environment=server "Open in CodeSandbox")
 
 ## Onward and upward\![​](#onward-and-upward "Direct link to Onward and upward!")
 
