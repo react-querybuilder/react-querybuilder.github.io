@@ -42,6 +42,8 @@ The full *runtime* export surface of `@react-querybuilder/core` (type-only expor
 
 Path helpers: `findPath`, `findID`, `getPathOfID`, `pathIsDisabled`, `pathIsDisabledByPaths`, `exceedsMaxLevels`.
 
+Every query tool accepts `freeze: false`, which skips the deep freeze applied to the returned query. Frameworks that wrap state in proxies (Vue `reactive`, Solid stores) need that; see [Freezing](/docs/utils/query-management.md#freezing-tools). `QueryManager` accepts an option of the same name, and `setAutoFreeze` is re-exported from immer as a process-wide switch.
+
 ## History[​](#history "Direct link to History")
 
 | Export                                       | Purpose                                                             |

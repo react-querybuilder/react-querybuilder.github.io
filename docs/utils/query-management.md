@@ -21,7 +21,7 @@ Adds a rule or group (and an independent combinator if necessary to keep the que
 AddOptions
 
 ```
-export interface AddOptions extends AbortOptions {
+export interface AddOptions extends QueryToolOptions {
 
   /**
 
@@ -60,7 +60,7 @@ export interface AddOptions extends AbortOptions {
 }
 ```
 
-> *Source: [/packages/core/src/utils/queryTools.ts#L173-L191](https://github.com/react-querybuilder/react-querybuilder/blob/main/packages/core/src/utils/queryTools.ts#L173-L191)*
+> *Source: [/packages/core/src/utils/queryTools.ts#L190-L208](https://github.com/react-querybuilder/react-querybuilder/blob/main/packages/core/src/utils/queryTools.ts#L190-L208)*
 
 ### `remove`[​](#remove "Direct link to remove")
 
@@ -93,7 +93,7 @@ Regardless of the order in which properties are listed, `field`, `operator`, and
 UpdateOptions
 
 ```
-export interface UpdateOptions extends AbortOptions {
+export interface UpdateOptions extends QueryToolOptions {
 
   /**
 
@@ -152,7 +152,7 @@ export interface UpdateOptions extends AbortOptions {
 }
 ```
 
-> *Source: [/packages/core/src/utils/queryTools.ts#L286-L314](https://github.com/react-querybuilder/react-querybuilder/blob/main/packages/core/src/utils/queryTools.ts#L286-L314)*
+> *Source: [/packages/core/src/utils/queryTools.ts#L305-L333](https://github.com/react-querybuilder/react-querybuilder/blob/main/packages/core/src/utils/queryTools.ts#L305-L333)*
 
 ### `move`[​](#move "Direct link to move")
 
@@ -163,7 +163,7 @@ Moves (or clones with a new `id`) a rule or group at the specified `path` or wit
 MoveOptions
 
 ```
-export interface MoveOptions extends AbortOptions {
+export interface MoveOptions extends QueryToolOptions {
 
   /**
 
@@ -196,7 +196,7 @@ export interface MoveOptions extends AbortOptions {
 }
 ```
 
-> *Source: [/packages/core/src/utils/queryTools.ts#L763-L778](https://github.com/react-querybuilder/react-querybuilder/blob/main/packages/core/src/utils/queryTools.ts#L763-L778)*
+> *Source: [/packages/core/src/utils/queryTools.ts#L789-L804](https://github.com/react-querybuilder/react-querybuilder/blob/main/packages/core/src/utils/queryTools.ts#L789-L804)*
 
 ### `insert`[​](#insert "Direct link to insert")
 
@@ -207,7 +207,7 @@ Inserts a rule or group (and an independent combinator if necessary to keep the 
 InsertOptions
 
 ```
-export interface InsertOptions extends AbortOptions {
+export interface InsertOptions extends QueryToolOptions {
 
   /**
 
@@ -274,7 +274,7 @@ export interface InsertOptions extends AbortOptions {
 }
 ```
 
-> *Source: [/packages/core/src/utils/queryTools.ts#L971-L1003](https://github.com/react-querybuilder/react-querybuilder/blob/main/packages/core/src/utils/queryTools.ts#L971-L1003)*
+> *Source: [/packages/core/src/utils/queryTools.ts#L997-L1029](https://github.com/react-querybuilder/react-querybuilder/blob/main/packages/core/src/utils/queryTools.ts#L997-L1029)*
 
 ### `group`[​](#group "Direct link to group")
 
@@ -285,7 +285,7 @@ Creates a new group at the target `path` (based on the specified `path` or given
 GroupOptions
 
 ```
-export interface GroupOptions extends AbortOptions {
+export interface GroupOptions extends QueryToolOptions {
 
   /**
 
@@ -318,7 +318,7 @@ export interface GroupOptions extends AbortOptions {
 }
 ```
 
-> *Source: [/packages/core/src/utils/queryTools.ts#L1121-L1136](https://github.com/react-querybuilder/react-querybuilder/blob/main/packages/core/src/utils/queryTools.ts#L1121-L1136)*
+> *Source: [/packages/core/src/utils/queryTools.ts#L1147-L1162](https://github.com/react-querybuilder/react-querybuilder/blob/main/packages/core/src/utils/queryTools.ts#L1147-L1162)*
 
 ### Aborted operations[​](#aborted-operations "Direct link to Aborted operations")
 
@@ -358,7 +358,7 @@ export interface AbortOptions extends GuardOptions {
 }
 ```
 
-> *Source: [/packages/core/src/utils/queryTools.ts#L122-L129](https://github.com/react-querybuilder/react-querybuilder/blob/main/packages/core/src/utils/queryTools.ts#L122-L129)*
+> *Source: [/packages/core/src/utils/queryTools.ts#L123-L130](https://github.com/react-querybuilder/react-querybuilder/blob/main/packages/core/src/utils/queryTools.ts#L123-L130)*
 
 `reason` is one of:
 
@@ -403,6 +403,20 @@ update(query, 'disabled', false, [0], { respectDisabled: true });
 ```
 
 `getGuardAbortReason(query, pathOrID, guards, { asParent })` and `exceedsMaxLevels(parentPath, guards)` are exported so a UI layer that runs its own logic before mutating—invoking a confirmation callback, for example—can apply the same rules without duplicating them.
+
+### Freezing (tools)[​](#freezing-tools "Direct link to Freezing (tools)")
+
+The query tools produce their result with [immer](https://immerjs.github.io/immer/), which deep-freezes it. That makes accidental mutation throw in strict mode, but some frameworks—Vue with `reactive`, Solid with stores—cannot wrap a frozen object. Pass `freeze: false` to opt out:
+
+```
+const nextQuery = add(query, rule, [], { freeze: false });
+
+Object.isFrozen(nextQuery); // false
+```
+
+Structural sharing is unaffected, so reference comparison still works. The `*InPlace` variants never freeze anything, so the option is inert for them.
+
+`setAutoFreeze(false)` (re-exported from immer) disables freezing process-wide, including for `produce` calls you make yourself. Prefer the per-call option unless you need that.
 
 ## Query manager[​](#query-manager "Direct link to Query manager")
 
@@ -689,6 +703,32 @@ export interface QueryManagerOptions<
 
   onInvalidTarget?: (info: AbortInfo) => void;
 
+  /**
+
+   * Deep-freeze everything the manager hands out—the query, the field list, the field map, and
+
+   * the combinator list—so accidental mutation throws in strict mode. Defaults to `true`.
+
+   *
+
+   * Pass `false` when the manager's output is handed to a framework that wraps objects in
+
+   * proxies (Vue `reactive`, Solid stores) or otherwise needs to mutate them. This also disables
+
+   * immer's auto-freeze for mutations made through the manager.
+
+   *
+
+   * The shallow copy returned by {@link QueryManager.getOptions} is frozen either way: it is a
+
+   * one-level copy that no framework proxy is placed inside, so freezing it costs nothing and
+
+   * still prevents callers from mutating the options snapshot they were handed.
+
+   */
+
+  freeze?: boolean;
+
   /** Validates the query. Defaults to {@link defaultValidator}. */
 
   validator?: QueryValidator;
@@ -714,13 +754,27 @@ export interface QueryManagerOptions<
 }
 ```
 
-> *Source: [/packages/core/src/utils/QueryManager.ts#L193-L327](https://github.com/react-querybuilder/react-querybuilder/blob/main/packages/core/src/utils/QueryManager.ts#L193-L327)*
+> *Source: [/packages/core/src/utils/QueryManager.ts#L193-L340](https://github.com/react-querybuilder/react-querybuilder/blob/main/packages/core/src/utils/QueryManager.ts#L193-L340)*
 
 The constructor also accepts the [guard options](#guards) `respectDisabled` (defaulting to **`true`** here, matching the `QueryBuilder` component), `queryDisabled`, and `maxLevels`, plus `resetOnFieldChange` (default `true`) and `resetOnOperatorChange` (default `false`), which mirror the props of the same names.
 
+### Freezing (manager)[​](#freezing-manager "Direct link to Freezing (manager)")
+
+Everything the manager hands out directly—the query, the field list, the field map, and the combinator list—is deep-frozen. Pass `freeze: false` to disable that, along with immer's auto-freeze for mutations made through the manager:
+
+```
+const q = new QueryManager(query, { fields, freeze: false });
+
+Object.isFrozen(q.getQuery()); // false
+```
+
+This is what makes a manager's output usable with a framework that wraps objects in proxies. The one exception is `getOptions()`, which is a one-level copy that no proxy is placed inside; it stays frozen either way, so callers can't mutate the options snapshot they were handed.
+
+Note that under `freeze: false`, "a query previously handed out by `getQuery` is never modified" remains true—mutations still go through the non-`InPlace` tools—but it is a convention rather than a runtime-enforced guarantee.
+
 ### State access[​](#state-access "Direct link to State access")
 
-* `getQuery(): RuleGroupTypeAny` — The current query. The returned object is frozen and structurally shared, so it's safe to retain and compare by reference to detect changes.
+* `getQuery(): RuleGroupTypeAny` — The current query. The returned object is structurally shared, so it's safe to retain and compare by reference to detect changes. It's also frozen unless the [`freeze` option](#freezing-manager) is `false`.
 * `setQuery(query: RuleGroupTypeAny)` — Replaces the current query, assigning `id`s as needed.
 
 ### Factories[​](#factories "Direct link to Factories")
@@ -766,7 +820,7 @@ The incoming options are shallow-merged over the current ones, so keys left out 
 
 Related methods:
 
-* `getOptions(): QueryManagerOptions` — The options currently in effect, as a frozen shallow copy.
+* `getOptions(): QueryManagerOptions` — The options currently in effect, as a frozen shallow copy. This one is frozen even under `freeze: false`; see [Freezing](#freezing-manager).
 * `getConfigVersion(): number` — A counter incremented by every `reconfigure` call. Bound to the instance, so it can be passed directly to React's `useSyncExternalStore` alongside `subscribe`. The [`useQueryManager`](/docs/utils/hooks.md#usequerymanager) hook already does this.
 
 note
@@ -953,7 +1007,7 @@ These methods resolve the same field/operator configuration the `QueryBuilder` c
 * `getCombinators(): FullOptionList<FullCombinator>` — The normalized combinator list, for populating a combinator selector.
 * `getFieldData(field): FullField` — The configured field. For an unconfigured field, returns the same minimal fallback (`{ name, value, label }`, all set to the field name) that `getRuleContext` reports as `fieldData`.
 
-`getFields` and `getCombinators` return frozen arrays, so they are safe to hand to rendering code without defensive copying.
+`getFields` and `getCombinators` return frozen arrays (unless the [`freeze` option](#freezing-manager) is `false`), so they are safe to hand to rendering code without defensive copying. Either way, treat them as read-only.
 
 * `getOperators(field): FullOptionList<FullOperator>` — The operator list for a field.
 * `getValueSources(field, operator): ValueSourceFullOptions` — The available value sources.
