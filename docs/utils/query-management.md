@@ -754,7 +754,7 @@ export interface QueryManagerOptions<
 }
 ```
 
-> *Source: [/packages/core/src/utils/QueryManager.ts#L193-L340](https://github.com/react-querybuilder/react-querybuilder/blob/main/packages/core/src/utils/QueryManager.ts#L193-L340)*
+> *Source: [/packages/core/src/utils/QueryManager.ts#L194-L341](https://github.com/react-querybuilder/react-querybuilder/blob/main/packages/core/src/utils/QueryManager.ts#L194-L341)*
 
 The constructor also accepts the [guard options](#guards) `respectDisabled` (defaulting to **`true`** here, matching the `QueryBuilder` component), `queryDisabled`, and `maxLevels`, plus `resetOnFieldChange` (default `true`) and `resetOnOperatorChange` (default `false`), which mirror the props of the same names.
 
@@ -821,17 +821,27 @@ The incoming options are shallow-merged over the current ones, so keys left out 
 Related methods:
 
 * `getOptions(): QueryManagerOptions` — The options currently in effect, as a frozen shallow copy. This one is frozen even under `freeze: false`; see [Freezing](#freezing-manager).
-* `getConfigVersion(): number` — A counter incremented by every `reconfigure` call. Bound to the instance, so it can be passed directly to React's `useSyncExternalStore` alongside `subscribe`. The [`useQueryManager`](/docs/utils/hooks.md#usequerymanager) hook already does this.
+* `getConfigVersion(): number` — A counter incremented only when a `reconfigure` call changes the effective configuration; calls that resolve to the options already in effect leave it unchanged. Bound to the instance, so it can be passed directly to React's `useSyncExternalStore` alongside `subscribe`. The [`useQueryManager`](/docs/utils/hooks.md#usequerymanager) hook already does this.
 
 note
 
 `reconfigure` never rewrites the query, even when the new options no longer describe it—a rule whose `field` is not in the new `fields` list is left as-is. Call [`validate()`](#validation-and-export) to detect that, or `setQuery(getQuery())` to re-normalize.
 
-Subscribers are notified once and `getConfigVersion()` is incremented, even inside a [batch](#batching); configuration is not part of a batch's rollback. History options are honored immediately: lowering `maxHistory` trims the undo stack, and turning history off clears both stacks.
+A call that resolves to the configuration already in effect is a **no-op**: nothing is re-derived, `getConfigVersion()` does not change, and subscribers are not notified. Equality is structural for data and by identity for functions (see [`optionsEqual`](/docs/utils/framework-adapters.md#configuration)), so rebuilding the options object on every render—which every framework adapter does—does not force a reconfigure as long as the data is the same. Rebuilding a callback per render *does* count as a change; memoize it to avoid that. The comparison is against the merged options, or against the replacement under `{ replace: true }`, so `reconfigure({})` behaves like `reconfigure(getOptions())`.
+
+Otherwise subscribers are notified once and `getConfigVersion()` is incremented. Inside a [batch](#batching) the options are applied immediately—configuration is not part of a batch's rollback—but the notification is deferred and merged into the batch's single notification. History options are honored immediately: lowering `maxHistory` trims the undo stack, and turning history off clears both stacks.
 
 ### Subscriptions[​](#subscriptions "Direct link to Subscriptions")
 
-`subscribe(listener: () => void)` registers a listener called after every change to the query, and returns a function that unregisters it. Mutations that resolve to a no-op do not notify, and a [batch](#batching) notifies once no matter how many changes it contains.
+`subscribe(listener: (change: SubscriptionChange) => void)` registers a listener called after every change to the query or the configuration, and returns a function that unregisters it. Mutations that resolve to a no-op do not notify, and a [batch](#batching) notifies once no matter how many changes it contains.
+
+The listener receives a `SubscriptionChange`—`{ query: boolean; config: boolean }`, at least one of which is always `true`—describing what changed. A framework adapter can use it to skip work a given change does not affect (re-deriving option lists on a query-only change, say) instead of diffing the manager's output to find out. The argument is optional: a zero-argument listener, including `useSyncExternalStore`'s `onStoreChange`, is a valid listener.
+
+| Notification source                      | `change`                         |
+| ---------------------------------------- | -------------------------------- |
+| Any mutation, `setQuery`, `undo`, `redo` | `{ query: true, config: false }` |
+| `reconfigure`                            | `{ query: false, config: true }` |
+| A batch containing both                  | `{ query: true, config: true }`  |
 
 The method is bound to the instance, so it is a stable reference across renders and can be passed directly to React's `useSyncExternalStore`. `getQuery` is bound as well, so it can serve as the snapshot getter without a wrapper:
 
