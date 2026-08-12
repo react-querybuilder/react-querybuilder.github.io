@@ -10,6 +10,20 @@ The exports listed on this page are **public API covered by semantic versioning*
 
 The full *runtime* export surface of `@react-querybuilder/core` (type-only exports are not covered) is locked by a test (`packages/core/src/__tests__/publicApi.test.ts`) that fails on both accidental removal *and* accidental addition, so every change to the surface requires a deliberate changelog entry.
 
+## The `/derivations` subpath[​](#the-derivations-subpath "Direct link to the-derivations-subpath")
+
+Everything on this page is available from the package root, and—except for `QueryManager`, `formatQuery`, and the parsers—also from `@react-querybuilder/core/derivations`:
+
+```
+import { deriveRuleContext, shouldCoalesce } from '@react-querybuilder/core/derivations';
+```
+
+The subpath contains the same bindings as the root, minus `QueryManager` and the query formatter. Importing from it guarantees that neither ends up in the bundle. That matters for adapters that own their own state and never construct a `QueryManager`: importing the same names from the root leaves their elimination up to the bundler, which is a property worth having as a contract rather than as an optimization that may or may not happen.
+
+`bun check-derivations-purity` gates the guarantee against the built output, so an import added to a derivation module cannot quietly undo it.
+
+The parsers (`parseSQL`, `parseCEL`, and the rest) have subpaths of their own and are not exported from the root, so they are excluded from `/derivations` as well.
+
 ## Option list preparation[​](#option-list-preparation "Direct link to Option list preparation")
 
 | Function                 | Purpose                                                                            |
@@ -129,4 +143,4 @@ if (!optionsEqual(manager.getOptions(), nextOptions)) manager.reconfigure(nextOp
 
 ## Validation and export[​](#validation-and-export "Direct link to Validation and export")
 
-`defaultValidator` and `formatQuery` are also framework-agnostic. See [Validation](/docs/utils/validation.md) and [Export](/docs/utils/export.md).
+`defaultValidator` and `formatQuery` are also framework-agnostic. See [Validation](/docs/utils/validation.md) and [Export](/docs/utils/export.md). `defaultValidator` is in the `/derivations` subpath; `formatQuery` is not, since it is by far the largest thing in the package and most adapters never call it. Import it from the package root or from `@react-querybuilder/core/formatQuery`.
