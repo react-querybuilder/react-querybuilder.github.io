@@ -70,6 +70,7 @@ Try the interactive Rules Engine demo with a musician-themed example, including 
 ### Utilities
 
 - [Export](/docs/utils/export.md): Convert query builder objects to SQL, etc.
+- [Framework adapter API](/docs/utils/framework-adapters.md): Headless derivations for non-React ports of React Query Builder
 - [Hooks](/docs/utils/hooks.md): Reuse React Query Builder's logic in your own components
 - [Import](/docs/utils/import.md): Convert SQL and other formats to query builder objects
 - [Miscellaneous](/docs/utils/misc.md): Assorted utilities and other exports

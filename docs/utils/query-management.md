@@ -507,11 +507,11 @@ export interface QueryManagerOptions<
 
   /** The default `field` for rules created by {@link QueryManager.createRule}. */
 
-  getDefaultField?: string | ((fieldsData: FullOptionList<F>) => string);
+  getDefaultField?: DefaultFieldProp<F>;
 
   /** The default `operator` for a given field. */
 
-  getDefaultOperator?: string | ((field: string, misc: { fieldData: F }) => string);
+  getDefaultOperator?: DefaultOperatorProp<F>;
 
   /** Overrides the computed default `value` for a new rule. */
 
@@ -714,7 +714,7 @@ export interface QueryManagerOptions<
 }
 ```
 
-> *Source: [/packages/core/src/utils/QueryManager.ts#L167-L301](https://github.com/react-querybuilder/react-querybuilder/blob/main/packages/core/src/utils/QueryManager.ts#L167-L301)*
+> *Source: [/packages/core/src/utils/QueryManager.ts#L193-L327](https://github.com/react-querybuilder/react-querybuilder/blob/main/packages/core/src/utils/QueryManager.ts#L193-L327)*
 
 The constructor also accepts the [guard options](#guards) `respectDisabled` (defaulting to **`true`** here, matching the `QueryBuilder` component), `queryDisabled`, and `maxLevels`, plus `resetOnFieldChange` (default `true`) and `resetOnOperatorChange` (default `false`), which mirror the props of the same names.
 
