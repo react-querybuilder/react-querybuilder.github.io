@@ -60,7 +60,7 @@ export interface AddOptions extends QueryToolOptions {
 }
 ```
 
-> *Source: [/packages/core/src/utils/queryTools.ts#L190-L208](https://github.com/react-querybuilder/react-querybuilder/blob/main/packages/core/src/utils/queryTools.ts#L190-L208)*
+> *Source: [/packages/core/src/utils/queryTools.ts#L192-L210](https://github.com/react-querybuilder/react-querybuilder/blob/main/packages/core/src/utils/queryTools.ts#L192-L210)*
 
 ### `remove`[​](#remove "Direct link to remove")
 
@@ -152,7 +152,7 @@ export interface UpdateOptions extends QueryToolOptions {
 }
 ```
 
-> *Source: [/packages/core/src/utils/queryTools.ts#L305-L333](https://github.com/react-querybuilder/react-querybuilder/blob/main/packages/core/src/utils/queryTools.ts#L305-L333)*
+> *Source: [/packages/core/src/utils/queryTools.ts#L307-L335](https://github.com/react-querybuilder/react-querybuilder/blob/main/packages/core/src/utils/queryTools.ts#L307-L335)*
 
 ### `move`[​](#move "Direct link to move")
 
@@ -196,7 +196,7 @@ export interface MoveOptions extends QueryToolOptions {
 }
 ```
 
-> *Source: [/packages/core/src/utils/queryTools.ts#L789-L804](https://github.com/react-querybuilder/react-querybuilder/blob/main/packages/core/src/utils/queryTools.ts#L789-L804)*
+> *Source: [/packages/core/src/utils/queryTools.ts#L889-L904](https://github.com/react-querybuilder/react-querybuilder/blob/main/packages/core/src/utils/queryTools.ts#L889-L904)*
 
 ### `insert`[​](#insert "Direct link to insert")
 
@@ -274,7 +274,43 @@ export interface InsertOptions extends QueryToolOptions {
 }
 ```
 
-> *Source: [/packages/core/src/utils/queryTools.ts#L997-L1029](https://github.com/react-querybuilder/react-querybuilder/blob/main/packages/core/src/utils/queryTools.ts#L997-L1029)*
+> *Source: [/packages/core/src/utils/queryTools.ts#L1097-L1129](https://github.com/react-querybuilder/react-querybuilder/blob/main/packages/core/src/utils/queryTools.ts#L1097-L1129)*
+
+### `ungroup`[​](#ungroup "Direct link to ungroup")
+
+`(query: RuleGroupTypeAny, pathOrID: Path | string, options: UngroupOptions) => RuleGroupTypeAny`
+
+Replaces the group at the specified `path` or with the given `id` with its own rules in the parent group. The group's `combinator`, `not`, `id`, `muted`, and `disabled` properties are discarded; its rules keep their `id`s. In an independent combinators query, the promoted rules keep their combinators, preserving the parent's alternation. An empty group is simply removed, along with the adjacent independent combinator if one exists.
+
+UngroupOptions
+
+```
+export interface UngroupOptions extends QueryToolOptions {}
+
+
+
+export interface UngroupMethod {
+
+  <RG extends RuleGroupTypeAny>(
+
+    /** The query to update. */
+
+    query: RG,
+
+    /** The path or ID of the group to ungroup. */
+
+    pathOrID: Path | string,
+
+    /** Options. */
+
+    options?: UngroupOptions
+
+  ): RG;
+
+}
+```
+
+> *Source: [/packages/core/src/utils/queryTools.ts#L734-L745](https://github.com/react-querybuilder/react-querybuilder/blob/main/packages/core/src/utils/queryTools.ts#L734-L745)*
 
 ### `group`[​](#group "Direct link to group")
 
@@ -318,7 +354,7 @@ export interface GroupOptions extends QueryToolOptions {
 }
 ```
 
-> *Source: [/packages/core/src/utils/queryTools.ts#L1147-L1162](https://github.com/react-querybuilder/react-querybuilder/blob/main/packages/core/src/utils/queryTools.ts#L1147-L1162)*
+> *Source: [/packages/core/src/utils/queryTools.ts#L1247-L1262](https://github.com/react-querybuilder/react-querybuilder/blob/main/packages/core/src/utils/queryTools.ts#L1247-L1262)*
 
 ### Aborted operations[​](#aborted-operations "Direct link to Aborted operations")
 
@@ -358,7 +394,7 @@ export interface AbortOptions extends GuardOptions {
 }
 ```
 
-> *Source: [/packages/core/src/utils/queryTools.ts#L123-L130](https://github.com/react-querybuilder/react-querybuilder/blob/main/packages/core/src/utils/queryTools.ts#L123-L130)*
+> *Source: [/packages/core/src/utils/queryTools.ts#L125-L132](https://github.com/react-querybuilder/react-querybuilder/blob/main/packages/core/src/utils/queryTools.ts#L125-L132)*
 
 `reason` is one of:
 
@@ -367,8 +403,9 @@ export interface AbortOptions extends GuardOptions {
 | `"target-not-found"`      | The rule/group identified by the given path or `id` does not exist.   |
 | `"parent-not-found"`      | The parent group identified by the given path or `id` does not exist. |
 | `"parent-not-a-group"`    | The given parent path or `id` refers to a rule rather than a group.   |
+| `"target-not-a-group"`    | The given path or `id` refers to a rule rather than a group.          |
 | `"destination-not-found"` | The destination's parent group does not exist.                        |
-| `"root-not-allowed"`      | The root group cannot be removed, moved, or grouped.                  |
+| `"root-not-allowed"`      | The root group cannot be removed, moved, grouped, or ungrouped.       |
 | `"not-a-combinator-slot"` | In an independent combinators query, the target index holds a rule.   |
 | `"same-location"`         | The rule/group is already at the destination. *Not an error.*         |
 | `"no-change"`             | The property already has the given value. *Not an error.*             |
@@ -754,7 +791,7 @@ export interface QueryManagerOptions<
 }
 ```
 
-> *Source: [/packages/core/src/utils/QueryManager.ts#L174-L321](https://github.com/react-querybuilder/react-querybuilder/blob/main/packages/core/src/utils/QueryManager.ts#L174-L321)*
+> *Source: [/packages/core/src/utils/QueryManager.ts#L175-L322](https://github.com/react-querybuilder/react-querybuilder/blob/main/packages/core/src/utils/QueryManager.ts#L175-L322)*
 
 The constructor also accepts the [guard options](#guards) `respectDisabled` (defaulting to **`true`** here, matching the `QueryBuilder` component), `queryDisabled`, and `maxLevels`, plus `resetOnFieldChange` (default `true`) and `resetOnOperatorChange` (default `false`), which mirror the props of the same names.
 
@@ -794,6 +831,7 @@ Each method below delegates to the query tool of the same name, using the manage
 * `move(oldPathOrID, newPath, options?)`
 * `insert(ruleOrGroup, path, options?)` — Like the `insert` query tool, this accepts a path only, not an `id`.
 * `group(sourcePathOrID, targetPathOrID, options?)`
+* `ungroup(pathOrID, options?)`
 
 note
 
@@ -1216,13 +1254,15 @@ const actions = createQueryActions({
 
   onGroupGroup,
 
+  onUngroup,
+
   onLog,
 
 });
 
 
 
-// { addRule, addGroup, propChange, removeRuleOrGroup, moveRule, groupRule }
+// { addRule, addGroup, propChange, removeRuleOrGroup, moveRule, groupRule, ungroupRuleGroup }
 ```
 
 This is the policy that surrounds the [query tools](#query-tools)—disabled gating, the confirmation callback protocol, depth limits, and debug logging. An implementation supplies only its own storage: read the current query, call the action, apply a non-`undefined` result.
@@ -1239,9 +1279,10 @@ The confirmation callbacks have three distinct return contracts:
 | ---------------------------------------------------------- | ---------------------------------------------------------------------------------- |
 | `onAddRule`, `onAddGroup`                                  | `true` to proceed, falsy to cancel, or a **replacement rule/group** to add instead |
 | `onMoveRule`, `onMoveGroup`, `onGroupRule`, `onGroupGroup` | `true` to proceed, falsy to cancel, or a **replacement query** to apply instead    |
+| `onUngroup`                                                | `true` to proceed, falsy to cancel, or a **replacement query** to apply instead    |
 | `onRemove`                                                 | boolean only                                                                       |
 
-The move and group actions compute the prospective query *before* invoking their callback, so it can inspect the result it is being asked to approve.
+The move, group, and ungroup actions compute the prospective query *before* invoking their callback, so it can inspect the result it is being asked to approve.
 
 ### Controlled and uncontrolled queries[​](#controlled-and-uncontrolled-queries "Direct link to Controlled and uncontrolled queries")
 

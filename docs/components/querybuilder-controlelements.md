@@ -48,6 +48,7 @@ The following control overrides are supported via the `Controls` interface. Sett
 | [`ruleGroupHeaderElements`](#rulegroupheaderelements) | `React.ComponentType<RuleGroupProps & ReturnType<typeof useRuleGroup>>`                           |
 | [`shiftActions`](#shiftactions)                       | `React.ComponentType<ShiftActionsProps> \| null`                                                  |
 | [`undoRedoActions`](#undoredoactions)                 | `React.ComponentType<UndoRedoActionsProps> \| null`                                               |
+| [`ungroupAction`](#ungroupaction)                     | `React.ComponentType<ActionProps> \| null`                                                        |
 | [`valueEditor`](#valueeditor)                         | `React.ComponentType<ValueEditorProps> \| null`                                                   |
 | [`valueSelector`](#valueselector)                     | `React.ComponentType<ValueSelectorProps>`                                                         |
 | [`valueSourceSelector`](#valuesourceselector)         | `React.ComponentType<ValueSourceSelectorProps> \| null`                                           |
@@ -66,6 +67,7 @@ The base component for all button-type controls. Defaults to [`ActionElement`](/
 * [`muteRuleAction`](#muteruleaction)
 * [`removeGroupAction`](#removegroupaction)
 * [`removeRuleAction`](#removeruleaction)
+* [`ungroupAction`](#ungroupaction)
 
 For example, this:
 
@@ -99,6 +101,8 @@ For example, this:
     removeGroupAction: MyAwesomeButton
 
     removeRuleAction: MyAwesomeButton
+
+    ungroupAction: MyAwesomeButton
 
   }}
 
@@ -600,6 +604,27 @@ Per the `UndoRedoActionsProps` interface:
 | `disabled`    | `boolean`                               | Whether the query builder is disabled                                           |
 | `path`        | `Path`                                  | [Path](/docs/tips/path.md) of the group (always `[]`)                           |
 | `schema`      | `Schema`                                | Query [schema](/docs/typescript.md#miscellaneous)                               |
+
+### `ungroupAction`[​](#ungroupaction "Direct link to ungroupaction")
+
+Replaces the current group with its own rules in the parent group. Only rendered on non-root groups when [`showUngroupButtons`](/docs/components/querybuilder.md#showungroupbuttons) is `true`. Defaults to [`ActionElement`](/docs/components/actionelement.md).
+
+Props for `ungroupAction`
+
+Per the `ActionProps` interface:
+
+| Prop            | Type                            | Description                                                  |
+| --------------- | ------------------------------- | ------------------------------------------------------------ |
+| `label`         | `ReactNode`                     | `translations.ungroupRuleGroup.label`, e.g. "⊟"              |
+| `title`         | `string`                        | `translations.ungroupRuleGroup.title`, e.g. "Ungroup"        |
+| `className`     | `string`                        | CSS `classNames` to be applied                               |
+| `handleOnClick` | `(e: React.MouseEvent) => void` | Ungroups this group                                          |
+| `rules`         | `RuleOrGroupArray`              | The `rules` array for this group                             |
+| `ruleOrGroup`   | `RuleGroupTypeAny`              | This group                                                   |
+| `level`         | `number`                        | The `level` of this group                                    |
+| `context`       | `any`                           | Container for custom props that are passed to all components |
+| `validation`    | `boolean \| ValidationResult`   | Validation result of this group                              |
+| `disabled`      | `boolean`                       | Whether this group is disabled/locked                        |
 
 ### `valueEditor`[​](#valueeditor "Direct link to valueeditor")
 

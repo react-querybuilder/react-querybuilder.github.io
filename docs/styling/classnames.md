@@ -101,6 +101,8 @@ export const standardClassnames = {
 
   cloneGroup: 'ruleGroup-cloneGroup',
 
+  ungroup: 'ruleGroup-ungroup',
+
   removeGroup: 'ruleGroup-remove',
 
   notToggle: 'ruleGroup-notToggle',
@@ -180,4 +182,4 @@ export const standardClassnames = {
 } as const;
 ```
 
-> *Source: [/packages/core/src/defaults.ts#L326-L374](https://github.com/react-querybuilder/react-querybuilder/blob/main/packages/core/src/defaults.ts#L326-L374)*
+> *Source: [/packages/core/src/defaults.ts#L327-L376](https://github.com/react-querybuilder/react-querybuilder/blob/main/packages/core/src/defaults.ts#L327-L376)*

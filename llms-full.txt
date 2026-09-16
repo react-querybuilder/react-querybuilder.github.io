@@ -949,7 +949,7 @@ export const defaultOperators: DefaultOperators = [
 ];
 ```
 
-> *Source: [/packages/core/src/defaults.ts#L178-L197](https://github.com/react-querybuilder/react-querybuilder/blob/main/packages/core/src/defaults.ts#L178-L197)*
+> *Source: [/packages/core/src/defaults.ts#L179-L198](https://github.com/react-querybuilder/react-querybuilder/blob/main/packages/core/src/defaults.ts#L179-L198)*
 
 For more information about option list props like `operators`, see [Working with option lists](/docs/tips/option-lists.md).
 
@@ -969,7 +969,7 @@ export const defaultCombinators: DefaultCombinators = [
 ];
 ```
 
-> *Source: [/packages/core/src/defaults.ts#L283-L286](https://github.com/react-querybuilder/react-querybuilder/blob/main/packages/core/src/defaults.ts#L283-L286)*
+> *Source: [/packages/core/src/defaults.ts#L284-L287](https://github.com/react-querybuilder/react-querybuilder/blob/main/packages/core/src/defaults.ts#L284-L287)*
 
 For more information about option list props like `combinators`, see [Working with option lists](/docs/tips/option-lists.md).
 
@@ -1024,6 +1024,7 @@ function App() {
 | `addGroup`       | each `<button>` that adds a group                                                 |
 | `cloneRule`      | each `<button>` that clones a rule                                                |
 | `cloneGroup`     | each `<button>` that clones a group                                               |
+| `ungroup`        | each `<button>` that ungroups a group                                             |
 | `removeGroup`    | each `<button>` that removes a group                                              |
 | `lockRule`       | each `<button>` that locks/disables a rule                                        |
 | `lockGroup`      | each `<button>` that locks/disables a group                                       |
@@ -1259,6 +1260,36 @@ Called before a group is moved or shifted. Return:
 2. `false` - Cancel the move/shift
 3. New query object (based on `query` or `nextQuery` parameters)
 
+### `onUngroup`[​](#onungroup "Direct link to onungroup")
+
+```
+<RG extends RuleGroupTypeAny>(
+
+  ruleGroup: RG,
+
+  path: Path,
+
+  query: RG,
+
+  nextQuery: RG,
+
+  context?: any
+
+) => RG | boolean;
+```
+
+Called before a group is replaced by its own rules in the parent group (see [`showUngroupButtons`](#showungroupbuttons)). Return:
+
+1. `true` - Allow the ungroup
+2. `false` - Cancel the ungroup
+3. New query object (based on `query` or `nextQuery` parameters)
+
+Since ungrouping discards the group's `not` property, this is the place to intercept negated groups:
+
+```
+onUngroup={ruleGroup => !ruleGroup.not}
+```
+
 ### `onRemove`[​](#onremove "Direct link to onremove")
 
 `<RG extends RuleGroupTypeAny>(ruleOrGroup: RG | RuleType, path: Path, query: RG, context?: any) => boolean`
@@ -1334,6 +1365,8 @@ export const defaultTranslations: BaseTranslationsFull = {
 
   cloneRuleGroup: { label: '⧉', title: 'Clone group' } as const,
 
+  ungroupRuleGroup: { label: '⊟', title: 'Ungroup' } as const,
+
   shiftActionUp: { label: '˄', title: 'Shift up' } as const,
 
   shiftActionDown: { label: '˅', title: 'Shift down' } as const,
@@ -1365,7 +1398,7 @@ export const defaultTranslations: BaseTranslationsFull = {
 } satisfies BaseTranslationsFull;
 ```
 
-> *Source: [/packages/core/src/defaults.ts#L89-L133](https://github.com/react-querybuilder/react-querybuilder/blob/main/packages/core/src/defaults.ts#L89-L133)*
+> *Source: [/packages/core/src/defaults.ts#L89-L134](https://github.com/react-querybuilder/react-querybuilder/blob/main/packages/core/src/defaults.ts#L89-L134)*
 
 ### `showCombinatorsBetweenRules`[​](#showcombinatorsbetweenrules "Direct link to showcombinatorsbetweenrules")
 
@@ -1386,6 +1419,12 @@ Displays "Not" (inversion) toggle switch for each rule group.
 `boolean` (default `false`) *[Click here for demo](/demo#showCloneButtons=true)*
 
 Displays "clone" button on each group header and rule. Clicking creates an exact duplicate (with new `id`) positioned immediately after the original.
+
+### `showUngroupButtons`[​](#showungroupbuttons "Direct link to showungroupbuttons")
+
+`boolean` (default `false`) *[Click here for demo](/demo#showUngroupButtons=true)*
+
+Displays an "Ungroup" button on each group header except the root. Clicking it replaces the group with its own rules in the parent group, discarding the group's `combinator`, `not`, `id`, `muted`, and `disabled` properties. An empty group is simply removed. Intercept or cancel the operation with [`onUngroup`](#onungroup).
 
 ### `showLockButtons`[​](#showlockbuttons "Direct link to showlockbuttons")
 
@@ -1726,6 +1765,7 @@ The following control overrides are supported via the `Controls` interface. Sett
 | [`ruleGroupHeaderElements`](#rulegroupheaderelements) | `React.ComponentType<RuleGroupProps & ReturnType<typeof useRuleGroup>>`                           |
 | [`shiftActions`](#shiftactions)                       | `React.ComponentType<ShiftActionsProps> \| null`                                                  |
 | [`undoRedoActions`](#undoredoactions)                 | `React.ComponentType<UndoRedoActionsProps> \| null`                                               |
+| [`ungroupAction`](#ungroupaction)                     | `React.ComponentType<ActionProps> \| null`                                                        |
 | [`valueEditor`](#valueeditor)                         | `React.ComponentType<ValueEditorProps> \| null`                                                   |
 | [`valueSelector`](#valueselector)                     | `React.ComponentType<ValueSelectorProps>`                                                         |
 | [`valueSourceSelector`](#valuesourceselector)         | `React.ComponentType<ValueSourceSelectorProps> \| null`                                           |
@@ -1744,6 +1784,7 @@ The base component for all button-type controls. Defaults to [`ActionElement`](/
 * [`muteRuleAction`](#muteruleaction)
 * [`removeGroupAction`](#removegroupaction)
 * [`removeRuleAction`](#removeruleaction)
+* [`ungroupAction`](#ungroupaction)
 
 For example, this:
 
@@ -1777,6 +1818,8 @@ For example, this:
     removeGroupAction: MyAwesomeButton
 
     removeRuleAction: MyAwesomeButton
+
+    ungroupAction: MyAwesomeButton
 
   }}
 
@@ -2279,6 +2322,27 @@ Per the `UndoRedoActionsProps` interface:
 | `path`        | `Path`                                  | [Path](/docs/tips/path.md) of the group (always `[]`)                           |
 | `schema`      | `Schema`                                | Query [schema](/docs/typescript.md#miscellaneous)                               |
 
+### `ungroupAction`[​](#ungroupaction "Direct link to ungroupaction")
+
+Replaces the current group with its own rules in the parent group. Only rendered on non-root groups when [`showUngroupButtons`](/docs/components/querybuilder.md#showungroupbuttons) is `true`. Defaults to [`ActionElement`](/docs/components/actionelement.md).
+
+Props for `ungroupAction`
+
+Per the `ActionProps` interface:
+
+| Prop            | Type                            | Description                                                  |
+| --------------- | ------------------------------- | ------------------------------------------------------------ |
+| `label`         | `ReactNode`                     | `translations.ungroupRuleGroup.label`, e.g. "⊟"              |
+| `title`         | `string`                        | `translations.ungroupRuleGroup.title`, e.g. "Ungroup"        |
+| `className`     | `string`                        | CSS `classNames` to be applied                               |
+| `handleOnClick` | `(e: React.MouseEvent) => void` | Ungroups this group                                          |
+| `rules`         | `RuleOrGroupArray`              | The `rules` array for this group                             |
+| `ruleOrGroup`   | `RuleGroupTypeAny`              | This group                                                   |
+| `level`         | `number`                        | The `level` of this group                                    |
+| `context`       | `any`                           | Container for custom props that are passed to all components |
+| `validation`    | `boolean \| ValidationResult`   | Validation result of this group                              |
+| `disabled`      | `boolean`                       | Whether this group is disabled/locked                        |
+
 ### `valueEditor`[​](#valueeditor "Direct link to valueeditor")
 
 Updates the `value` property for the current rule. Defaults to [`ValueEditor`](/docs/components/valueeditor.md).
@@ -2456,14 +2520,15 @@ This component renders the following elements in this order:
 * Add rule button
 * Add group button
 * Clone group button[5](#user-content-fn-5)
-* Lock group button[6](#user-content-fn-6)
-* Remove group button[7](#user-content-fn-7)
+* Ungroup button[6](#user-content-fn-9)
+* Lock group button[7](#user-content-fn-6)
+* Remove group button[8](#user-content-fn-7)
 
 ### `RuleGroupBodyComponents`[​](#rulegroupbodycomponents "Direct link to rulegroupbodycomponents")
 
 This component iterates through a group's `rules` array, rendering a child `RuleGroup` element for each subgroup and a [`Rule`](/docs/components/rule.md) element for each rule.
 
-When [`showCombinatorsBetweenRules`](/docs/components/querybuilder.md#showcombinatorsbetweenrules) is `true`, an inline combinator[8](#user-content-fn-8) (using the group's `combinator` value) appears before each rule or group except the first.
+When [`showCombinatorsBetweenRules`](/docs/components/querybuilder.md#showcombinatorsbetweenrules) is `true`, an inline combinator[9](#user-content-fn-8) (using the group's `combinator` value) appears before each rule or group except the first.
 
 With [independent combinators](/docs/components/querybuilder.md#independent-combinators), each odd-numbered index in the `rules` array contains a string representing a combinator value. These elements render as independent inline combinators.
 
@@ -2485,11 +2550,13 @@ The `showCombinatorsBetweenRules` prop is ignored if the query is using independ
 
 5. Only rendered if [`showCloneButtons`](/docs/components/querybuilder.md#showclonebuttons) is `true`. [↩](#user-content-fnref-5)
 
-6. Only rendered if [`showLockButtons`](/docs/components/querybuilder.md#showlockbuttons) is `true`. [↩](#user-content-fnref-6)
+6. Only rendered if [`showUngroupButtons`](/docs/components/querybuilder.md#showungroupbuttons) is `true` and the group is not the query root. [↩](#user-content-fnref-9)
 
-7. Only rendered if the group is not the query root. [↩](#user-content-fnref-7)
+7. Only rendered if [`showLockButtons`](/docs/components/querybuilder.md#showlockbuttons) is `true`. [↩](#user-content-fnref-6)
 
-8. The [`inlineCombinator`](/docs/components/querybuilder-controlelements.md#inlinecombinator) component in turn renders the configured [`combinatorSelector`](/docs/components/querybuilder-controlelements.md#combinatorselector). [↩](#user-content-fnref-8)
+8. Only rendered if the group is not the query root. [↩](#user-content-fnref-7)
+
+9. The [`inlineCombinator`](/docs/components/querybuilder-controlelements.md#inlinecombinator) component in turn renders the configured [`combinatorSelector`](/docs/components/querybuilder-controlelements.md#combinatorselector). [↩](#user-content-fnref-8)
 
 
 ---
@@ -6073,6 +6140,8 @@ export const standardClassnames = {
 
   cloneGroup: 'ruleGroup-cloneGroup',
 
+  ungroup: 'ruleGroup-ungroup',
+
   removeGroup: 'ruleGroup-remove',
 
   notToggle: 'ruleGroup-notToggle',
@@ -6152,7 +6221,7 @@ export const standardClassnames = {
 } as const;
 ```
 
-> *Source: [/packages/core/src/defaults.ts#L326-L374](https://github.com/react-querybuilder/react-querybuilder/blob/main/packages/core/src/defaults.ts#L326-L374)*
+> *Source: [/packages/core/src/defaults.ts#L327-L376](https://github.com/react-querybuilder/react-querybuilder/blob/main/packages/core/src/defaults.ts#L327-L376)*
 
 
 ---
@@ -15579,7 +15648,7 @@ export interface AddOptions extends QueryToolOptions {
 }
 ```
 
-> *Source: [/packages/core/src/utils/queryTools.ts#L190-L208](https://github.com/react-querybuilder/react-querybuilder/blob/main/packages/core/src/utils/queryTools.ts#L190-L208)*
+> *Source: [/packages/core/src/utils/queryTools.ts#L192-L210](https://github.com/react-querybuilder/react-querybuilder/blob/main/packages/core/src/utils/queryTools.ts#L192-L210)*
 
 ### `remove`[​](#remove "Direct link to remove")
 
@@ -15671,7 +15740,7 @@ export interface UpdateOptions extends QueryToolOptions {
 }
 ```
 
-> *Source: [/packages/core/src/utils/queryTools.ts#L305-L333](https://github.com/react-querybuilder/react-querybuilder/blob/main/packages/core/src/utils/queryTools.ts#L305-L333)*
+> *Source: [/packages/core/src/utils/queryTools.ts#L307-L335](https://github.com/react-querybuilder/react-querybuilder/blob/main/packages/core/src/utils/queryTools.ts#L307-L335)*
 
 ### `move`[​](#move "Direct link to move")
 
@@ -15715,7 +15784,7 @@ export interface MoveOptions extends QueryToolOptions {
 }
 ```
 
-> *Source: [/packages/core/src/utils/queryTools.ts#L789-L804](https://github.com/react-querybuilder/react-querybuilder/blob/main/packages/core/src/utils/queryTools.ts#L789-L804)*
+> *Source: [/packages/core/src/utils/queryTools.ts#L889-L904](https://github.com/react-querybuilder/react-querybuilder/blob/main/packages/core/src/utils/queryTools.ts#L889-L904)*
 
 ### `insert`[​](#insert "Direct link to insert")
 
@@ -15793,7 +15862,43 @@ export interface InsertOptions extends QueryToolOptions {
 }
 ```
 
-> *Source: [/packages/core/src/utils/queryTools.ts#L997-L1029](https://github.com/react-querybuilder/react-querybuilder/blob/main/packages/core/src/utils/queryTools.ts#L997-L1029)*
+> *Source: [/packages/core/src/utils/queryTools.ts#L1097-L1129](https://github.com/react-querybuilder/react-querybuilder/blob/main/packages/core/src/utils/queryTools.ts#L1097-L1129)*
+
+### `ungroup`[​](#ungroup "Direct link to ungroup")
+
+`(query: RuleGroupTypeAny, pathOrID: Path | string, options: UngroupOptions) => RuleGroupTypeAny`
+
+Replaces the group at the specified `path` or with the given `id` with its own rules in the parent group. The group's `combinator`, `not`, `id`, `muted`, and `disabled` properties are discarded; its rules keep their `id`s. In an independent combinators query, the promoted rules keep their combinators, preserving the parent's alternation. An empty group is simply removed, along with the adjacent independent combinator if one exists.
+
+UngroupOptions
+
+```
+export interface UngroupOptions extends QueryToolOptions {}
+
+
+
+export interface UngroupMethod {
+
+  <RG extends RuleGroupTypeAny>(
+
+    /** The query to update. */
+
+    query: RG,
+
+    /** The path or ID of the group to ungroup. */
+
+    pathOrID: Path | string,
+
+    /** Options. */
+
+    options?: UngroupOptions
+
+  ): RG;
+
+}
+```
+
+> *Source: [/packages/core/src/utils/queryTools.ts#L734-L745](https://github.com/react-querybuilder/react-querybuilder/blob/main/packages/core/src/utils/queryTools.ts#L734-L745)*
 
 ### `group`[​](#group "Direct link to group")
 
@@ -15837,7 +15942,7 @@ export interface GroupOptions extends QueryToolOptions {
 }
 ```
 
-> *Source: [/packages/core/src/utils/queryTools.ts#L1147-L1162](https://github.com/react-querybuilder/react-querybuilder/blob/main/packages/core/src/utils/queryTools.ts#L1147-L1162)*
+> *Source: [/packages/core/src/utils/queryTools.ts#L1247-L1262](https://github.com/react-querybuilder/react-querybuilder/blob/main/packages/core/src/utils/queryTools.ts#L1247-L1262)*
 
 ### Aborted operations[​](#aborted-operations "Direct link to Aborted operations")
 
@@ -15877,7 +15982,7 @@ export interface AbortOptions extends GuardOptions {
 }
 ```
 
-> *Source: [/packages/core/src/utils/queryTools.ts#L123-L130](https://github.com/react-querybuilder/react-querybuilder/blob/main/packages/core/src/utils/queryTools.ts#L123-L130)*
+> *Source: [/packages/core/src/utils/queryTools.ts#L125-L132](https://github.com/react-querybuilder/react-querybuilder/blob/main/packages/core/src/utils/queryTools.ts#L125-L132)*
 
 `reason` is one of:
 
@@ -15886,8 +15991,9 @@ export interface AbortOptions extends GuardOptions {
 | `"target-not-found"`      | The rule/group identified by the given path or `id` does not exist.   |
 | `"parent-not-found"`      | The parent group identified by the given path or `id` does not exist. |
 | `"parent-not-a-group"`    | The given parent path or `id` refers to a rule rather than a group.   |
+| `"target-not-a-group"`    | The given path or `id` refers to a rule rather than a group.          |
 | `"destination-not-found"` | The destination's parent group does not exist.                        |
-| `"root-not-allowed"`      | The root group cannot be removed, moved, or grouped.                  |
+| `"root-not-allowed"`      | The root group cannot be removed, moved, grouped, or ungrouped.       |
 | `"not-a-combinator-slot"` | In an independent combinators query, the target index holds a rule.   |
 | `"same-location"`         | The rule/group is already at the destination. *Not an error.*         |
 | `"no-change"`             | The property already has the given value. *Not an error.*             |
@@ -16273,7 +16379,7 @@ export interface QueryManagerOptions<
 }
 ```
 
-> *Source: [/packages/core/src/utils/QueryManager.ts#L174-L321](https://github.com/react-querybuilder/react-querybuilder/blob/main/packages/core/src/utils/QueryManager.ts#L174-L321)*
+> *Source: [/packages/core/src/utils/QueryManager.ts#L175-L322](https://github.com/react-querybuilder/react-querybuilder/blob/main/packages/core/src/utils/QueryManager.ts#L175-L322)*
 
 The constructor also accepts the [guard options](#guards) `respectDisabled` (defaulting to **`true`** here, matching the `QueryBuilder` component), `queryDisabled`, and `maxLevels`, plus `resetOnFieldChange` (default `true`) and `resetOnOperatorChange` (default `false`), which mirror the props of the same names.
 
@@ -16313,6 +16419,7 @@ Each method below delegates to the query tool of the same name, using the manage
 * `move(oldPathOrID, newPath, options?)`
 * `insert(ruleOrGroup, path, options?)` — Like the `insert` query tool, this accepts a path only, not an `id`.
 * `group(sourcePathOrID, targetPathOrID, options?)`
+* `ungroup(pathOrID, options?)`
 
 note
 
@@ -16735,13 +16842,15 @@ const actions = createQueryActions({
 
   onGroupGroup,
 
+  onUngroup,
+
   onLog,
 
 });
 
 
 
-// { addRule, addGroup, propChange, removeRuleOrGroup, moveRule, groupRule }
+// { addRule, addGroup, propChange, removeRuleOrGroup, moveRule, groupRule, ungroupRuleGroup }
 ```
 
 This is the policy that surrounds the [query tools](#query-tools)—disabled gating, the confirmation callback protocol, depth limits, and debug logging. An implementation supplies only its own storage: read the current query, call the action, apply a non-`undefined` result.
@@ -16758,9 +16867,10 @@ The confirmation callbacks have three distinct return contracts:
 | ---------------------------------------------------------- | ---------------------------------------------------------------------------------- |
 | `onAddRule`, `onAddGroup`                                  | `true` to proceed, falsy to cancel, or a **replacement rule/group** to add instead |
 | `onMoveRule`, `onMoveGroup`, `onGroupRule`, `onGroupGroup` | `true` to proceed, falsy to cancel, or a **replacement query** to apply instead    |
+| `onUngroup`                                                | `true` to proceed, falsy to cancel, or a **replacement query** to apply instead    |
 | `onRemove`                                                 | boolean only                                                                       |
 
-The move and group actions compute the prospective query *before* invoking their callback, so it can inspect the result it is being asked to approve.
+The move, group, and ungroup actions compute the prospective query *before* invoking their callback, so it can inspect the result it is being asked to approve.
 
 ### Controlled and uncontrolled queries[​](#controlled-and-uncontrolled-queries "Direct link to Controlled and uncontrolled queries")
 

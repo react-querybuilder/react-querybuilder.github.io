@@ -21,14 +21,15 @@ This component renders the following elements in this order:
 * Add rule button
 * Add group button
 * Clone group button[5](#user-content-fn-5)
-* Lock group button[6](#user-content-fn-6)
-* Remove group button[7](#user-content-fn-7)
+* Ungroup button[6](#user-content-fn-9)
+* Lock group button[7](#user-content-fn-6)
+* Remove group button[8](#user-content-fn-7)
 
 ### `RuleGroupBodyComponents`[​](#rulegroupbodycomponents "Direct link to rulegroupbodycomponents")
 
 This component iterates through a group's `rules` array, rendering a child `RuleGroup` element for each subgroup and a [`Rule`](/docs/components/rule.md) element for each rule.
 
-When [`showCombinatorsBetweenRules`](/docs/components/querybuilder.md#showcombinatorsbetweenrules) is `true`, an inline combinator[8](#user-content-fn-8) (using the group's `combinator` value) appears before each rule or group except the first.
+When [`showCombinatorsBetweenRules`](/docs/components/querybuilder.md#showcombinatorsbetweenrules) is `true`, an inline combinator[9](#user-content-fn-8) (using the group's `combinator` value) appears before each rule or group except the first.
 
 With [independent combinators](/docs/components/querybuilder.md#independent-combinators), each odd-numbered index in the `rules` array contains a string representing a combinator value. These elements render as independent inline combinators.
 
@@ -50,8 +51,10 @@ The `showCombinatorsBetweenRules` prop is ignored if the query is using independ
 
 5. Only rendered if [`showCloneButtons`](/docs/components/querybuilder.md#showclonebuttons) is `true`. [↩](#user-content-fnref-5)
 
-6. Only rendered if [`showLockButtons`](/docs/components/querybuilder.md#showlockbuttons) is `true`. [↩](#user-content-fnref-6)
+6. Only rendered if [`showUngroupButtons`](/docs/components/querybuilder.md#showungroupbuttons) is `true` and the group is not the query root. [↩](#user-content-fnref-9)
 
-7. Only rendered if the group is not the query root. [↩](#user-content-fnref-7)
+7. Only rendered if [`showLockButtons`](/docs/components/querybuilder.md#showlockbuttons) is `true`. [↩](#user-content-fnref-6)
 
-8. The [`inlineCombinator`](/docs/components/querybuilder-controlelements.md#inlinecombinator) component in turn renders the configured [`combinatorSelector`](/docs/components/querybuilder-controlelements.md#combinatorselector). [↩](#user-content-fnref-8)
+8. Only rendered if the group is not the query root. [↩](#user-content-fnref-7)
+
+9. The [`inlineCombinator`](/docs/components/querybuilder-controlelements.md#inlinecombinator) component in turn renders the configured [`combinatorSelector`](/docs/components/querybuilder-controlelements.md#combinatorselector). [↩](#user-content-fnref-8)

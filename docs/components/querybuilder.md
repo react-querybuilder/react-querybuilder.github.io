@@ -118,7 +118,7 @@ export const defaultOperators: DefaultOperators = [
 ];
 ```
 
-> *Source: [/packages/core/src/defaults.ts#L178-L197](https://github.com/react-querybuilder/react-querybuilder/blob/main/packages/core/src/defaults.ts#L178-L197)*
+> *Source: [/packages/core/src/defaults.ts#L179-L198](https://github.com/react-querybuilder/react-querybuilder/blob/main/packages/core/src/defaults.ts#L179-L198)*
 
 For more information about option list props like `operators`, see [Working with option lists](/docs/tips/option-lists.md).
 
@@ -138,7 +138,7 @@ export const defaultCombinators: DefaultCombinators = [
 ];
 ```
 
-> *Source: [/packages/core/src/defaults.ts#L283-L286](https://github.com/react-querybuilder/react-querybuilder/blob/main/packages/core/src/defaults.ts#L283-L286)*
+> *Source: [/packages/core/src/defaults.ts#L284-L287](https://github.com/react-querybuilder/react-querybuilder/blob/main/packages/core/src/defaults.ts#L284-L287)*
 
 For more information about option list props like `combinators`, see [Working with option lists](/docs/tips/option-lists.md).
 
@@ -193,6 +193,7 @@ function App() {
 | `addGroup`       | each `<button>` that adds a group                                                 |
 | `cloneRule`      | each `<button>` that clones a rule                                                |
 | `cloneGroup`     | each `<button>` that clones a group                                               |
+| `ungroup`        | each `<button>` that ungroups a group                                             |
 | `removeGroup`    | each `<button>` that removes a group                                              |
 | `lockRule`       | each `<button>` that locks/disables a rule                                        |
 | `lockGroup`      | each `<button>` that locks/disables a group                                       |
@@ -428,6 +429,36 @@ Called before a group is moved or shifted. Return:
 2. `false` - Cancel the move/shift
 3. New query object (based on `query` or `nextQuery` parameters)
 
+### `onUngroup`[​](#onungroup "Direct link to onungroup")
+
+```
+<RG extends RuleGroupTypeAny>(
+
+  ruleGroup: RG,
+
+  path: Path,
+
+  query: RG,
+
+  nextQuery: RG,
+
+  context?: any
+
+) => RG | boolean;
+```
+
+Called before a group is replaced by its own rules in the parent group (see [`showUngroupButtons`](#showungroupbuttons)). Return:
+
+1. `true` - Allow the ungroup
+2. `false` - Cancel the ungroup
+3. New query object (based on `query` or `nextQuery` parameters)
+
+Since ungrouping discards the group's `not` property, this is the place to intercept negated groups:
+
+```
+onUngroup={ruleGroup => !ruleGroup.not}
+```
+
 ### `onRemove`[​](#onremove "Direct link to onremove")
 
 `<RG extends RuleGroupTypeAny>(ruleOrGroup: RG | RuleType, path: Path, query: RG, context?: any) => boolean`
@@ -503,6 +534,8 @@ export const defaultTranslations: BaseTranslationsFull = {
 
   cloneRuleGroup: { label: '⧉', title: 'Clone group' } as const,
 
+  ungroupRuleGroup: { label: '⊟', title: 'Ungroup' } as const,
+
   shiftActionUp: { label: '˄', title: 'Shift up' } as const,
 
   shiftActionDown: { label: '˅', title: 'Shift down' } as const,
@@ -534,7 +567,7 @@ export const defaultTranslations: BaseTranslationsFull = {
 } satisfies BaseTranslationsFull;
 ```
 
-> *Source: [/packages/core/src/defaults.ts#L89-L133](https://github.com/react-querybuilder/react-querybuilder/blob/main/packages/core/src/defaults.ts#L89-L133)*
+> *Source: [/packages/core/src/defaults.ts#L89-L134](https://github.com/react-querybuilder/react-querybuilder/blob/main/packages/core/src/defaults.ts#L89-L134)*
 
 ### `showCombinatorsBetweenRules`[​](#showcombinatorsbetweenrules "Direct link to showcombinatorsbetweenrules")
 
@@ -555,6 +588,12 @@ Displays "Not" (inversion) toggle switch for each rule group.
 `boolean` (default `false`) *[Click here for demo](/demo#showCloneButtons=true)*
 
 Displays "clone" button on each group header and rule. Clicking creates an exact duplicate (with new `id`) positioned immediately after the original.
+
+### `showUngroupButtons`[​](#showungroupbuttons "Direct link to showungroupbuttons")
+
+`boolean` (default `false`) *[Click here for demo](/demo#showUngroupButtons=true)*
+
+Displays an "Ungroup" button on each group header except the root. Clicking it replaces the group with its own rules in the parent group, discarding the group's `combinator`, `not`, `id`, `muted`, and `disabled` properties. An empty group is simply removed. Intercept or cancel the operation with [`onUngroup`](#onungroup).
 
 ### `showLockButtons`[​](#showlockbuttons "Direct link to showlockbuttons")
 
