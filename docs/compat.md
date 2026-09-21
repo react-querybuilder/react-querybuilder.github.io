@@ -21,6 +21,18 @@ See each component package in action by selecting the "Style library" option on 
 | [React Native](https://reactnative.dev/)            | [@react-querybuilder/native](https://www.npmjs.com/package/@react-querybuilder/native)       | *Coming soon!*          | [CodeSandbox](/sandbox?t=native)    | [StackBlitz](/sandbox?p=sb\&t=native)    |
 | [Tremor](https://www.tremor.so/)                    | [@react-querybuilder/tremor](https://www.npmjs.com/package/@react-querybuilder/tremor)       | [Demo](/demo/tremor)    | [CodeSandbox](/sandbox?t=tremor)    | [StackBlitz](/sandbox?p=sb\&t=tremor)    |
 
+## Other frameworks[​](#other-frameworks "Direct link to Other frameworks")
+
+React is not a requirement for the query builder. Official ports to other frameworks, each maintained in its own repo, wrap the same framework-agnostic derivations from [`@react-querybuilder/core`](/docs/utils/framework-adapters.md) that the React components use. Query shapes, [import](/docs/utils/import.md)/[export](/docs/utils/export.md) utilities, and most configuration options (`fields`, `operators`, etc.) behave identically; the component API itself is idiomatic to each framework.
+
+| Framework                     | Repo                                                                             | npm                                                                                |
+| ----------------------------- | -------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------- |
+| [Solid](https://solidjs.com/) | [solid-querybuilder](https://github.com/react-querybuilder/solid-querybuilder)   | [`solid-querybuilder`](https://www.npmjs.com/package/solid-querybuilder)           |
+| [Svelte](https://svelte.dev/) | [svelte-querybuilder](https://github.com/react-querybuilder/svelte-querybuilder) | [`svelte-querybuilder`](https://www.npmjs.com/package/svelte-querybuilder)         |
+| [Vue](https://vuejs.org/)     | [vue-querybuilder](https://github.com/react-querybuilder/vue-querybuilder)       | [`@react-querybuilder/vue`](https://www.npmjs.com/package/@react-querybuilder/vue) |
+
+The rendered DOM is class-compatible with React Query Builder, so existing [class name](/docs/styling/classnames.md)-based styles and themes carry over unchanged.
+
 ## Usage[​](#usage "Direct link to Usage")
 
 The recommended approach is to wrap `<QueryBuilder />` in the appropriate `QueryBuilder*` context provider from the compatibility package.

@@ -4,6 +4,8 @@
 
 `@react-querybuilder/core` contains every derivation the `<QueryBuilder />` component performs, with no React dependency. A framework port—Solid, Svelte, Vue, or anything else—can render an equivalent UI by calling these functions directly instead of reimplementing the precedence rules for fields, operators, values, class names, and history.
 
+Official ports built this way already exist for [Solid, Svelte, and Vue](/docs/compat.md#other-frameworks).
+
 info
 
 The exports listed on this page are **public API covered by semantic versioning**. They will not be removed or have their signatures changed outside a major release.
