@@ -229,6 +229,30 @@ const useUndoRedoShortcuts = (qbId: string) => {
 };
 ```
 
+## React Native[​](#react-native "Direct link to React Native")
+
+`QueryBuilderNative` from [`@react-querybuilder/native`](/docs/compat.md) works the same way—wrap it in `QueryBuilderHistory` and the undo/redo controls render as React Native components (`NativeUndoRedoActions`, styled with the `undoRedoActions` key of the `styles` prop).
+
+```
+import { QueryBuilderNative } from '@react-querybuilder/native';
+
+import { QueryBuilderHistory } from 'react-querybuilder/history';
+
+
+
+const App = () => (
+
+  <QueryBuilderHistory>
+
+    <QueryBuilderNative fields={fields} />
+
+  </QueryBuilderHistory>
+
+);
+```
+
+Without a `QueryBuilderHistory` ancestor, `showUndoRedo` still renders working undo/redo controls in React Native, since `QueryBuilderNative` assigns `NativeUndoRedoActions` to the `undoRedoActions` control element by default. Wrapping in `QueryBuilderHistory` is still the better option: it enables `showUndoRedo` automatically and lets you configure `maxHistory` and `coalesceMs`.
+
 ## Multiple query builders[​](#multiple-query-builders "Direct link to Multiple query builders")
 
 Each query builder has its own independent history, keyed by `qbId`. Undoing in one has no effect on any other.
