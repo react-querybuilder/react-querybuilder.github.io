@@ -187,7 +187,7 @@ Output is multi-line JSON with 2-space indentation:
 
 ### JSON without IDs[​](#json-without-ids "Direct link to JSON without IDs")
 
-Export unformatted (single-line) JSON without `id` or `path` attributes using "json\_without\_ids". This format is useful for persistent storage:
+Export unformatted (single-line) JSON without `id` or `path` attributes using "json_without_ids". This format is useful for persistent storage:
 
 ```
 formatQuery(query, 'json_without_ids');
@@ -235,7 +235,7 @@ Output (JSON object):
 
 #### Named parameters[​](#named-parameters "Direct link to Named parameters")
 
-When anonymous parameters aren't suitable, use "parameterized\_named" to name parameters based on field names. This is similar to "parameterized" but `params` is an object instead of an array:
+When anonymous parameters aren't suitable, use "parameterized_named" to name parameters based on field names. This is similar to "parameterized" but `params` is an object instead of an array:
 
 ```
 formatQuery(query, 'parameterized_named');
@@ -469,7 +469,7 @@ const users = await Users.findAll({ where });
 
 #### TanStack DB[​](#tanstack-db "Direct link to TanStack DB")
 
-Generate a `WhereCallback` for [TanStack DB](https://tanstack.com/db)'s `.where()` method using the "tanstack\_db" format. The processor does not import any executable code from `@tanstack/db` — operators are passed in through the `context` option.
+Generate a `WhereCallback` for [TanStack DB](https://tanstack.com/db)'s `.where()` method using the "tanstack_db" format. The processor does not import any executable code from `@tanstack/db` — operators are passed in through the `context` option.
 
 Pass the full `@tanstack/db` module or individual operators as `tanStackDbOperators`:
 
@@ -573,11 +573,11 @@ Bare fields cannot be disambiguated across collections at export time because Ta
 
 ### MongoDB[​](#mongodb "Direct link to MongoDB")
 
-Generate MongoDB queries as JSON objects or strings. Use the "mongodb\_query" format (recommended) for JSON objects. The "mongodb" format is the stringified version.
+Generate MongoDB queries as JSON objects or strings. Use the "mongodb_query" format (recommended) for JSON objects. The "mongodb" format is the stringified version.
 
 info
 
-The "mongodb" format was deprecated when the "mongodb\_query" export format was introduced in version 8.1.0.
+The "mongodb" format was deprecated when the "mongodb_query" export format was introduced in version 8.1.0.
 
 ```
 formatQuery(query, 'mongodb_query');
@@ -725,7 +725,7 @@ Output (string):
 
 ### Natural language[​](#natural-language "Direct link to Natural language")
 
-Generate natural language queries using "natural\_language" format. Use `getOperators` and `fields` options to render labels instead of values. See [i18n options](#internationalization):
+Generate natural language queries using "natural_language" format. Use `getOperators` and `fields` options to render labels instead of values. See [i18n options](#internationalization):
 
 ```
 formatQuery(query, {
@@ -1283,7 +1283,7 @@ formatQuery(query, { format: 'sql', ruleProcessor: customRuleProcessor });
 
 #### Generating parameter names[​](#generating-parameter-names "Direct link to Generating parameter names")
 
-The "parameterized" and "parameterized\_named" formats require rule processors to return an object resembling `formatQuery`'s return type for these formats. The `getNextNamedParam` utility helps generate unique parameter names. The example below matches the Oracle SQL example above, but uses "parameterized\_named" format.
+The "parameterized" and "parameterized_named" formats require rule processors to return an object resembling `formatQuery`'s return type for these formats. The `getNextNamedParam` utility helps generate unique parameter names. The example below matches the Oracle SQL example above, but uses "parameterized_named" format.
 
 ```
 const customRuleProcessor: RuleProcessor = (rule, options) => {
@@ -1441,18 +1441,18 @@ formatQuery(query, { format: 'sql', valueProcessor: customValueProcessor });
 
 Default value processors using the legacy signature are available for some query language formats.
 
-| Format                 | Current signature (recommended)      | Legacy signature (not recommended) |
-| ---------------------- | ------------------------------------ | ---------------------------------- |
-| "sql"                  | `defaultValueProcessorByRule`        | `defaultValueProcessor`            |
-| "parameterized"        | `defaultValueProcessorByRule`        | `defaultValueProcessor`            |
-| "parameterized\_named" | `defaultValueProcessorByRule`        | `defaultValueProcessor`            |
-| "cel"                  | `defaultValueProcessorCELByRule`     | `defaultCELValueProcessor`         |
-| "mongodb"              | `defaultValueProcessorMongoDBByRule` | `defaultMongoDBValueProcessor`     |
-| "spel"                 | `defaultValueProcessorSpELByRule`    | `defaultSpELValueProcessor`        |
+| Format                | Current signature (recommended)      | Legacy signature (not recommended) |
+| --------------------- | ------------------------------------ | ---------------------------------- |
+| "sql"                 | `defaultValueProcessorByRule`        | `defaultValueProcessor`            |
+| "parameterized"       | `defaultValueProcessorByRule`        | `defaultValueProcessor`            |
+| "parameterized_named" | `defaultValueProcessorByRule`        | `defaultValueProcessor`            |
+| "cel"                 | `defaultValueProcessorCELByRule`     | `defaultCELValueProcessor`         |
+| "mongodb"             | `defaultValueProcessorMongoDBByRule` | `defaultMongoDBValueProcessor`     |
+| "spel"                | `defaultValueProcessorSpELByRule`    | `defaultSpELValueProcessor`        |
 
 ### Operator processor[​](#operator-processor "Direct link to Operator processor")
 
-`operatorProcessor` accepts the same arguments as `ruleProcessor`, but only affects the "operator" portion for "sql", "parameterized", "parameterized\_named", and "natural\_language" formats.
+`operatorProcessor` accepts the same arguments as `ruleProcessor`, but only affects the "operator" portion for "sql", "parameterized", "parameterized_named", and "natural_language" formats.
 
 ```
 formatQuery(query, {
@@ -1536,7 +1536,7 @@ formatQuery(query, { format: 'sql', quoteValuesWith: '"' });
 
 ### Parameter prefix[​](#parameter-prefix "Direct link to Parameter prefix")
 
-If the "parameterized\_named" format is used, configure the parameter prefix used in the `sql` string with the `paramPrefix` option, should the default `":"` be inappropriate.
+If the "parameterized_named" format is used, configure the parameter prefix used in the `sql` string with the `paramPrefix` option, should the default `":"` be inappropriate.
 
 ```
 const p = formatQuery(query, {
@@ -1558,7 +1558,7 @@ p.sql === "(firstName = $firstName_1 and lastName = $lastName_1)"
 
 ### Retain parameter prefixes[​](#retain-parameter-prefixes "Direct link to Retain parameter prefixes")
 
-`paramsKeepPrefix` simplifies compatibility with [SQLite](https://sqlite.org/). With "parameterized\_named" format, `params` object keys maintain the `paramPrefix` string as it appears in the `sql` string (e.g. `{ ":param_1": "val" }` instead of `{ "param_1": "val" }`).
+`paramsKeepPrefix` simplifies compatibility with [SQLite](https://sqlite.org/). With "parameterized_named" format, `params` object keys maintain the `paramPrefix` string as it appears in the `sql` string (e.g. `{ ":param_1": "val" }` instead of `{ "param_1": "val" }`).
 
 ### Numbered parameters[​](#numbered-parameters "Direct link to Numbered parameters")
 
@@ -1793,7 +1793,7 @@ Rules where `field`, `operator`, or `value` matches the placeholder value (defau
 
 ### Internationalization[​](#internationalization "Direct link to Internationalization")
 
-These i18n options are specific to ["natural\_language"](#natural-language) format.
+These i18n options are specific to ["natural_language"](#natural-language) format.
 
 #### Word order[​](#word-order "Direct link to Word order")
 
@@ -1855,7 +1855,7 @@ formatQuery(query, {
 // `(First Name is 'Steve') is def the truth, and (Last Name is 'Vai') is so not true`
 ```
 
-When `not` is falsy but the `combinator` is `"xor"`, `groupSuffix_xor` will be used if it exists. Otherwise it will fall back to the default. If both conditions are true, the order of the suffixes doesn't matter: both "groupSuffix\_not\_xor" and "groupSuffix\_xor\_not" would be valid (although there is no guarantee which one will be used if both are present).
+When `not` is falsy but the `combinator` is `"xor"`, `groupSuffix_xor` will be used if it exists. Otherwise it will fall back to the default. If both conditions are true, the order of the suffixes doesn't matter: both "groupSuffix_not_xor" and "groupSuffix_xor_not" would be valid (although there is no guarantee which one will be used if both are present).
 
 ##### Rule separator[​](#rule-separator "Direct link to Rule separator")
 
@@ -2121,7 +2121,7 @@ To leverage this pre-processing but generate custom output, use the `ruleGroupPr
 ruleGroupProcessor(ruleGroup, finalOptions);
 ```
 
-> ***Note: The `ruleGroupProcessor` option overrides the `format` option.***
+> **_Note: The `ruleGroupProcessor` option overrides the `format` option._**
 
 The default rule group processors for each format are available as exports from `react-querybuilder`:
 
@@ -2191,7 +2191,7 @@ formatQuery(query, { ruleGroupProcessor: customRuleGroupProcessor });
 
 ## Validation[​](#validation "Direct link to Validation")
 
-Validation options (`validator` and `fields` – see [Validation](/docs/utils/validation.md)) only affect output when `format` is not "json" or "json\_without\_ids". If the `validator` function returns `false`, the `fallbackExpression` is returned. Otherwise, groups and rules marked as invalid (by the validation map from the `validator` function or field-based `validator` function) are ignored.
+Validation options (`validator` and `fields` – see [Validation](/docs/utils/validation.md)) only affect output when `format` is not "json" or "json_without_ids". If the `validator` function returns `false`, the `fallbackExpression` is returned. Otherwise, groups and rules marked as invalid (by the validation map from the `validator` function or field-based `validator` function) are ignored.
 
 Example:
 
@@ -2277,7 +2277,7 @@ formatQuery(query, {
 
 ### Muted rules and groups[​](#muted-rules-and-groups "Direct link to Muted rules and groups")
 
-Rules and groups with the `muted` property set to `true` are excluded from output for all formats except "json" and "json\_without\_ids", similar to invalid rules and groups. This allows temporary exclusion of conditions without removing them from the query structure.
+Rules and groups with the `muted` property set to `true` are excluded from output for all formats except "json" and "json_without_ids", similar to invalid rules and groups. This allows temporary exclusion of conditions without removing them from the query structure.
 
 ```
 const query: RuleGroupType = {
@@ -2345,7 +2345,7 @@ Enable mute functionality in the UI by setting [`showMuteButtons`](/docs/compone
 
 ### Automatic validation[​](#automatic-validation "Direct link to Automatic validation")
 
-To minimize invalid syntax, `formatQuery` performs basic validation for "in", "notIn", "between", and "notBetween" operators for all formats except "json" and "json\_without\_ids", even without specified validator functions or field validators.
+To minimize invalid syntax, `formatQuery` performs basic validation for "in", "notIn", "between", and "notBetween" operators for all formats except "json" and "json_without_ids", even without specified validator functions or field validators.
 
 <!-- -->
 

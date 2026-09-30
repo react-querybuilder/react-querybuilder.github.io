@@ -135,7 +135,7 @@ The `datetimeRuleProcessorSQL` rule processor produces different output based on
 
 ### MongoDB[​](#mongodb "Direct link to MongoDB")
 
-Since the `datetimeRuleProcessorMongoDBQuery` rule processor handles real date/time values (as `Date` objects), it should be used with the "mongodb\_query" format, not "mongodb".
+Since the `datetimeRuleProcessorMongoDBQuery` rule processor handles real date/time values (as `Date` objects), it should be used with the "mongodb_query" format, not "mongodb".
 
 ```
 import { datetimeRuleProcessorMongoDBQuery } from '@react-querybuilder/datetime/dayjs';

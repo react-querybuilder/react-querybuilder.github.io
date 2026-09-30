@@ -309,9 +309,9 @@ Export format support for subqueries varies by implementation:
 
 | Support level | Formats                                                                                                                                        |
 | ------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
-| Full          | "jsonlogic"[1](#user-content-fn-1), "jsonata", "cel", "spel", "natural\_language", ~~"mongodb"~~, "mongodb\_query"                             |
+| Full          | "jsonlogic"[1](#user-content-fn-1), "jsonata", "cel", "spel", "natural_language", ~~"mongodb"~~, "mongodb_query"                               |
 | Partial       | "sql"[2](#user-content-fn-2), "parameterized"[2](#user-content-fn-2), "drizzle"[2](#user-content-fn-2), "elasticsearch"[3](#user-content-fn-3) |
-| None          | "parameterized\_named"[4](#user-content-fn-4), "prisma", "sequelize", "tanstack\_db", "ldap"                                                   |
+| None          | "parameterized_named"[4](#user-content-fn-4), "prisma", "sequelize", "tanstack_db", "ldap"                                                     |
 
 caution
 
