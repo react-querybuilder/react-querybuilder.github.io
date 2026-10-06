@@ -38,9 +38,7 @@ pnpm add react-querybuilder @react-querybuilder/dnd @atlaskit/pragmatic-drag-and
 ```
 
 ```
-import { QueryBuilderDnD } from '@react-querybuilder/dnd';
-
-import { createPragmaticDndAdapter } from '@react-querybuilder/dnd/pragmatic-dnd';
+import { combine } from '@atlaskit/pragmatic-drag-and-drop/combine';
 
 import {
 
@@ -52,7 +50,9 @@ import {
 
 } from '@atlaskit/pragmatic-drag-and-drop/element/adapter';
 
-import { combine } from '@atlaskit/pragmatic-drag-and-drop/combine';
+import { QueryBuilderDnD } from '@react-querybuilder/dnd';
+
+import { createPragmaticDndAdapter } from '@react-querybuilder/dnd/pragmatic-dnd';
 
 import { QueryBuilder } from 'react-querybuilder';
 
@@ -111,11 +111,11 @@ pnpm add react-querybuilder @react-querybuilder/dnd @dnd-kit/core
 ```
 
 ```
+import * as DndKit from '@dnd-kit/core';
+
 import { QueryBuilderDnD } from '@react-querybuilder/dnd';
 
 import { createDndKitAdapter } from '@react-querybuilder/dnd/dnd-kit';
-
-import * as DndKit from '@dnd-kit/core';
 
 import { QueryBuilder } from 'react-querybuilder';
 
