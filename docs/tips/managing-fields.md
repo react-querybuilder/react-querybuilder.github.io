@@ -42,75 +42,46 @@ The [`fields`](/docs/components/querybuilder.md#fields) array forms the foundati
 
 <!-- -->
 
-tip
+> **Tip:** For more information about option list props like `fields`, see [Working with option lists](/docs/tips/option-lists.md).
 
-For more information about option list props like `fields`, see [Working with option lists](/docs/tips/option-lists.md).
-
-## Updating `fields` at runtime[​](#updating-fields-at-runtime "Direct link to updating-fields-at-runtime")
+## Updating `fields` at runtime
 
 The `fields` prop is fully reactive — when it changes, the query builder re-normalizes the field list and updates all selectors automatically. This means you can let users add, remove, or edit fields at runtime with standard React state:
 
-```
+```tsx
 import { useState } from 'react';
-
 import { QueryBuilder } from 'react-querybuilder';
-
 import type { Field, RuleGroupType } from 'react-querybuilder';
 
-
-
 const initialFields: Field[] = [
-
   { name: 'firstName', label: 'First Name' },
-
   { name: 'lastName', label: 'Last Name' },
-
 ];
 
-
-
 export function App() {
-
   const [fields, setFields] = useState(initialFields);
-
   const [query, setQuery] = useState<RuleGroupType>({ combinator: 'and', rules: [] });
 
-
-
   const addField = () =>
-
     setFields(prev => [...prev, { name: 'email', label: 'Email', inputType: 'email' }]);
-
-
 
   const removeField = (name: string) => setFields(prev => prev.filter(f => f.name !== name));
 
-
-
   return (
-
     <>
-
       <button onClick={addField}>Add Email Field</button>
-
       <button onClick={() => removeField('email')}>Remove Email Field</button>
-
       <QueryBuilder fields={fields} query={query} onQueryChange={setQuery} />
-
     </>
-
   );
-
 }
 ```
 
 Existing rules that reference unchanged field names remain valid when the field list is updated. If you remove a field that is already referenced by a rule, the rule will still render but display the now-missing field name in the selector.
 
-tip
+> **Tip:** If your fields array is computed inline or derived from other state, wrap it in `useMemo` to avoid unnecessary re-normalization on every render.
 
-If your fields array is computed inline or derived from other state, wrap it in `useMemo` to avoid unnecessary re-normalization on every render.
-
-### Fields editor[​](#fields-editor "Direct link to Fields editor")
+### Fields editor
 
 The following example lets users add, edit, and delete fields. It stores an editor-friendly `FieldDef` for each field and derives the `fields` prop from it, with some safeguards to keep the query consistent with the field list:
 
@@ -120,7 +91,7 @@ The following example lets users add, edit, and delete fields. It stores an edit
 * **Changing types or values**: if saving would invalidate existing rules (a type change, or removed `select` values), a warning shows how many rules will be affected. Saving resets those rules' operator and value.
 * **At least one field**: the last field can't be deleted.
 
-## Generating `fields` dynamically[​](#generating-fields-dynamically "Direct link to generating-fields-dynamically")
+## Generating `fields` dynamically
 
 Field arrays typically correspond to database table columns. You can dynamically generate the `fields` array by querying your database's information schema.
 
@@ -136,856 +107,496 @@ The following examples demonstrate database-specific queries to extract field in
 
 > **Note:** `inputType: null` and `defaultValue: null` behave differently than `undefined` or missing properties. Consider removing `null` values from the query results or substituting empty strings (`""`) as needed.
 
-### Relational databases[​](#relational-databases "Direct link to Relational databases")
+### Relational databases
 
-#### PostgreSQL[​](#postgresql "Direct link to PostgreSQL")
+#### PostgreSQL
 
-```
+```sql
 SELECT json_agg(
-
     json_build_object(
-
       'name', column_name,
-
       'value', column_name,
-
       'label', column_name,
-
       'datatype', data_type || CASE WHEN data_type LIKE '%char%' THEN '(' || character_maximum_length || ')' END,
-
       'defaultValue', column_default::text,
-
       'inputType', CASE
-
         WHEN data_type LIKE '%char%' OR data_type = 'text' THEN 'text'
-
         WHEN data_type IN ('integer', 'bigint', 'smallint', 'decimal', 'numeric', 'real', 'double precision') THEN 'number'
-
         WHEN data_type = 'date' THEN 'date'
-
         WHEN data_type LIKE 'timestamp%' THEN 'datetime-local'
-
         WHEN data_type LIKE 'time%' THEN 'time'
-
       END
-
     ) ORDER BY ordinal_position
-
   ) AS fields
-
 FROM information_schema.columns
-
 WHERE table_name = 'my_table';
 ```
 
-#### MySQL[​](#mysql "Direct link to MySQL")
+#### MySQL
 
-```
+```sql
 SELECT JSON_ARRAYAGG(
-
     JSON_OBJECT(
-
       'name', COLUMN_NAME,
-
       'value', COLUMN_NAME,
-
       'label', COLUMN_NAME,
-
       'datatype', DATA_TYPE,
-
       'defaultValue', CAST(column_default AS CHAR),
-
       'inputType', CASE
-
         WHEN DATA_TYPE LIKE '%char%' OR DATA_TYPE = 'text' THEN 'text'
-
         WHEN DATA_TYPE IN ('int', 'bigint', 'smallint', 'decimal', 'dec', 'fixed', 'numeric', 'float', 'double', 'double precision') THEN 'number'
-
         WHEN DATA_TYPE = 'date' THEN 'date'
-
         WHEN DATA_TYPE = 'time' THEN 'time'
-
         WHEN DATA_TYPE IN ('datetime', 'timestamp') THEN 'datetime-local'
-
       END
-
     )
-
   ) AS fields
-
 FROM INFORMATION_SCHEMA.COLUMNS
-
 WHERE TABLE_NAME = 'my_table';
 ```
 
-#### SQLite[​](#sqlite "Direct link to SQLite")
+#### SQLite
 
-```
+```sql
 SELECT json_group_array(
-
       json_object(
-
         'name', name,
-
         'value', name,
-
         'label', name,
-
         'datatype', type,
-
         'defaultValue', dflt_value,
-
         'inputType', CASE
-
           WHEN UPPER(type) LIKE '%INT%' OR UPPER(type) LIKE '%REAL%' OR UPPER(type) LIKE '%FLOA%' OR UPPER(type) LIKE '%DOUB%' THEN 'number'
-
         END,
-
         'affinity', CASE -- See https://sqlite.org/datatype3.html#type_affinity
-
           WHEN UPPER(type) LIKE '%INT%' THEN 'INTEGER'
-
           WHEN UPPER(type) LIKE '%CHAR%' OR UPPER(type) LIKE '%CLOB%' OR UPPER(type) LIKE '%TEXT%' THEN 'TEXT'
-
           WHEN UPPER(type) LIKE '%BLOB%' OR type IS NULL THEN 'BLOB'
-
           WHEN UPPER(type) LIKE '%REAL%' OR UPPER(type) LIKE '%FLOA%' OR UPPER(type) LIKE '%DOUB%' THEN 'REAL'
-
           ELSE 'NUMERIC'
-
         END
-
       )
-
     ) fields
-
   FROM pragma_table_info('my_table')
-
  ORDER BY cid;
 ```
 
-#### SQL Server[​](#sql-server "Direct link to SQL Server")
+#### SQL Server
 
-```
+```sql
 SELECT (
-
   SELECT
-
     COLUMN_NAME AS [name],
-
     COLUMN_NAME AS [value],
-
     COLUMN_NAME AS [label],
-
     CAST(COLUMN_DEFAULT AS CHAR) AS [defaultValue],
-
     CASE WHEN DATA_TYPE LIKE '%CHAR%' THEN CONCAT(DATA_TYPE, '(', CAST(ROUND(CHARACTER_MAXIMUM_LENGTH, 0) AS int), ')') ELSE DATA_TYPE END AS [datatype],
-
     CASE
-
       WHEN DATA_TYPE IN ('char', 'varchar', 'text', 'nchar', 'nvarchar', 'ntext') THEN 'text'
-
       WHEN DATA_TYPE IN ('tinyint', 'smallint', 'int', 'bigint', 'bit', 'decimal', 'numeric', 'money', 'smallmoney', 'float', 'real') THEN 'number'
-
       WHEN DATA_TYPE = 'date' THEN 'date'
-
       WHEN DATA_TYPE = 'time' THEN 'time'
-
       WHEN DATA_TYPE LIKE '%datetime%' THEN 'datetime-local'
-
     END AS [inputType]
-
     FROM INFORMATION_SCHEMA.COLUMNS
-
    WHERE TABLE_NAME='my_table'
-
    ORDER BY ORDINAL_POSITION
-
      FOR JSON AUTO
-
 ) AS [fields];
 ```
 
-#### Oracle[​](#oracle "Direct link to Oracle")
+#### Oracle
 
-```
+```sql
 SELECT json_arrayagg(
-
     json_object(
-
       'name' VALUE column_name,
-
       'value' VALUE column_name,
-
       'label' VALUE column_name,
-
       'datatype' VALUE data_type || CASE WHEN data_type LIKE '%CHAR%' THEN '(' || data_length || ')' END,
-
       -- 'defaultValue' is omitted in this example because ALL_TAB_COLS.DATA_DEFAULT
-
       -- is type LONG which is difficult to convert to text without custom functions.
-
       'inputType' VALUE CASE
-
         WHEN data_type LIKE '%CHAR%' THEN 'text'
-
         WHEN data_type IN ('NUMBER', 'NUMERIC', 'FLOAT', 'DECIMAL', 'DEC', 'INTEGER', 'INT', 'SMALLINT') THEN 'number'
-
         WHEN data_type = 'DATE' THEN 'date'
-
         WHEN data_type = 'TIMESTAMP' THEN 'datetime-local'
-
       END
-
     ) ORDER BY column_id
-
   ) fields
-
   FROM all_tab_cols
-
  WHERE table_name = 'my_table';
 ```
 
-tip
+> **Tip:** To generate queries for relational databases, use [`formatQuery`](/docs/utils/export.md) with the `"sql"`, `"parameterized"`, or `"parameterized_named"` format.
 
-To generate queries for relational databases, use [`formatQuery`](/docs/utils/export.md) with the `"sql"`, `"parameterized"`, or `"parameterized_named"` format.
-
-### ORMs[​](#orms "Direct link to ORMs")
+### ORMs
 
 ORMs expose column metadata at runtime, so you can derive `fields` from your model definitions without querying the database.
 
-#### Drizzle ORM[​](#drizzle-orm "Direct link to Drizzle ORM")
+#### Drizzle ORM
 
 *Tested with `drizzle-orm` v0.45.*
 
 [`getTableColumns`](https://orm.drizzle.team/docs/goodies#get-typed-table-columns) returns each column's JS-level `dataType` (`"string"`, `"number"`, `"boolean"`, `"date"`, etc.) and dialect-specific `columnType`.
 
-```
+```ts
 import { getTableColumns } from 'drizzle-orm';
-
 import { myTable } from './schema';
 
-
-
 const inputTypes: Record<string, string> = {
-
   string: 'text',
-
   number: 'number',
-
   bigint: 'number',
-
   date: 'datetime-local',
-
 };
 
-
-
 const fields = Object.entries(getTableColumns(myTable)).map(([key, col]) => ({
-
   name: key,
-
   value: key,
-
   label: key,
-
   datatype: col.columnType, // e.g. "PgVarchar", "SQLiteInteger"
-
   defaultValue: col.default ?? null,
-
   inputType: inputTypes[col.dataType] ?? null,
-
   ...(col.dataType === 'boolean' ? { valueEditorType: 'checkbox' } : {}),
-
 }));
 ```
 
 `name` uses the TypeScript property key, which is what the ["drizzle" format](/docs/utils/export.md#drizzle-orm) expects. Use `col.name` instead for the database column name.
 
-#### Prisma ORM[​](#prisma-orm "Direct link to Prisma ORM")
+#### Prisma ORM
 
 *Tested with `prisma`/`@prisma/client` v7.10 (`prisma-client-js` generator).*
 
 The generated client exposes the data model as `Prisma.dmmf`. Relation fields are excluded since they can't be filtered directly. The runtime DMMF omits default values, so `defaultValue` is not included.
 
-```
+```ts
 import { Prisma } from '@prisma/client';
 
-
-
 const inputTypes: Record<string, string> = {
-
   String: 'text',
-
   Int: 'number',
-
   BigInt: 'number',
-
   Float: 'number',
-
   Decimal: 'number',
-
   DateTime: 'datetime-local',
-
 };
-
-
 
 const model = Prisma.dmmf.datamodel.models.find(m => m.name === 'User');
 
-
-
 const fields = (model?.fields ?? [])
-
   .filter(f => f.kind === 'scalar' || f.kind === 'enum')
-
   .map(f => ({
-
     name: f.name,
-
     value: f.name,
-
     label: f.name,
-
     datatype: f.type,
-
     inputType: inputTypes[f.type] ?? null,
-
     ...(f.type === 'Boolean' ? { valueEditorType: 'checkbox' } : {}),
-
   }));
 ```
 
-#### Sequelize[​](#sequelize "Direct link to Sequelize")
+#### Sequelize
 
 *Tested with `sequelize` v6.37.*
 
 `Model.getAttributes()` returns each attribute's type and default value. The attribute list includes automatic attributes like `id`, `createdAt`, and `updatedAt`.
 
-```
+```ts
 import { User } from './models';
 
-
-
 const inputTypes: Record<string, string> = {
-
   STRING: 'text',
-
   TEXT: 'text',
-
   CHAR: 'text',
-
   INTEGER: 'number',
-
   BIGINT: 'number',
-
   SMALLINT: 'number',
-
   TINYINT: 'number',
-
   MEDIUMINT: 'number',
-
   FLOAT: 'number',
-
   DOUBLE: 'number',
-
   REAL: 'number',
-
   DECIMAL: 'number',
-
   DATEONLY: 'date',
-
   DATE: 'datetime-local',
-
   TIME: 'time',
-
 };
 
-
-
 const fields = Object.entries(User.getAttributes()).map(([key, attr]) => {
-
   const { key: typeKey } = attr.type as { key: string };
-
   return {
-
     name: key,
-
     value: key,
-
     label: key,
-
     datatype: attr.type.toString({}), // e.g. "VARCHAR(50)", "DECIMAL(10,2)"
-
     defaultValue: attr.defaultValue ?? null,
-
     inputType: inputTypes[typeKey] ?? null,
-
     ...(typeKey === 'BOOLEAN' ? { valueEditorType: 'checkbox' } : {}),
-
   };
-
 });
 ```
 
-tip
+> **Tip:** To generate queries for ORMs, use [`formatQuery`](/docs/utils/export.md#orms) with the `"drizzle"`, `"prisma"`, or `"sequelize"` format.
 
-To generate queries for ORMs, use [`formatQuery`](/docs/utils/export.md#orms) with the `"drizzle"`, `"prisma"`, or `"sequelize"` format.
-
-### MongoDB[​](#mongodb "Direct link to MongoDB")
+### MongoDB
 
 MongoDB collections have no fixed schema, so there is no information schema to query. Use a `$jsonSchema` validator if the collection has one; otherwise, infer fields from a sample of documents.
 
-#### From a `$jsonSchema` validator[​](#from-a-jsonschema-validator "Direct link to from-a-jsonschema-validator")
+#### From a `$jsonSchema` validator
 
 This approach is reliable when a validator exists. It recurses into subdocuments to produce dot-path field names.
 
-```
+```ts
 import { MongoClient } from 'mongodb';
 
-
-
 interface JSONSchemaProperty {
-
   bsonType?: string | string[];
-
   properties?: Record<string, JSONSchemaProperty>;
-
 }
 
-
-
 const inputTypes: Record<string, string> = {
-
   string: 'text',
-
   int: 'number',
-
   long: 'number',
-
   double: 'number',
-
   decimal: 'number',
-
   date: 'datetime-local',
-
 };
 
-
-
 const toFields = (props: Record<string, JSONSchemaProperty> = {}, prefix = ''): unknown[] =>
-
   Object.entries(props).flatMap(([key, { bsonType, properties }]) => {
-
     const name = `${prefix}${key}`;
-
     const types = [bsonType ?? []].flat().filter(t => t !== 'null');
-
     if (types[0] === 'object' && properties) return toFields(properties, `${name}.`);
-
     return [
-
       {
-
         name,
-
         value: name,
-
         label: name,
-
         datatype: types.join('|'),
-
         inputType: inputTypes[types[0]] ?? null,
-
         ...(types[0] === 'bool' ? { valueEditorType: 'checkbox' } : {}),
-
       },
-
     ];
-
   });
 
-
-
 const client = await MongoClient.connect('mongodb://localhost:27017');
-
 const [info] = await client.db('my_db').listCollections({ name: 'my_collection' }).toArray();
-
 const fields = toFields(info?.options?.validator?.$jsonSchema?.properties);
 ```
 
-#### From sampled documents[​](#from-sampled-documents "Direct link to From sampled documents")
+#### From sampled documents
 
 This aggregation pipeline works on any collection, but the result is only as accurate as the sample. It expands one level of subdocuments into dot-paths (repeat the `$cond`/`$unwind` stages for deeper nesting). Fields containing multiple BSON types get a `|`-separated `datatype`, and `inputType` is based on the first type found.
 
-```
+```js
 db.my_collection.aggregate([
-
   { $sample: { size: 1000 } },
-
   { $project: { kv: { $objectToArray: '$$ROOT' } } },
-
   { $unwind: '$kv' },
-
   // Expand one level of subdocuments into dot-paths
-
   {
-
     $project: {
-
       kv: {
-
         $cond: [
-
           { $eq: [{ $type: '$kv.v' }, 'object'] },
-
           {
-
             $map: {
-
               input: { $objectToArray: '$kv.v' },
-
               as: 'sub',
-
               in: { k: { $concat: ['$kv.k', '.', '$$sub.k'] }, v: '$$sub.v' },
-
             },
-
           },
-
           ['$kv'],
-
         ],
-
       },
-
     },
-
   },
-
   { $unwind: '$kv' },
-
   { $match: { 'kv.k': { $ne: '_id' } } },
-
   { $group: { _id: '$kv.k', types: { $addToSet: { $type: '$kv.v' } } } },
-
   { $set: { types: { $setDifference: ['$types', ['null', 'missing']] } } },
-
   { $set: { type: { $first: '$types' } } },
-
   { $sort: { _id: 1 } },
-
   {
-
     $project: {
-
       _id: 0,
-
       name: '$_id',
-
       value: '$_id',
-
       label: '$_id',
-
       datatype: {
-
         $reduce: {
-
           input: '$types',
-
           initialValue: '',
-
           in: { $concat: ['$$value', { $cond: [{ $eq: ['$$value', ''] }, '', '|'] }, '$$this'] },
-
         },
-
       },
-
       inputType: {
-
         $switch: {
-
           branches: [
-
             { case: { $eq: ['$type', 'string'] }, then: 'text' },
-
             { case: { $in: ['$type', ['int', 'long', 'double', 'decimal']] }, then: 'number' },
-
             { case: { $eq: ['$type', 'date'] }, then: 'datetime-local' },
-
           ],
-
           default: null,
-
         },
-
       },
-
       valueEditorType: { $cond: [{ $eq: ['$type', 'bool'] }, 'checkbox', '$$REMOVE'] },
-
     },
-
   },
-
 ]);
 ```
 
-tip
+> **Tip:** To generate queries for MongoDB, use [`formatQuery`](/docs/utils/export.md) with the `"mongodb_query"` format.
 
-To generate queries for MongoDB, use [`formatQuery`](/docs/utils/export.md) with the `"mongodb_query"` format.
-
-### ElasticSearch[​](#elasticsearch "Direct link to ElasticSearch")
+### ElasticSearch
 
 Every ElasticSearch index has a mapping that declares the type of each field. Mappings have no default values, so `defaultValue` is omitted.
 
 Retrieve the mapping with the [get mapping API](https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-get-mapping.html):
 
-```
+```http
 GET /my_index/_mapping
 ```
 
 The response looks something like this:
 
-```
+```json
 {
-
   "my_index": {
-
     "mappings": {
-
       "properties": {
-
         "firstName": {
-
           "type": "text",
-
           "fields": { "keyword": { "type": "keyword", "ignore_above": 256 } }
-
         },
-
         "age": { "type": "integer" },
-
         "isActive": { "type": "boolean" },
-
         "birthDate": { "type": "date" },
-
         "address": {
-
           "properties": {
-
             "city": { "type": "keyword" },
-
             "zip": { "type": "keyword" }
-
           }
-
         }
-
       }
-
     }
-
   }
-
 }
 ```
 
 The following function fetches the mapping and converts it to a `fields` array, flattening `object` and `nested` properties to dot-paths. Multi-fields like `firstName.keyword` are skipped.
 
-```
+```ts
 interface ESProperty {
-
   type?: string;
-
   properties?: Record<string, ESProperty>;
-
 }
 
-
-
 const inputTypes: Record<string, string> = {
-
   text: 'text',
-
   keyword: 'text',
-
   integer: 'number',
-
   long: 'number',
-
   short: 'number',
-
   byte: 'number',
-
   float: 'number',
-
   double: 'number',
-
   half_float: 'number',
-
   scaled_float: 'number',
-
   date: 'datetime-local',
-
 };
 
-
-
 const toFields = (props: Record<string, ESProperty>, prefix = ''): unknown[] =>
-
   Object.entries(props).flatMap(([key, { type = 'object', properties }]) => {
-
     const name = `${prefix}${key}`;
-
     if (properties) return toFields(properties, `${name}.`);
-
     return [
-
       {
-
         name,
-
         value: name,
-
         label: name,
-
         datatype: type,
-
         inputType: inputTypes[type] ?? null,
-
         ...(type === 'boolean' ? { valueEditorType: 'checkbox' } : {}),
-
       },
-
     ];
-
   });
 
-
-
 const index = 'my_index';
-
 const res = await fetch(`http://localhost:9200/${index}/_mapping`);
-
 const mapping = await res.json();
-
 const fields = toFields(mapping[index].mappings.properties);
 ```
 
-tip
+> **Tip:** To generate queries for ElasticSearch, use [`formatQuery`](/docs/utils/export.md) with the `"elasticsearch"` format.
 
-To generate queries for ElasticSearch, use [`formatQuery`](/docs/utils/export.md) with the `"elasticsearch"` format.
+### Graph databases
 
-### Graph databases[​](#graph-databases "Direct link to Graph databases")
-
-#### Neo4j (Cypher/GQL)[​](#neo4j-cyphergql "Direct link to Neo4j (Cypher/GQL)")
+#### Neo4j (Cypher/GQL)
 
 *Checked against the documented output format of `db.schema.nodeTypeProperties()` only, not run against a live Neo4j instance.*
 
 [`db.schema.nodeTypeProperties()`](https://neo4j.com/docs/operations-manual/current/procedures/#procedure_db_schema_nodeTypeProperties) reports the property names and types seen for each node label. Types are matched case-insensitively because different Neo4j versions report them differently (e.g. `"String"` vs. `"STRING"`). Cypher can't leave out a map key based on a condition, so `valueEditorType` is `null` for properties that aren't booleans.
 
-```
+```cypher
 CALL db.schema.nodeTypeProperties() YIELD nodeLabels, propertyName, propertyTypes
-
 WHERE 'Person' IN nodeLabels AND propertyName IS NOT NULL
-
 WITH propertyName AS name, propertyTypes, toUpper(propertyTypes[0]) AS type
-
 ORDER BY name
-
 RETURN collect({
-
   name: name,
-
   value: name,
-
   label: name,
-
   datatype: reduce(s = '', t IN propertyTypes | s + CASE WHEN s = '' THEN '' ELSE '|' END + t),
-
   inputType: CASE
-
     WHEN type = 'STRING' THEN 'text'
-
     WHEN type IN ['LONG', 'INTEGER', 'DOUBLE', 'FLOAT'] THEN 'number'
-
     WHEN type = 'DATE' THEN 'date'
-
     WHEN type IN ['LOCALDATETIME', 'LOCAL DATETIME', 'DATETIME', 'ZONED DATETIME'] THEN 'datetime-local'
-
     WHEN type IN ['LOCALTIME', 'LOCAL TIME', 'TIME', 'ZONED TIME'] THEN 'time'
-
   END,
-
   valueEditorType: CASE WHEN type = 'BOOLEAN' THEN 'checkbox' END
-
 }) AS fields;
 ```
 
-tip
+> **Tip:** To generate queries for Neo4j, use [`formatQuery`](/docs/utils/export.md#cypher) with the `"cypher"` or `"gql"` format.
 
-To generate queries for Neo4j, use [`formatQuery`](/docs/utils/export.md#cypher) with the `"cypher"` or `"gql"` format.
-
-#### SPARQL[​](#sparql "Direct link to SPARQL")
+#### SPARQL
 
 *Tested with [Oxigraph](https://github.com/oxigraph/oxigraph) v0.5.*
 
 RDF data doesn't need a schema, so this query samples the predicates used by instances of a class (`ex:Person` here) and infers each predicate's type from its literal values. `name` is the predicate's local name (the part after the last `/` or `#`), which fits the variable names used by the ["sparql" format](/docs/utils/export.md#sparql). `iri` keeps the full predicate IRI for when you write the query's triple patterns. Predicates whose values are IRIs get `datatype: "IRI"` and no `inputType`.
 
-```
+```sparql
 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
-
 PREFIX ex: <http://example.com/>
 
-
-
 SELECT ?name ?value ?label ?iri (SAMPLE(?dt) AS ?datatype) (SAMPLE(?it) AS ?inputType)
-
        (SAMPLE(?vet) AS ?valueEditorType)
-
 WHERE {
-
   { SELECT DISTINCT ?p ?o WHERE { ?s a ex:Person ; ?p ?o . } LIMIT 10000 }
-
   FILTER(?p != rdf:type)
-
   BIND(STR(?p) AS ?iri)
-
   BIND(REPLACE(?iri, "^.*[/#]", "") AS ?name)
-
   BIND(?name AS ?value)
-
   BIND(?name AS ?label)
-
   BIND(IF(isLiteral(?o), STR(DATATYPE(?o)), "IRI") AS ?dt)
-
   BIND(
-
     IF(DATATYPE(?o) IN (xsd:string, rdf:langString), "text",
-
     IF(DATATYPE(?o) IN (xsd:integer, xsd:int, xsd:long, xsd:decimal, xsd:float, xsd:double), "number",
-
     IF(DATATYPE(?o) = xsd:date, "date",
-
     IF(DATATYPE(?o) = xsd:dateTime, "datetime-local",
-
     IF(DATATYPE(?o) = xsd:time, "time", ?unbound))))) AS ?it
-
   )
-
   BIND(IF(DATATYPE(?o) = xsd:boolean, "checkbox", ?unbound) AS ?vet)
-
 }
-
 GROUP BY ?name ?value ?label ?iri
-
 ORDER BY ?name
 ```
 
 SPARQL returns a result set, not JSON objects, so map each binding to a field object in your client code.
 
-tip
-
-To generate queries for SPARQL, use [`formatQuery`](/docs/utils/export.md#sparql) with the `"sparql"` format.
+> **Tip:** To generate queries for SPARQL, use [`formatQuery`](/docs/utils/export.md#sparql) with the `"sparql"` format.

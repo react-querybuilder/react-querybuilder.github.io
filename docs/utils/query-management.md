@@ -4,7 +4,7 @@
 
 Utilities for building and modifying query objects programmatically, without the `<QueryBuilder />` component.
 
-## Query tools[​](#query-tools "Direct link to Query tools")
+## Query tools
 
 Several methods are available to assist with programmatic manipulation of query objects. These methods are used by the `<QueryBuilder />` component itself, so they're guaranteed to achieve the same result as a corresponding UI-based update. Each method returns the modified query.
 
@@ -12,7 +12,7 @@ Check out the ["External controls" Tips & Tricks page](/docs/tips/external-contr
 
 For a stateful, chainable wrapper around these methods that holds the query for you, see [`QueryManager`](#query-manager) below.
 
-### `add`[​](#add "Direct link to add")
+### `add`
 
 `(query: RuleGroupTypeAny, ruleOrGroup: RuleGroupTypeAny | RuleType, parentPathOrID: Path | string, options: AddOptions) => RuleGroupTypeAny`
 
@@ -20,55 +20,37 @@ Adds a rule or group (and an independent combinator if necessary to keep the que
 
 AddOptions
 
-```
+```ts
 export interface AddOptions extends QueryToolOptions {
-
   /**
-
    * If the query extends `RuleGroupTypeIC` (i.e. the query has independent
-
    * combinators), then the first combinator in this list will be inserted
-
    * before the new rule/group if the parent group is not empty. This option
-
    * is overridden by `combinatorPreceding`.
-
    */
-
   combinators?: OptionList;
-
   /**
-
    * If the query extends `RuleGroupTypeIC` (i.e. the query has independent
-
    * combinators), then this combinator will be inserted before the new rule/group
-
    * if the parent group is not empty. This option will supersede `combinators`.
-
    */
-
   combinatorPreceding?: string;
-
   /**
-
    * ID generator.
-
    */
-
   idGenerator?: () => string;
-
 }
 ```
 
 > *Source: [/packages/core/src/utils/queryTools.ts#L192-L210](https://github.com/react-querybuilder/react-querybuilder/blob/main/packages/core/src/utils/queryTools.ts#L192-L210)*
 
-### `remove`[​](#remove "Direct link to remove")
+### `remove`
 
 `(query: RuleGroupTypeAny, pathOrID: Path | string, options: RemoveOptions) => RuleGroupTypeAny`
 
 Removes a rule or group (and the preceding independent combinator if one exists) at the specified `path` or with the given `id`.
 
-### `update`[​](#update "Direct link to update")
+### `update`
 
 `(query: RuleGroupTypeAny, prop: string, value: any, pathOrID: Path | string, options: UpdateOptions) => RuleGroupTypeAny`
 
@@ -80,11 +62,9 @@ Multiple properties can be updated at once by passing either a property-to-value
 
 `(query: RuleGroupTypeAny, props: string[], values: any[], pathOrID: Path | string, options: UpdateOptions) => RuleGroupTypeAny`
 
-```
+```ts
 // Equivalent ways to set `valueSource` and `value` in a single call:
-
 update(query, { valueSource: 'field', value: 'otherField' }, rulePath);
-
 update(query, ['valueSource', 'value'], ['field', 'otherField'], rulePath);
 ```
 
@@ -92,69 +72,41 @@ Regardless of the order in which properties are listed, `field`, `operator`, and
 
 UpdateOptions
 
-```
+```ts
 export interface UpdateOptions extends QueryToolOptions {
-
   /**
-
    * When updating the `field` of a rule, the rule's `operator`, `value`, and `valueSource`
-
    * will be reset to their respective defaults. Defaults to `true`.
-
    */
-
   resetOnFieldChange?: boolean;
-
   /**
-
    * When updating the `operator` of a rule, the rule's `value` and `valueSource`
-
    * will be reset to their respective defaults. Defaults to `false`.
-
    */
-
   resetOnOperatorChange?: boolean;
-
   /**
-
    * Determines the default operator name for a given field.
-
    */
-
   getRuleDefaultOperator?: (field: string) => string;
-
   /**
-
    * Determines the valid value sources for a given field and operator.
-
    */
-
   getValueSources?: (field: string, operator: string) => ValueSources | ValueSourceFlexibleOptions;
-
   /**
-
    * Gets the default value for a given rule, in case the value needs to be reset.
-
    */
-
   // oxlint-disable-next-line typescript/no-explicit-any
-
   getRuleDefaultValue?: (rule: RuleType) => any;
-
   /**
-
    * Determines the valid match modes for a given field.
-
    */
-
   getMatchModes?: (field: string) => MatchModeOptions;
-
 }
 ```
 
 > *Source: [/packages/core/src/utils/queryTools.ts#L307-L335](https://github.com/react-querybuilder/react-querybuilder/blob/main/packages/core/src/utils/queryTools.ts#L307-L335)*
 
-### `move`[​](#move "Direct link to move")
+### `move`
 
 `(query: RuleGroupTypeAny, oldPathOrID: Path | string, newPath: Path | 'up' | 'down', options: MoveOptions) => RuleGroupTypeAny`
 
@@ -162,43 +114,28 @@ Moves (or clones with a new `id`) a rule or group at the specified `path` or wit
 
 MoveOptions
 
-```
+```ts
 export interface MoveOptions extends QueryToolOptions {
-
   /**
-
    * When `true`, the source rule/group will not be removed from its original path.
-
    */
-
   clone?: boolean;
-
   /**
-
    * If the query extends `RuleGroupTypeIC` (i.e. the query is using independent
-
    * combinators), then the first combinator in this list will be inserted before
-
    * the rule/group if necessary.
-
    */
-
   combinators?: OptionList;
-
   /**
-
    * ID generator.
-
    */
-
   idGenerator?: () => string;
-
 }
 ```
 
 > *Source: [/packages/core/src/utils/queryTools.ts#L889-L904](https://github.com/react-querybuilder/react-querybuilder/blob/main/packages/core/src/utils/queryTools.ts#L889-L904)*
 
-### `insert`[​](#insert "Direct link to insert")
+### `insert`
 
 `(query: RuleGroupTypeAny, ruleOrGroup: RuleGroupTypeAny | RuleType, path: Path, options: InsertOptions) => RuleGroupTypeAny`
 
@@ -206,77 +143,45 @@ Inserts a rule or group (and an independent combinator if necessary to keep the 
 
 InsertOptions
 
-```
+```ts
 export interface InsertOptions extends QueryToolOptions {
-
   /**
-
    * If the query extends `RuleGroupTypeIC` (i.e. the query has independent
-
    * combinators), then the first combinator in this list will be inserted
-
    * before the new rule/group if the parent group is not empty. This option
-
    * is overridden by `combinatorPreceding`.
-
    */
-
   combinators?: OptionList;
-
   /**
-
    * If the query extends `RuleGroupTypeIC` (i.e. the query has independent
-
    * combinators), then this combinator will be inserted before the new rule/group
-
    * if the parent group is not empty and the new rule/group is not the first in the
-
    * group (`path.at(-1) > 0`). This option will supersede `combinators`.
-
    */
-
   combinatorPreceding?: string;
-
   /**
-
    * If the query extends `RuleGroupTypeIC` (i.e. the query has independent
-
    * combinators), then this combinator will be inserted after the new rule/group
-
    * if the parent group is not empty and the new rule/group is the first in the
-
    * group (`path.at(-1) === 0`). This option will supersede `combinators`.
-
    */
-
   combinatorSucceeding?: string;
-
   /**
-
    * ID generator.
-
    *
-
    * @default generateID
-
    */
-
   idGenerator?: () => string;
-
   /**
-
    * When `true`, the new rule/group will replace the rule/group at `path`.
-
    */
-
   replace?: boolean;
-
 }
 ```
 
 > *Source: [/packages/core/src/utils/queryTools.ts#L1097-L1129](https://github.com/react-querybuilder/react-querybuilder/blob/main/packages/core/src/utils/queryTools.ts#L1097-L1129)*
 
-### `ungroup`[​](#ungroup "Direct link to ungroup")
+### `ungroup`
 
 `(query: RuleGroupTypeAny, pathOrID: Path | string, options: UngroupOptions) => RuleGroupTypeAny`
 
@@ -284,35 +189,24 @@ Replaces the group at the specified `path` or with the given `id` with its own r
 
 UngroupOptions
 
-```
+```ts
 export interface UngroupOptions extends QueryToolOptions {}
 
-
-
 export interface UngroupMethod {
-
   <RG extends RuleGroupTypeAny>(
-
     /** The query to update. */
-
     query: RG,
-
     /** The path or ID of the group to ungroup. */
-
     pathOrID: Path | string,
-
     /** Options. */
-
     options?: UngroupOptions
-
   ): RG;
-
 }
 ```
 
 > *Source: [/packages/core/src/utils/queryTools.ts#L734-L745](https://github.com/react-querybuilder/react-querybuilder/blob/main/packages/core/src/utils/queryTools.ts#L734-L745)*
 
-### `group`[​](#group "Direct link to group")
+### `group`
 
 `(query: RuleGroupTypeAny, sourcePathOrID: Path | string, targetPathOrID: Path | string, options: GroupOptions) => RuleGroupTypeAny`
 
@@ -320,77 +214,51 @@ Creates a new group at the target `path` (based on the specified `path` or given
 
 GroupOptions
 
-```
+```ts
 export interface GroupOptions extends QueryToolOptions {
-
   /**
-
    * When `true`, the source rule/group will not be removed from its original path.
-
    */
-
   clone?: boolean;
-
   /**
-
    * If the query extends `RuleGroupTypeIC` (i.e. the query is using independent
-
    * combinators), then the first combinator in this list will be inserted between
-
    * the two rules/groups.
-
    */
-
   combinators?: OptionList;
-
   /**
-
    * ID generator.
-
    */
-
   idGenerator?: () => string;
-
 }
 ```
 
 > *Source: [/packages/core/src/utils/queryTools.ts#L1247-L1262](https://github.com/react-querybuilder/react-querybuilder/blob/main/packages/core/src/utils/queryTools.ts#L1247-L1262)*
 
-### Aborted operations[​](#aborted-operations "Direct link to Aborted operations")
+### Aborted operations
 
 Query tools never throw. When an operation can't be carried out—the `path`/`id` doesn't resolve, the parent is a rule instead of a group, the target is the root group, and so on—the original query is returned unmodified. Since the return value is the same object either way, that outcome is indistinguishable from a successful call that happened to change nothing.
 
 Pass `onAbort` (accepted by every query tool) to find out which happened and why:
 
-```
+```ts
 const newQuery = remove(query, 'some-id', {
-
   onAbort: ({ reason, operation, pathOrID }) => {
-
     console.warn(`${operation} aborted: ${reason}`, pathOrID);
-
   },
-
 });
 ```
 
 AbortOptions
 
-```
+```ts
 export interface AbortOptions extends GuardOptions {
-
   /**
-
    * Called when the operation returns the query unmodified, with the reason why. Query tools
-
    * never throw, so this is the only way to distinguish "the target was invalid" from
-
    * "the operation had nothing to do".
-
    */
-
   onAbort?: (info: AbortInfo) => void;
-
 }
 ```
 
@@ -415,7 +283,7 @@ export interface AbortOptions extends GuardOptions {
 
 [`QueryManager`](#query-manager)'s [strict mode](#strict-mode) builds on this channel.
 
-### Guards[​](#guards "Direct link to Guards")
+### Guards
 
 The last three reasons above are produced by opt-in guards, accepted by every query tool alongside `onAbort`:
 
@@ -427,27 +295,22 @@ The last three reasons above are produced by opt-in guards, accepted by every qu
 
 Updating a rule or group's own `disabled` property is always permitted under `respectDisabled`, since that is the only way to re-enable it. `queryDisabled` blocks even that.
 
-```
+```ts
 // Aborts: the rule at [0] is disabled
-
 update(query, 'value', 'x', [0], { respectDisabled: true });
 
-
-
 // Succeeds: re-enabling is always allowed
-
 update(query, 'disabled', false, [0], { respectDisabled: true });
 ```
 
 `getGuardAbortReason(query, pathOrID, guards, { asParent })` and `exceedsMaxLevels(parentPath, guards)` are exported so a UI layer that runs its own logic before mutating—invoking a confirmation callback, for example—can apply the same rules without duplicating them.
 
-### Freezing (tools)[​](#freezing-tools "Direct link to Freezing (tools)")
+### Freezing (tools)
 
 The query tools produce their result with [immer](https://immerjs.github.io/immer/), which deep-freezes it. That makes accidental mutation throw in strict mode, but some frameworks—Vue with `reactive`, Solid with stores—cannot wrap a frozen object. Pass `freeze: false` to opt out:
 
-```
+```ts
 const nextQuery = add(query, rule, [], { freeze: false });
-
 Object.isFrozen(nextQuery); // false
 ```
 
@@ -455,37 +318,26 @@ Structural sharing is unaffected, so reference comparison still works. The `*InP
 
 `setAutoFreeze(false)` (re-exported from immer) disables freezing process-wide, including for `produce` calls you make yourself. Prefer the per-call option unless you need that.
 
-## Query manager[​](#query-manager "Direct link to Query manager")
+## Query manager
 
 `QueryManager` is a stateful wrapper around the [query tools](#query-tools) above. It holds the query internally, so each method takes the same arguments as its query tool counterpart minus the leading `query` parameter, and returns the manager itself for chaining. It has no React dependency, so it can be used on the server, in a CLI, or anywhere else a query needs to be built or modified programmatically.
 
-```
+```ts
 import { QueryManager } from 'react-querybuilder';
-
 // or: import { QueryManager } from '@react-querybuilder/core';
-
-
 
 const q = new QueryManager(undefined, { fields });
 
-
-
 q.add({ field: 'firstName', operator: '=', value: 'Steve' })
-
   .add({ field: 'lastName', operator: '=', value: 'Vai' })
-
   .update('operator', 'contains', 'rule-id-1');
 
-
-
 q.validate(); // boolean | ValidationMap
-
 q.format('sql'); // string
-
 q.getQuery(); // RuleGroupType
 ```
 
-### Constructor[​](#constructor "Direct link to Constructor")
+### Constructor
 
 `new QueryManager(query?: RuleGroupTypeAny, options?: QueryManagerOptions)`
 
@@ -493,301 +345,154 @@ Without a `query`, an empty group is created using the configured `combinators` 
 
 QueryManagerOptions
 
-```
+```ts
 export interface QueryManagerOptions<
-
   F extends FullField = FullField,
-
   O extends FullOperator = FullOperator,
-
   C extends FullCombinator = FullCombinator,
-
 > {
-
   /** The fields available for rules. Accepts the same shapes as the `fields` prop. */
-
   fields?: FlexibleOptionListProp<F> | BaseOptionMap<F>;
-
   /** The operators available for rules. Accepts the same shapes as the `operators` prop. */
-
   operators?: FlexibleOptionListProp<O> | BaseOptionMap<O>;
-
   /** The combinators available for groups. Defaults to `defaultCombinators`. */
-
   combinators?: FlexibleOptionListProp<C> | BaseOptionMap<C>;
-
   /** Properties applied to every field in `fields`. */
-
   baseField?: Record<string, unknown>;
-
   /** Properties applied to every operator in `operators`. */
-
   baseOperator?: Record<string, unknown>;
-
   /** Properties applied to every combinator in `combinators`. */
-
   baseCombinator?: Record<string, unknown>;
-
   /** When `false`, an empty placeholder option is prepended to the field list. */
-
   autoSelectField?: boolean;
-
   /** When `false`, an empty placeholder option is prepended to each operator list. */
-
   autoSelectOperator?: boolean;
-
   /** When `false`, an empty placeholder option is prepended to each value list. */
-
   autoSelectValue?: boolean;
-
   /**
-
    * Translations, accepting the same shape as the `translations` prop. Only the placeholder
-
    * properties of `fields`, `operators`, and `values` are used, and only when the corresponding
-
    * `autoSelect*` option is `false`; the remaining keys describe UI elements that have no
-
    * meaning outside the `QueryBuilder` component. Labels are typed as `unknown` so the React
-
    * `Translations` type, whose labels are `ReactNode`, can be passed as-is.
-
    */
-
   translations?: Partial<BaseTranslations<unknown>>;
-
   /** The default `field` for rules created by {@link QueryManager.createRule}. */
-
   getDefaultField?: DefaultFieldProp<F>;
-
   /** The default `operator` for a given field. */
-
   getDefaultOperator?: DefaultOperatorProp<F>;
-
   /** Overrides the computed default `value` for a new rule. */
-
   getDefaultValue?: (rule: RuleType, misc: { fieldData: F }) => unknown;
-
   /** The operators available for a given field. */
-
   getOperators?: (field: string, misc: { fieldData: F }) => FlexibleOptionList<O> | null;
-
   /** The value editor type for a given field/operator, which informs the default value. */
-
   getValueEditorType?: (field: string, operator: string, misc: { fieldData: F }) => ValueEditorType;
-
   /** The value list for a given field/operator, which informs the default value. */
-
   getValues?: (
-
     field: string,
-
     operator: string,
-
     misc: { fieldData: F }
-
   ) => FlexibleOptionList<Option>;
-
   /** The valid value sources for a given field/operator. */
-
   getValueSources?: (
-
     field: string,
-
     operator: string,
-
     misc: { fieldData: F }
-
   ) => ValueSources | ValueSourceFlexibleOptions;
-
   /** The valid match modes for a given field. */
-
   getMatchModes?: (
-
     field: string,
-
     misc: { fieldData: F }
-
   ) => boolean | MatchMode[] | FlexibleOption<MatchMode>[];
-
   /** The named parameters available for a given field/operator. */
-
   getParameters?: (
-
     field: string,
-
     operator: string,
-
     misc: { fieldData: F }
-
   ) => FlexibleOptionList<Option> | null;
-
   /** When `true`, multi-value defaults are arrays instead of comma-joined strings. */
-
   listsAsArrays?: boolean;
-
   /** When `true`, groups created by {@link QueryManager.createRuleGroup} contain one new rule. */
-
   addRuleToNewGroups?: boolean;
-
   /**
-
    * When updating a rule's `field`, reset its `operator`, `value`, and `valueSource` to their
-
    * defaults. Defaults to `true`, matching the `QueryBuilder` prop of the same name.
-
    */
-
   resetOnFieldChange?: boolean;
-
   /**
-
    * When updating a rule's `operator`, reset its `value` to the default. Defaults to `false`,
-
    * matching the `QueryBuilder` prop of the same name.
-
    */
-
   resetOnOperatorChange?: boolean;
-
   /**
-
    * The maximum depth at which groups may be added. As with the `QueryBuilder` prop of the same
-
    * name, a non-positive value means unlimited. Defaults to `Infinity`.
-
    */
-
   maxLevels?: number;
-
   /**
-
    * Honor `disabled` properties within the query, so mutations targeting a disabled rule or
-
    * group (or a descendant of a disabled group) are aborted. Updating a node's own `disabled`
-
    * property is always permitted. Defaults to `true`, matching the `QueryBuilder` component;
-
    * pass `false` to mutate freely regardless of the property.
-
    */
-
   respectDisabled?: boolean;
-
   /**
-
    * Paths that are disabled without the corresponding rule or group carrying a `disabled`
-
    * property. This mirrors the array form of the `QueryBuilder` `disabled` prop
-
    * (e.g. `disabled={[[2]]}`), which disables nodes by position rather than by data.
-
    *
-
    * A path is treated as disabled if it appears here or descends from a path that does. Honored
-
    * only when `respectDisabled` is `true`; as with the `disabled` property, a node's own
-
    * `disabled` can always be changed so it is never permanently locked.
-
    */
-
   disabledPaths?: Path[];
-
   /** Abort every mutation, as though the entire query were disabled. Defaults to `false`. */
-
   queryDisabled?: boolean;
-
   /** The input type for a given field/operator, surfaced by {@link QueryManager.getRuleContext}. */
-
   getInputType?: (field: string, operator: string, misc: { fieldData: F }) => InputType | null;
-
   /** Extra props for a subquery builder, surfaced by {@link QueryManager.getRuleContext}. */
-
   getSubQueryBuilderProps?: (field: string, misc: { fieldData: F }) => Record<string, unknown>;
-
   /**
-
    * Enables undo/redo recording. Pass `true` for the defaults, or an object to configure
-
    * `maxHistory` and/or `coalesceMs`. Disabled by default, so instances that never undo
-
    * retain no extra references.
-
    */
-
   history?: boolean | QueryHistoryOptions;
-
   /**
-
    * Throw a {@link QueryManagerError} when a mutation is aborted because its target could not
-
    * be used. Disabled by default, in which case such mutations are silent no-ops. Can be
-
    * overridden per call.
-
    */
-
   strict?: boolean;
-
   /**
-
    * Called whenever a mutation is aborted, including for the non-error reasons
-
    * `"same-location"` and `"no-change"`. Can be overridden per call.
-
    */
-
   onInvalidTarget?: (info: AbortInfo) => void;
-
   /**
-
    * Deep-freeze everything the manager hands out—the query, the field list, the field map, and
-
    * the combinator list—so accidental mutation throws in strict mode. Defaults to `true`.
-
    *
-
    * Pass `false` when the manager's output is handed to a framework that wraps objects in
-
    * proxies (Vue `reactive`, Solid stores) or otherwise needs to mutate them. This also disables
-
    * immer's auto-freeze for mutations made through the manager.
-
    *
-
    * The shallow copy returned by {@link QueryManager.getOptions} is frozen either way: it is a
-
    * one-level copy that no framework proxy is placed inside, so freezing it costs nothing and
-
    * still prevents callers from mutating the options snapshot they were handed.
-
    */
-
   freeze?: boolean;
-
   /** Validates the query. Defaults to {@link defaultValidator}. */
-
   validator?: QueryValidator;
-
   /** Generates `id` properties for new rules and groups. Defaults to {@link generateID}. */
-
   idGenerator?: () => string;
-
   /**
-
    * Clock used to time history coalescing. Defaults to `Date.now`.
-
    *
-
    * @internal Test seam. Exists so that history recording can be compared against the
-
    * `react-querybuilder/history` implementation without depending on wall-clock timing.
-
    */
-
   now?: () => number;
-
 }
 ```
 
@@ -795,13 +500,12 @@ export interface QueryManagerOptions<
 
 The constructor also accepts the [guard options](#guards) `respectDisabled` (defaulting to **`true`** here, matching the `QueryBuilder` component), `queryDisabled`, and `maxLevels`, plus `resetOnFieldChange` (default `true`) and `resetOnOperatorChange` (default `false`), which mirror the props of the same names.
 
-### Freezing (manager)[​](#freezing-manager "Direct link to Freezing (manager)")
+### Freezing (manager)
 
 Everything the manager hands out directly—the query, the field list, the field map, and the combinator list—is deep-frozen. Pass `freeze: false` to disable that, along with immer's auto-freeze for mutations made through the manager:
 
-```
+```ts
 const q = new QueryManager(query, { fields, freeze: false });
-
 Object.isFrozen(q.getQuery()); // false
 ```
 
@@ -809,19 +513,19 @@ This is what makes a manager's output usable with a framework that wraps objects
 
 Note that under `freeze: false`, "a query previously handed out by `getQuery` is never modified" remains true—mutations still go through the non-`InPlace` tools—but it is a convention rather than a runtime-enforced guarantee.
 
-### State access[​](#state-access "Direct link to State access")
+### State access
 
 * `getQuery(): RuleGroupTypeAny` — The current query. The returned object is structurally shared, so it's safe to retain and compare by reference to detect changes. It's also frozen unless the [`freeze` option](#freezing-manager) is `false`.
 * `setQuery(query: RuleGroupTypeAny)` — Replaces the current query, assigning `id`s as needed.
 
-### Factories[​](#factories "Direct link to Factories")
+### Factories
 
 * `createRule(): RuleType` — Creates a rule using the configured fields, operators, and defaults, applying the same precedence rules as the `<QueryBuilder />` component.
 * `createRuleGroup(independentCombinators?: boolean): RuleGroupTypeAny` — Creates a group.
 
 Neither method adds anything to the query; pass the result to `add` or `insert`.
 
-### Mutation[​](#mutation "Direct link to Mutation")
+### Mutation
 
 Each method below delegates to the query tool of the same name, using the manager's configuration (`combinators`, `idGenerator`, and the default resolvers) as the default options. Per-call options take precedence.
 
@@ -833,24 +537,22 @@ Each method below delegates to the query tool of the same name, using the manage
 * `group(sourcePathOrID, targetPathOrID, options?)`
 * `ungroup(pathOrID, options?)`
 
-note
+> **Note:** As with the query tools themselves, these methods are a no-op when the target path or `id` can't be resolved—including attempts to remove the root group. Nothing is thrown by default, and mutators always return the manager, so compare `getQuery()` by reference if you need to know whether a call had any effect. See [strict mode](#strict-mode) to turn these into errors instead.
 
-As with the query tools themselves, these methods are a no-op when the target path or `id` can't be resolved—including attempts to remove the root group. Nothing is thrown by default, and mutators always return the manager, so compare `getQuery()` by reference if you need to know whether a call had any effect. See [strict mode](#strict-mode) to turn these into errors instead.
-
-### Validation and export[​](#validation-and-export "Direct link to Validation and export")
+### Validation and export
 
 * `validate(): boolean | ValidationMap` — Validates the current query with the configured `validator`, defaulting to [`defaultValidator`](/docs/utils/misc.md#defaultvalidator).
 * `format(options?)` — Passes the current query to [`formatQuery`](/docs/utils/export.md). Accepts everything `formatQuery` accepts as its second parameter, including the format-name shorthand (`q.format('sql')`), and has the same return types.
 
-### Cloning[​](#cloning "Direct link to Cloning")
+### Cloning
 
 `clone(options?: { regenerateIDs?: boolean })` returns an independent manager with the same configuration and the current query. Subscribers and history are not carried over. Because every mutation produces a new query object, the two managers share the initial query safely and diverge from the first change. Pass `{ regenerateIDs: true }` to give every rule and group in the clone a new `id`, which is useful when both queries will be used together.
 
-### Reconfiguration[​](#reconfiguration "Direct link to Reconfiguration")
+### Reconfiguration
 
 `reconfigure(options: Partial<QueryManagerOptions>, config?: { replace?: boolean })` updates the manager's configuration in place, keeping the current query, the undo/redo history, and every subscriber. Use it to propagate new `translations`, `fields`, `operators`, and so on without discarding state:
 
-```
+```ts
 q.reconfigure({ translations: { fields: { placeholderLabel: 'Choisir un champ' } } });
 ```
 
@@ -861,15 +563,13 @@ Related methods:
 * `getOptions(): QueryManagerOptions` — The options currently in effect, as a frozen shallow copy. This one is frozen even under `freeze: false`; see [Freezing](#freezing-manager).
 * `getConfigVersion(): number` — A counter incremented only when a `reconfigure` call changes the effective configuration; calls that resolve to the options already in effect leave it unchanged. Bound to the instance, so it can be passed directly to React's `useSyncExternalStore` alongside `subscribe`. The [`useQueryManager`](/docs/utils/hooks.md#usequerymanager) hook already does this.
 
-note
+> **Note:** `reconfigure` never rewrites the query, even when the new options no longer describe it—a rule whose `field` is not in the new `fields` list is left as-is. Call [`validate()`](#validation-and-export) to detect that, or `setQuery(getQuery())` to re-normalize.
+>
+> A call that resolves to the configuration already in effect is a **no-op**: nothing is re-derived, `getConfigVersion()` does not change, and subscribers are not notified. Equality is structural for data and by identity for functions (see [`optionsEqual`](/docs/utils/framework-adapters.md#configuration)), so rebuilding the options object on every render—which every framework adapter does—does not force a reconfigure as long as the data is the same. Rebuilding a callback per render *does* count as a change; memoize it to avoid that. The comparison is against the merged options, or against the replacement under `{ replace: true }`, so `reconfigure({})` behaves like `reconfigure(getOptions())`.
+>
+> Otherwise subscribers are notified once and `getConfigVersion()` is incremented. Inside a [batch](#batching) the options are applied immediately—configuration is not part of a batch's rollback—but the notification is deferred and merged into the batch's single notification. History options are honored immediately: lowering `maxHistory` trims the undo stack, and turning history off clears both stacks.
 
-`reconfigure` never rewrites the query, even when the new options no longer describe it—a rule whose `field` is not in the new `fields` list is left as-is. Call [`validate()`](#validation-and-export) to detect that, or `setQuery(getQuery())` to re-normalize.
-
-A call that resolves to the configuration already in effect is a **no-op**: nothing is re-derived, `getConfigVersion()` does not change, and subscribers are not notified. Equality is structural for data and by identity for functions (see [`optionsEqual`](/docs/utils/framework-adapters.md#configuration)), so rebuilding the options object on every render—which every framework adapter does—does not force a reconfigure as long as the data is the same. Rebuilding a callback per render *does* count as a change; memoize it to avoid that. The comparison is against the merged options, or against the replacement under `{ replace: true }`, so `reconfigure({})` behaves like `reconfigure(getOptions())`.
-
-Otherwise subscribers are notified once and `getConfigVersion()` is incremented. Inside a [batch](#batching) the options are applied immediately—configuration is not part of a batch's rollback—but the notification is deferred and merged into the batch's single notification. History options are honored immediately: lowering `maxHistory` trims the undo stack, and turning history off clears both stacks.
-
-### Subscriptions[​](#subscriptions "Direct link to Subscriptions")
+### Subscriptions
 
 `subscribe(listener: (change: SubscriptionChange) => void)` registers a listener called after every change to the query or the configuration, and returns a function that unregisters it. Mutations that resolve to a no-op do not notify, and a [batch](#batching) notifies once no matter how many changes it contains.
 
@@ -883,13 +583,13 @@ The listener receives a `SubscriptionChange`—`{ query: boolean; config: boolea
 
 The method is bound to the instance, so it is a stable reference across renders and can be passed directly to React's `useSyncExternalStore`. `getQuery` is bound as well, so it can serve as the snapshot getter without a wrapper:
 
-```
+```ts
 const query = useSyncExternalStore(q.subscribe, q.getQuery);
 ```
 
 In React, prefer the [`useQueryManager`](/docs/utils/hooks.md#usequerymanager) hook, which wraps this and handles creating the manager exactly once.
 
-### Batching[​](#batching "Direct link to Batching")
+### Batching
 
 `batch(fn: () => void)` runs `fn`, deferring history recording and subscriber notification until it returns. The whole batch becomes a single undo step and triggers a single notification, or neither if the query ends up unchanged. Batches may be nested; only the outermost one commits.
 
@@ -897,45 +597,33 @@ If `fn` throws, the query and its history are restored to their pre-batch state 
 
 [`undo()`, `redo()`, and `clearHistory()`](#undoredo) may be called inside a batch, and their notifications are deferred like everything else. Because they manage the history stacks themselves, a batch containing one of them records no entry of its own, leaving the stacks exactly as those methods left them.
 
-```
+```ts
 q.batch(() => {
-
   q.add(rule1);
-
   q.add(rule2);
-
   q.add(rule3);
-
 }); // one notification, one undo step
 ```
 
-### Strict mode[​](#strict-mode "Direct link to Strict mode")
+### Strict mode
 
 By default, a mutation whose target can't be used is a silent no-op (see [aborted operations](#aborted-operations)). Set `strict: true` to raise a `QueryManagerError` instead:
 
-```
+```ts
 const q = new QueryManager(query, { fields, strict: true });
-
-
 
 q.remove('no-such-id'); // throws QueryManagerError
 ```
 
 The error carries a `code` (the [`AbortReason`](#aborted-operations)) and the full `info` object, so failures can be handled by kind rather than by message:
 
-```
+```ts
 try {
-
   q.remove(id);
-
 } catch (error) {
-
   if (error instanceof QueryManagerError && error.code === 'target-not-found') {
-
     // ...
-
   }
-
 }
 ```
 
@@ -943,31 +631,27 @@ The two non-error reasons—`"same-location"` and `"no-change"`—never throw, s
 
 To observe aborted operations without changing control flow, use `onInvalidTarget`. It is called for *every* abort, including the non-error reasons, and runs before any `strict` throw, so an operation can be both observed and enforced:
 
-```
+```ts
 const q = new QueryManager(query, {
-
   fields,
-
   onInvalidTarget: ({ reason, operation }) => logger.warn(`${operation}: ${reason}`),
-
 });
 ```
 
 Both options can be overridden per call, which takes precedence over the manager's own configuration:
 
-```
+```ts
 q.remove(id, { strict: true }); // just this call
-
 q.remove(id, { strict: false }); // opt out of a manager-wide strict setting
 ```
 
 A `strict` throw inside [`batch`](#batching) rolls the whole batch back.
 
-### Undo/redo[​](#undoredo "Direct link to Undo/redo")
+### Undo/redo
 
 Recording is opt-in through the `history` option, so instances that never undo retain no extra references. Pass `true` for the defaults, or an object to configure `maxHistory` (default `50`) and/or `coalesceMs` (default `500`).
 
-```
+```ts
 const q = new QueryManager(undefined, { fields, history: true });
 ```
 
@@ -980,29 +664,23 @@ const q = new QueryManager(undefined, { fields, history: true });
 
 Recording follows the same semantics as the [`react-querybuilder/history`](/docs/tips/undo-redo.md) entry point: consecutive changes to the same property of the same rule within `coalesceMs` are merged into a single undo step (so typing a value produces one entry rather than one per keystroke), structural changes never coalesce, and changes that alter no observable property are not recorded at all.
 
-### Traversal[​](#traversal "Direct link to Traversal")
+### Traversal
 
 `walk(options?)` is a generator yielding every rule and group in the query, depth-first in pre-order, starting with the root group itself. Combinator strings in independent-combinator queries are skipped.
 
 Each entry is a `QueryNode`:
 
-```
+```ts
 interface QueryNode {
-
   node: RuleGroupTypeAny | RuleType;
-
   path: Path;
-
   parent: RuleGroupTypeAny | null; // `null` for the root group
-
 }
 ```
 
-```
+```ts
 for (const { node, path } of q.walk({ rulesOnly: true })) {
-
   console.log(path, node.field);
-
 }
 ```
 
@@ -1023,7 +701,7 @@ Derived methods:
 
 Traversal operates on the query as it was when iteration began, so mutating the manager mid-iteration does not affect a walk already in progress. Because generators are lazy, that snapshot is taken on the first iteration step rather than when `walk()` is called.
 
-### Lookups[​](#lookups "Direct link to Lookups")
+### Lookups
 
 These mirror the standalone [`findPath`](/docs/utils/misc.md#findpath) and [`findID`](/docs/utils/misc.md#findid) utilities, minus the trailing `query` parameter.
 
@@ -1043,11 +721,9 @@ Unlike the standalone `findPath`, which can return `undefined` for an out-of-ran
 
 `findID`, `getPathOfID`, and the `pathOrID` forms above are backed by an `id`-to-`Path` index built once per query, so repeated lookups are constant time rather than a tree walk. The index is rebuilt automatically whenever the query changes, including via `undo`, `redo`, and a rolled-back `batch`.
 
-note
+> **Note:** `validate()` results are cached against the current query for the same reason. A custom `validator` with side effects, or one that depends on anything other than the query, may therefore run fewer times than expected.
 
-`validate()` results are cached against the current query for the same reason. A custom `validator` with side effects, or one that depends on anything other than the query, may therefore run fewer times than expected.
-
-### Rule configuration[​](#rule-configuration "Direct link to Rule configuration")
+### Rule configuration
 
 These methods resolve the same field/operator configuration the `QueryBuilder` component uses, applying the same precedence rules (field-level properties first, then the corresponding `get*` option, then the manager-level defaults).
 
@@ -1065,87 +741,58 @@ These methods resolve the same field/operator configuration the `QueryBuilder` c
 
 When `autoSelectField`, `autoSelectOperator`, or `autoSelectValue` is `false`, an empty placeholder option is prepended to the corresponding list. Pass the `translations` option to control those placeholders exactly as the `translations` prop does for the `QueryBuilder` component—only the placeholder properties of `fields`, `operators`, and `values` are used, since the remaining keys describe UI elements that have no meaning outside the component. This matters beyond presentation: `placeholderName` becomes the `field`, `operator`, or `value` written into rules created by the manager, so a manager paired with a component should receive the same translations.
 
-```
+```ts
 const q = new QueryManager(undefined, {
-
   fields,
-
   autoSelectField: false,
-
   translations: { fields: { placeholderName: '#', placeholderLabel: 'Select a field' } },
-
 });
-
 q.createRule(); // => { field: '#', ... }
 ```
 
 `getRuleContext(pathOrID)` resolves all of the above for a specific rule at once, plus its validation result, returning `null` when the target can't be resolved or isn't a rule.
 
-```
+```ts
 interface RuleContext {
-
   fieldData: FullField;
-
   hideValueControls: boolean;
-
   inputType: InputType | null;
-
   matchModes: MatchModeOptions;
-
   operatorObject: FullOperator | undefined;
-
   operators: OptionList<FullOperator>;
-
   parameters: FlexibleOptionList<Option> | null;
-
   validationResult: boolean | ValidationResult;
-
   valueEditorType: ValueEditorType;
-
   values: FlexibleOptionList<Option>;
-
   valueSourceOptions: ValueSourceFullOptions;
-
   valueSources: ValueSources;
-
 }
 ```
 
 This is the same derivation the [`useRule`](/docs/utils/hooks.md#userule) hook performs—both call the shared `deriveRuleContext` utility—so a non-React implementation can render a rule without reimplementing the precedence rules.
 
-```
+```ts
 const ctx = q.getRuleContext([0]);
-
 // => { fieldData: { name: 'firstName', ... }, valueEditorType: 'text', valueSources: ['value'], ... }
 ```
 
 `getRuleGroupContext(pathOrID)` is the equivalent for groups, defaulting to the root group. It returns `null` when the target can't be resolved or isn't a group.
 
-```
+```ts
 interface RuleGroupContext {
-
   combinator: string;
-
   combinatorObject: FullCombinator | undefined;
-
   combinators: FullOptionList<FullCombinator>;
-
   /** The selected combinator's `className`, or `null` for independent combinators. */
-
   combinatorBasedClassName: Classname | null;
-
   independentCombinators: boolean;
-
   validationResult: boolean | ValidationResult;
-
 }
 ```
 
-note
+> **Note:** Unlike a rule, a group's `validationResult` comes *only* from the query-level validation map—there is no field-level validator fallback.
 
-Unlike a rule, a group's `validationResult` comes *only* from the query-level validation map—there is no field-level validator fallback.
-
-### Classnames[​](#classnames "Direct link to Classnames")
+### Classnames
 
 `@react-querybuilder/core` also exports the classname derivations used by `useRule` and `useRuleGroup`, so an implementation in any framework can produce a byte-identical `class` attribute for every element:
 
@@ -1156,33 +803,27 @@ Unlike a rule, a group's `validationResult` comes *only* from the query-level va
 * `deriveRuleClassName(key, { ... })` — a single rule classname, for cases where only one is needed.
 * `deriveQueryBuilderClassNames({ classNames, suppressStandardClassnames, disabled, validationResult })` — the query builder's own wrapper classname, including the conditional `disabled`, `valid`, and `invalid` classes. Only a `boolean` `validationResult` contributes a class; a `ValidationMap` describes individual rules and groups, not the query as a whole.
 
-caution
-
-A group's wrapper reflects **fewer** states than a rule's: `dndOver`, `dndCopy`, `dndDropNotAllowed`, and `hasSubQuery` apply to rules only. The two condition sets are declared separately for exactly this reason, so use the matching function rather than assuming symmetry.
+> **Caution:** A group's wrapper reflects **fewer** states than a rule's: `dndOver`, `dndCopy`, `dndDropNotAllowed`, and `hasSubQuery` apply to rules only. The two condition sets are declared separately for exactly this reason, so use the matching function rather than assuming symmetry.
 
 Each takes the merged [`controlClassnames`](/docs/components/querybuilder.md#controlclassnames) object and returns plain strings.
 
 Composition is declared as data rather than code: every derived classname names the `controlClassnames` keys that contribute to it (in application order, after the standard classname) plus any state-dependent classes. Conditional elements—the rule wrapper and the group `header`—use the same declaration, so there is no element a port can handle differently by accident.
 
-```
+```ts
 interface ClassnameSpec {
-
   sources: readonly (keyof Classnames)[];
-
   conditions?: readonly { key; when; standardOnly? }[];
-
 }
 ```
 
 For each entry the result is the standard classname, then each `sources` entry, then each active condition's custom class, then a single object of active standard classes.
 
-```
+```ts
 deriveRuleClassNames({ classNames: { valueSelector: 'vs', fields: 'f' } });
-
 // => { fields: 'rule-fields vs f', operators: 'rule-operators vs', ... }
 ```
 
-### Option resolvers and factories[​](#option-resolvers-and-factories "Direct link to Option resolvers and factories")
+### Option resolvers and factories
 
 The precedence rules the `QueryBuilder` component applies when resolving a rule's configuration are exported as standalone functions, so `useQueryBuilderSetup` and `QueryManager` share one implementation rather than each keeping its own:
 
@@ -1194,11 +835,9 @@ The precedence rules the `QueryBuilder` component applies when resolving a rule'
 
 Each accepts an optional `placeholder` so a UI layer can supply translated placeholder options; omit it where translations don't apply.
 
-note
+> **Note:** `createRule` computes `value` in a second pass, once `field`, `operator`, and `valueSource` are known, since the default value depends on all three. `createRuleGroup` generates the group's own `id` *before* any contained rule's — observable when `idGenerator` is deterministic.
 
-`createRule` computes `value` in a second pass, once `field`, `operator`, and `valueSource` are known, since the default value depends on all three. `createRuleGroup` generates the group's own `id` *before* any contained rule's — observable when `idGenerator` is deterministic.
-
-### Value editors[​](#value-editors "Direct link to Value editors")
+### Value editors
 
 The logic behind the [`useValueEditor`](/docs/utils/hooks.md#usevalueeditor) hook is exported separately, since a value editor is the control an implementation is most likely to rewrite:
 
@@ -1209,67 +848,42 @@ The logic behind the [`useValueEditor`](/docs/utils/hooks.md#usevalueeditor) hoo
 * `isBetweenOperator(operator)` — whether an operator's value is a pair of bounds.
 * `getValueSelectorUpdate(value, { multiple, listsAsArrays })` / `normalizeValueSelectorValue(value, multiple)` — the equivalents for [`useValueSelector`](/docs/utils/hooks.md#usevalueselector). The latter stringifies multiselect values so they match option names, which are always strings.
 
-### Query actions[​](#query-actions "Direct link to Query actions")
+### Query actions
 
 `createQueryActions(config)` builds the six mutations a query builder performs as pure functions of the current query. Each returns the next query, or `undefined` when the mutation was aborted—because the target is disabled, a confirmation callback declined, or `maxLevels` was reached.
 
-```
+```ts
 const actions = createQueryActions({
-
   qbId,
-
   combinators,
-
   idGenerator,
-
   maxLevels,
-
   queryDisabled,
-
   respectDisabled,
-
   resetOnFieldChange,
-
   resetOnOperatorChange,
-
   getRuleDefaultOperator,
-
   getValueSources,
-
   getRuleDefaultValue,
-
   getMatchModes,
-
   onAddRule,
-
   onAddGroup,
-
   onRemove,
-
   onMoveRule,
-
   onMoveGroup,
-
   onGroupRule,
-
   onGroupGroup,
-
   onUngroup,
-
   onLog,
-
 });
-
-
 
 // { addRule, addGroup, propChange, removeRuleOrGroup, moveRule, groupRule, ungroupRuleGroup }
 ```
 
 This is the policy that surrounds the [query tools](#query-tools)—disabled gating, the confirmation callback protocol, depth limits, and debug logging. An implementation supplies only its own storage: read the current query, call the action, apply a non-`undefined` result.
 
-```
+```ts
 const newQuery = actions.addRule(currentQuery, rule, parentPath);
-
 if (newQuery) applyQuery(newQuery);
 ```
 
@@ -1284,33 +898,32 @@ The confirmation callbacks have three distinct return contracts:
 
 The move, group, and ungroup actions compute the prospective query *before* invoking their callback, so it can inspect the result it is being asked to approve.
 
-### Controlled and uncontrolled queries[​](#controlled-and-uncontrolled-queries "Direct link to Controlled and uncontrolled queries")
+### Controlled and uncontrolled queries
 
 `resolveCandidateQuery({ query, storeQuery, defaultQuery, fallbackQuery }, { idGenerator })` applies the precedence a query builder uses to decide what to render: the controlled `query`, then whatever is already in its store, then the uncontrolled `defaultQuery`, then a freshly created empty group. The result is passed through `prepareRuleGroup` unless it already has an `id`, which is taken to mean it has been prepared before—most often because the caller is passing back the object it received from `onQueryChange`.
 
-### Paths[​](#paths "Direct link to Paths")
+### Paths
 
 `derivePathInfo(path, childCount, { disabled, disabledPaths })` returns `{ path, disabled }` for each child of a group, applying the rule that a child is disabled if its parent is disabled or its own path appears in `disabledPaths`. The `usePathsMemo` hook wraps it to keep the array referentially stable across renders.
 
-### Inspection[​](#inspection "Direct link to Inspection")
+### Inspection
 
 * `isIC(): boolean` — Whether the current query uses independent combinators.
 * `signatureOf(other: RuleGroupTypeAny): string` — How the current query differs from `other`, using the same signature scheme as [undo/redo](#undoredo) coalescing.
 * `diagnostics(): DiagnosticsResult` — Shorthand for `format('diagnostics')`.
 * `toJSON(): RuleGroupTypeAny` — Returns the current query, so `JSON.stringify(q)` matches `JSON.stringify(q.getQuery())`.
 
-### Conversion[​](#conversion "Direct link to Conversion")
+### Conversion
 
 `toIC()` and `fromIC()` return a **new manager** with the same configuration and the query converted to or from the independent combinators structure (see [`convertQuery`](/docs/utils/misc.md#convertquery)). Both are idempotent and never modify the original. As with [`clone`](#cloning), subscribers and history are not carried over.
 
-```
+```ts
 const ic = q.toIC(); // QueryManager<RuleGroupTypeIC>
-
 q.getQuery(); // unchanged
 ```
 
 `transform(options?)` runs [`transformQuery`](/docs/utils/misc.md#transformquery) against the current query and returns its result directly, rather than a new manager — `transformQuery` can produce arbitrary shapes that are no longer valid queries. The manager is never modified.
 
-```
+```ts
 q.transform({ propertyMap: { combinator: 'AndOr' } });
 ```

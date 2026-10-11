@@ -11,42 +11,21 @@ Two utilities do most of the work:
 
 Both are exported from [`@react-querybuilder/migrate-raqb`](https://github.com/react-querybuilder/migrate-raqb), a standalone package outside the main React Query Builder repository. Since migration is generally a one-time task, these utilities are packaged separately to keep them out of your production bundle.
 
-* npm
-* Bun
-* Yarn
-* pnpm
-
-```
+```bash
 npm i @react-querybuilder/migrate-raqb
 ```
 
-```
-bun add @react-querybuilder/migrate-raqb
-```
-
-```
-yarn add @react-querybuilder/migrate-raqb
-```
-
-```
-pnpm add @react-querybuilder/migrate-raqb
-```
-
-```
+```ts
 import { parseRAQB, parseRAQBFields } from '@react-querybuilder/migrate-raqb';
 ```
 
 The package has no runtime dependencies—only a peer dependency on `@react-querybuilder/core` (v8.21.2 or later). It adds no dependency on RAQB or immutable.js.
 
-info
+> **Info:** `@react-querybuilder/migrate-raqb` requires React Query Builder v8. If you're migrating from RAQB, migrate straight to [the latest version](/docs/next/tips/migrate-from-raqb)—there's no reason to land on v7 first. Run the conversion under v8, save the resulting queries, and the output is plain JSON that works anywhere.
 
-`@react-querybuilder/migrate-raqb` requires React Query Builder v8. If you're migrating from RAQB, migrate straight to [the latest version](/docs/next/tips/migrate-from-raqb)—there's no reason to land on v7 first. Run the conversion under v8, save the resulting queries, and the output is plain JSON that works anywhere.
+> **Tip:** Once your queries are converted and saved in RQB format, uninstall `@react-querybuilder/migrate-raqb`. Nothing in your application needs it at runtime.
 
-tip
-
-Once your queries are converted and saved in RQB format, uninstall `@react-querybuilder/migrate-raqb`. Nothing in your application needs it at runtime.
-
-## Concept mapping[​](#concept-mapping "Direct link to Concept mapping")
+## Concept mapping
 
 | RAQB                                | React Query Builder                                                                        |
 | ----------------------------------- | ------------------------------------------------------------------------------------------ |
@@ -67,219 +46,119 @@ Once your queries are converted and saved in RQB format, uninstall `@react-query
 | `sqlFormat`, `mongodbFormat`, etc.  | [`formatQuery`](/docs/utils/export.md)                                                     |
 | `loadFromJsonLogic`, `loadFromSpel` | [`parseJsonLogic`, `parseSpEL`](/docs/utils/import.md)                                     |
 
-## Rendering the component[​](#rendering-the-component "Direct link to Rendering the component")
+## Rendering the component
 
 RAQB splits rendering across `<Query>`, a `renderBuilder` callback, and `<Builder>`, and keeps the query in an immutable.js tree that must be converted before it can be saved. RQB renders a single element and stores the query as plain JSON.
 
 Before (RAQB)
 
-```
+```tsx
 import { useCallback, useState } from 'react';
-
 import type {
-
   BuilderProps,
-
   Config,
-
   ImmutableTree,
-
   JsonGroup,
-
 } from '@react-awesome-query-builder/ui';
-
 import { BasicConfig, Builder, Query, Utils as QbUtils } from '@react-awesome-query-builder/ui';
-
 import '@react-awesome-query-builder/ui/css/styles.css';
 
-
-
 const config: Config = {
-
   ...BasicConfig,
-
   fields: {
-
     price: { label: 'Price', type: 'number' },
-
     color: {
-
       label: 'Color',
-
       type: 'select',
-
       fieldSettings: {
-
         listValues: [
-
           { value: 'yellow', title: 'Yellow' },
-
           { value: 'green', title: 'Green' },
-
         ],
-
       },
-
     },
-
   },
-
   settings: {
-
     ...BasicConfig.settings,
-
     showNot: true,
-
     showLock: true,
-
     maxNesting: 3,
-
     addRuleLabel: 'New rule',
-
   },
-
 };
-
-
 
 const initialTree: JsonGroup = { id: QbUtils.uuid(), type: 'group' };
 
-
-
 export const App = () => {
-
   const [tree, setTree] = useState(() => QbUtils.loadTree(initialTree));
 
-
-
   const onChange = useCallback((immutableTree: ImmutableTree) => {
-
     setTree(immutableTree);
-
     // Convert before saving — the state itself is an immutable.js tree
-
     console.log(QbUtils.getTree(immutableTree));
-
   }, []);
 
-
-
   const renderBuilder = useCallback(
-
     (props: BuilderProps) => (
-
       <div className="query-builder-container">
-
         <div className="query-builder qb-lite">
-
           <Builder {...props} />
-
         </div>
-
       </div>
-
     ),
-
     []
-
   );
-
-
 
   return (
-
     <>
-
       <Query {...config} value={tree} onChange={onChange} renderBuilder={renderBuilder} />
-
       <pre>{QbUtils.sqlFormat(tree, config)}</pre>
-
     </>
-
   );
-
 };
 ```
 
 After (RQB)
 
-```
+```tsx
 import { useState } from 'react';
-
 import type { Field, RuleGroupType } from 'react-querybuilder';
-
 import { formatQuery, QueryBuilder } from 'react-querybuilder';
-
 import 'react-querybuilder/dist/query-builder.css';
 
-
-
 const fields: Field[] = [
-
   { name: 'price', label: 'Price', inputType: 'number' },
-
   {
-
     name: 'color',
-
     label: 'Color',
-
     valueEditorType: 'select',
-
     values: [
-
       { name: 'yellow', label: 'Yellow' },
-
       { name: 'green', label: 'Green' },
-
     ],
-
   },
-
 ];
-
-
 
 const initialQuery: RuleGroupType = { combinator: 'and', rules: [] };
 
-
-
 export const App = () => {
-
   // Already plain JSON — save it as-is
-
   const [query, setQuery] = useState(initialQuery);
 
-
-
   return (
-
     <>
-
       <QueryBuilder
-
         fields={fields}
-
         query={query}
-
         onQueryChange={setQuery}
-
         showNotToggle
-
         showLockButtons
-
         maxLevels={3}
-
         translations={{ addRule: { label: 'New rule' } }}
-
       />
-
       <pre>{formatQuery(query, 'sql')}</pre>
-
     </>
-
   );
-
 };
 ```
 
@@ -290,7 +169,7 @@ Notable differences:
 * There is no `renderBuilder` indirection or required wrapper markup. Use [`controlClassnames`](/docs/components/querybuilder.md#controlclassnames) and [`controlElements`](/docs/components/querybuilder.md#controlelements) to customize markup and styling.
 * Export functions take the query object, not a tree plus a config.
 
-### Settings[​](#settings "Direct link to Settings")
+### Settings
 
 RAQB's `config.settings` correspond to individual `<QueryBuilder />` props:
 
@@ -309,75 +188,46 @@ RAQB's `config.settings` correspond to individual `<QueryBuilder />` props:
 | `addRuleLabel`, `valuePlaceholder`, and other labels | [`translations`](/docs/components/querybuilder.md#translations)                                                                                                 |
 | `fieldSeparator`                                     | Handled at conversion time by `parseRAQBFields` (field names are flattened)                                                                                     |
 
-## Converting the config[​](#converting-the-config "Direct link to Converting the config")
+## Converting the config
 
 `parseRAQBFields` accepts either a full RAQB `Config` object or just the `fields` map, and returns an RQB `fields` array.
 
-```
+```ts
 import { parseRAQBFields } from '@react-querybuilder/migrate-raqb';
 
-
-
 const fields = parseRAQBFields({
-
   price: {
-
     label: 'Price',
-
     type: 'number',
-
     fieldSettings: { min: 0, max: 100 },
-
   },
-
   color: {
-
     label: 'Color',
-
     type: 'select',
-
     fieldSettings: {
-
       listValues: [
-
         { value: 'yellow', title: 'Yellow' },
-
         { value: 'green', title: 'Green' },
-
       ],
-
     },
-
   },
-
 });
 ```
 
 Result
 
-```
+```json
 [
-
   { "name": "price", "label": "Price", "inputType": "number" },
-
   {
-
     "name": "color",
-
     "label": "Color",
-
     "valueEditorType": "select",
-
     "values": [
-
       { "name": "yellow", "label": "Yellow" },
-
       { "name": "green", "label": "Green" }
-
     ]
-
   }
-
 ]
 ```
 
@@ -391,84 +241,62 @@ Translation details:
 * Fields marked `hideForSelect` are omitted unless you pass `includeHidden: true`.
 * Export-time settings (`fieldName`, `tableName`, `jsonLogicVar`, `isSpelVariable`) and `fieldSettings.validateValue` are not translated.
 
-### `parseRAQBFields` options[​](#parseraqbfields-options "Direct link to parseraqbfields-options")
+### `parseRAQBFields` options
 
 * `fieldSeparator` (`string`): Character used to join nested field names.
 * `operatorMap` (`Record<string, string>`): Additional or overriding operator name mappings. Should match the `operatorMap` passed to `parseRAQB`.
 * `includeHidden` (`boolean`): Include fields marked `hideForSelect`. Defaults to `false`.
 * `onUnsupported` (`(info: RAQBUnsupportedInfo) => void`): Called for each construct that could not be fully translated.
 
-## Converting queries[​](#converting-queries "Direct link to Converting queries")
+## Converting queries
 
 `parseRAQB` accepts RAQB's **plain-JSON** tree — the output of `Utils.getTree(immutableTree)` — or a JSON string of the same. Immutable.js trees are not accepted; passing one throws an error explaining the fix.
 
-```
+```ts
 // In your RAQB app, save the plain JSON form:
-
 const jsonTree = QbUtils.getTree(immutableTree);
 ```
 
-```
+```ts
 import { parseRAQB } from '@react-querybuilder/migrate-raqb';
-
-
 
 const query = parseRAQB(jsonTree);
 ```
 
 Example
 
-```
+```ts
 parseRAQB({
-
   type: 'group',
-
   properties: { conjunction: 'AND' },
-
   children1: [
-
     {
-
       type: 'rule',
-
       properties: { field: 'price', operator: 'greater', value: [10], valueSrc: ['value'] },
-
     },
-
     {
-
       type: 'rule',
-
       properties: { field: 'color', operator: 'select_any_in', value: [['yellow', 'green']] },
-
     },
-
   ],
-
 });
 ```
 
 Result
 
-```
+```json
 {
-
   "combinator": "and",
-
   "rules": [
-
     { "field": "price", "operator": ">", "value": 10 },
-
     { "field": "color", "operator": "in", "value": "yellow,green" }
-
   ]
-
 }
 ```
 
 Both `children1` shapes are supported: the default array form and the keyed-object form produced when `children1AsArray` is `false`.
 
-### Operator mapping[​](#operator-mapping "Direct link to Operator mapping")
+### Operator mapping
 
 | RAQB                                                           | RQB                                                             |
 | -------------------------------------------------------------- | --------------------------------------------------------------- |
@@ -489,7 +317,7 @@ Both `children1` shapes are supported: the default array form and the keyed-obje
 
 Add to or override this map with the `operatorMap` option.
 
-### `parseRAQB` options[​](#parseraqb-options "Direct link to parseraqb-options")
+### `parseRAQB` options
 
 Beyond the standard [import configuration](/docs/utils/import.md#configuration) options (`fields`, `listsAsArrays`, `generateIDs`, `independentCombinators`, etc.), `parseRAQB` accepts:
 
@@ -501,77 +329,51 @@ Beyond the standard [import configuration](/docs/utils/import.md#configuration) 
 
 As with other parsers, passing `fields` restricts the output to rules whose fields exist in the list.
 
-## Functions and expressions[​](#functions-and-expressions "Direct link to Functions and expressions")
+## Functions and expressions
 
 RAQB's `valueSrc: "func"` operands convert to RQB [expressions](/docs/expr.md). Right-hand side functions become `valueSource: "expression"` with an expression object as the value; a function on the *left* side (`fieldSrc: "func"`) becomes the rule's `lhs` property.
 
 Example
 
-```
+```ts
 parseRAQB({
-
   type: 'group',
-
   properties: { conjunction: 'AND' },
-
   children1: [
-
     {
-
       type: 'rule',
-
       properties: {
-
         field: 'name',
-
         operator: 'equal',
-
         valueSrc: ['func'],
-
         value: [{ func: 'LOWER', args: { str: { value: 'Steve', valueSrc: 'value' } } }],
-
       },
-
     },
-
   ],
-
 });
 ```
 
 Result
 
-```
+```json
 {
-
   "combinator": "and",
-
   "rules": [
-
     {
-
       "field": "name",
-
       "operator": "=",
-
       "valueSource": "expression",
-
       "value": { "kind": "func", "fn": "lower", "args": [{ "kind": "value", "value": "Steve" }] }
-
     }
-
   ]
-
 }
 ```
 
-caution
-
-Queries containing expressions require [`@react-querybuilder/expr`](/docs/expr.md) to render, validate, or serialize. Wrap your query builder in `QueryBuilderExpressions` and register the export processor as described in the [expressions documentation](/docs/expr.md). Without that package, expression values will not display or export correctly.
+> **Caution:** Queries containing expressions require [`@react-querybuilder/expr`](/docs/expr.md) to render, validate, or serialize. Wrap your query builder in `QueryBuilderExpressions` and register the export processor as described in the [expressions documentation](/docs/expr.md). Without that package, expression values will not display or export correctly.
 
 RAQB's `LOWER` and `UPPER` map to `expr`'s `lower` and `upper`, and `LINEAR_REGRESSION` is expanded to the equivalent arithmetic expression. Every other RAQB function—apart from the date/time functions described below—is passed through under its original name and reported to `onUnsupported`. To render or export those, either register matching function metadata with `@react-querybuilder/expr` or map them to existing functions with `functionMap`.
 
-## Date and time functions[​](#date-and-time-functions "Direct link to Date and time functions")
+## Date and time functions
 
 RAQB's built-in date/time functions don't really compute anything—they describe a date relative to "now". RQB represents that concept as a *value* rather than an expression, so `parseRAQB` converts them to [`@react-querybuilder/datetime`](/docs/datetime.md)'s relative date/time value shape (`{ mode: "relative", anchor, offset, unit }`), which every date/time rule processor serializes symbolically (e.g. `current_timestamp - interval '7 days'`).
 
@@ -584,77 +386,45 @@ RAQB's built-in date/time functions don't really compute anything—they describ
 
 Example
 
-```
+```ts
 parseRAQB({
-
   type: 'group',
-
   properties: { conjunction: 'AND' },
-
   children1: [
-
     {
-
       type: 'rule',
-
       properties: {
-
         field: 'created',
-
         operator: 'between',
-
         valueSrc: ['func', 'func'],
-
         value: [
-
           {
-
             func: 'RELATIVE_DATETIME',
-
             args: { op: { value: 'minus' }, val: { value: 7 }, dim: { value: 'day' } },
-
           },
-
           { func: 'NOW', args: {} },
-
         ],
-
       },
-
     },
-
   ],
-
 });
 ```
 
 Result
 
-```
+```json
 {
-
   "combinator": "and",
-
   "rules": [
-
     {
-
       "field": "created",
-
       "operator": "between",
-
       "value": [
-
         { "mode": "relative", "anchor": "now", "offset": -7, "unit": "day" },
-
         { "mode": "relative", "anchor": "now", "offset": 0, "unit": "day" }
-
       ]
-
     }
-
   ]
-
 }
 ```
 
@@ -668,19 +438,15 @@ A few RAQB calls fall outside what relative values can express, and are converte
 
 Pass `relativeDateTimes: false` to convert date/time functions to expressions like any other function.
 
-## Unsupported constructs[​](#unsupported-constructs "Direct link to Unsupported constructs")
+## Unsupported constructs
 
 `parseRAQB` never throws on unrecognized content (aside from immutable.js input). Anything it can't convert is skipped, and a partial query is always returned. Use `onUnsupported` to log or surface what was dropped.
 
-```
+```ts
 const unsupported: RAQBUnsupportedInfo[] = [];
 
-
-
 const query = parseRAQB(jsonTree, {
-
   onUnsupported: info => unsupported.push(info),
-
 });
 ```
 
@@ -691,41 +457,29 @@ Reported constructs include:
 * **`!group` strict-inequality count operators** (`less`, `greater`), since RQB match modes cover only `exactly`, `atLeast`, and `atMost`.
 * **Functions with no `@react-querybuilder/expr` equivalent**, which pass through by name.
 
-## Putting it together[​](#putting-it-together "Direct link to Putting it together")
+## Putting it together
 
-```
+```tsx
 import { QueryBuilder } from 'react-querybuilder';
-
 import { parseRAQB, parseRAQBFields } from '@react-querybuilder/migrate-raqb';
-
 import raqbConfig from './raqbConfig';
-
 import savedTree from './savedQuery.json';
 
-
-
 const fields = parseRAQBFields(raqbConfig);
-
 const defaultQuery = parseRAQB(savedTree, { fields });
-
-
 
 export const App = () => <QueryBuilder fields={fields} defaultQuery={defaultQuery} />;
 ```
 
-## Converting back to RAQB[​](#converting-back-to-raqb "Direct link to Converting back to RAQB")
+## Converting back to RAQB
 
 The reverse conversion is useful for a phased migration where both query builders must read the same stored queries. `@react-querybuilder/migrate-raqb` exports `formatRAQB` for this purpose. (There is no `"raqb"` `formatQuery` export format; `formatRAQB` wraps `formatQuery`'s `ruleGroupProcessor` option, which takes precedence over `format`.)
 
-```
+```ts
 import { formatRAQB } from '@react-querybuilder/migrate-raqb';
-
 import { Utils } from '@react-awesome-query-builder/core';
 
-
-
 const jsonTree = formatRAQB(query, { fields });
-
 const immutableTree = Utils.checkTree(Utils.loadTree(jsonTree), raqbConfig);
 ```
 
@@ -733,10 +487,8 @@ Pass `fields` for the most faithful output—several RAQB operators collapse to 
 
 `formatRAQBFields`, the inverse of `parseRAQBFields`, is exported from the same package:
 
-```
+```ts
 import { formatRAQBFields } from '@react-querybuilder/migrate-raqb';
-
-
 
 const raqbConfig = { ...BasicConfig, fields: formatRAQBFields(fields) };
 ```
@@ -767,23 +519,15 @@ The mapping is the inverse of the tables above, with these caveats:
 
 To combine RAQB output with other `formatQuery` behavior, or to supply a custom `ruleProcessor`, use `defaultRuleGroupProcessorRAQB` directly. RAQB options then move into `context`:
 
-```
+```ts
 import { formatQuery } from 'react-querybuilder';
-
 import { defaultRuleGroupProcessorRAQB, raqbFallback } from '@react-querybuilder/migrate-raqb';
 
-
-
 const jsonTree = formatQuery(query, {
-
   ruleGroupProcessor: defaultRuleGroupProcessorRAQB,
-
   fields,
-
   context: { raqbValueTypes: true },
-
   fallbackExpression: raqbFallback as unknown as string,
-
 });
 ```
 

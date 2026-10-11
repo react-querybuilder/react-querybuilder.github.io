@@ -5,11 +5,14 @@
 
 ## Documentation
 
+- [Using with AI agents](/docs/ai.md): Agent skill, MCP server, and LLM-friendly docs for coding agents
 - [Buildless](/docs/buildless.md): Use React Query Builder directly in the browser without a build step via ESM imports. For JSX parsing in script tags, include Babel.
 - [Compatibility packages](/docs/compat.md): React Query Builder's default components use basic HTML5 form controls that are highly customizable through styling, especially via the controlClassnames prop. However, some UI libraries require specific components or HTML structures to properly style their form controls.
 - [Date/time features](/docs/datetime.md): By default, React Query Builder components and utilities handle dates and times in a generic, unopinionated way. We recommend storing dates as strings in ISO 8601-compatible format and taking advantage of built-in date/time functionality like "date" and "datetime-local" inputs (see inputType).
-- [Drag-and-drop](/docs/dnd.md): The @react-querybuilder/dnd package augments React Query Builder with drag-and-drop functionality. .
+- [Drag-and-drop](/docs/dnd.md): Drag-and-drop rules and groups with @react-querybuilder/dnd
+- [Expressions](/docs/expr.md): Arithmetic and function expressions in rules with @react-querybuilder/expr
 - [Getting started](/docs/intro.md): Basic setup instructions and principles
+- [Rules engine](/docs/rules-engine.md): Executable rule sets with conditions and consequences via @react-querybuilder/rules-engine
 - [TypeScript reference](/docs/typescript.md): Here are the key TypeScript types and interfaces used throughout React Query Builder. Even if you're using JavaScript, this reference helps you understand the expected shape of props and function parameters.
 
 ### Components
@@ -27,18 +30,6 @@
 - [UndoRedoActions](/docs/components/undoredoactions.md): Undo/redo buttons
 - [ValueEditor](/docs/components/valueeditor.md): Dynamic editor component
 - [ValueSelector](/docs/components/valueselector.md): Versatile selector component
-
-### expr
-
-The @react-querybuilder/expr package augments React Query Builder with arithmetic and function expression support. .
-
-- [Expressions](/docs/expr.md): The @react-querybuilder/expr package augments React Query Builder with arithmetic and function expression support. .
-
-### rules-engine
-
-Try the interactive Rules Engine demo with a musician-themed example, including live execution against sample data.
-
-- [Rules engine](/docs/rules-engine.md): Try the interactive Rules Engine demo with a musician-themed example, including live execution against sample data.
 
 ### Styling
 
@@ -63,6 +54,7 @@ Try the interactive Rules Engine demo with a musician-themed example, including 
 - [Working with option lists](/docs/tips/option-lists.md): Managing ambiguity in option list types
 - [External parameter manager](/docs/tips/parameter-manager.md): Feed an external parameter component into a query builder
 - [Path concepts](/docs/tips/path.md): Explanation of the "path" property of rules and groups
+- [Recipes](/docs/tips/recipes.md): Shortest working snippet and exact output for every export format and import parser
 - [Customization showcase](/docs/tips/showcase.md): Interesting/unconventional layouts or behavior
 - [Subqueries and nested data](/docs/tips/subqueries.md): Building queries for data with nested arrays and complex structures
 - [Undo / redo](/docs/tips/undo-redo.md): Recording and navigating query history
@@ -80,3 +72,6 @@ Try the interactive Rules Engine demo with a musician-themed example, including 
 ## Optional
 - [GitHub repository](https://github.com/react-querybuilder/react-querybuilder)
 - [Discord server](https://discord.gg/MnAQWyUtEg)
+- [Agent skill (SKILL.md)](https://github.com/react-querybuilder/react-querybuilder/tree/main/skills/react-querybuilder): Install: `npx skills add react-querybuilder/react-querybuilder --skill react-querybuilder`. Also shipped in `node_modules/react-querybuilder/skills/` and `node_modules/@react-querybuilder/core/skills/`.
+- [API index (llms-api.txt)](https://react-querybuilder.js.org/llms-api.txt): Every exported symbol of every package, one line each.
+- [MCP server (@react-querybuilder/mcp)](https://www.npmjs.com/package/@react-querybuilder/mcp): Coming soon. Stdio MCP server: format/parse/convert/validate queries, docs search.

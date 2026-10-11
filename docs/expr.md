@@ -9,46 +9,23 @@ Ordinarily a rule compares a single field against a literal value (`price > 100`
 
 Expressions can nest arbitrarily—a function argument may itself be another function call—so `((a + b) * c)` is representable.
 
-## Installation[​](#installation "Direct link to Installation")
+## Installation
 
-* npm
-* Bun
-* Yarn
-* pnpm
-
-```
+```bash
 npm install react-querybuilder @react-querybuilder/expr
 ```
 
-```
-bun add react-querybuilder @react-querybuilder/expr
-```
+> **Info:** All React-related exports (the `QueryBuilderExpressions` component, editors, etc.) must be imported from `@react-querybuilder/expr/ui` (note the **`/ui`**). The root entry point exports only non-React utilities and types—the `formatQuery` rule processors, the validator, the function-metadata and serializer helpers, and the `ExpressionFunctionMeta`/`ExpressionNode` types—so it can be used server-side.
 
-```
-yarn add react-querybuilder @react-querybuilder/expr
-```
-
-```
-pnpm add react-querybuilder @react-querybuilder/expr
-```
-
-info
-
-All React-related exports (the `QueryBuilderExpressions` component, editors, etc.) must be imported from `@react-querybuilder/expr/ui` (note the **`/ui`**). The root entry point exports only non-React utilities and types—the `formatQuery` rule processors, the validator, the function-metadata and serializer helpers, and the `ExpressionFunctionMeta`/`ExpressionNode` types—so it can be used server-side.
-
-## Data model[​](#data-model "Direct link to Data model")
+## Data model
 
 An expression is a tree of `ExpressionNode`s. The core library preserves these nodes but does not interpret them:
 
-```
+```ts
 type ExpressionNode =
-
   | { kind: 'field'; field: string }
-
   | { kind: 'value'; value: unknown; valueType?: string }
-
   | { kind: 'parameter'; parameter: string }
-
   | { kind: 'func'; fn: string; args: ExpressionNode[] };
 ```
 
@@ -56,147 +33,101 @@ A `parameter` node references a named query parameter (specified without a prefi
 
 A rule carries expressions in two places. The left-hand side lives on the dedicated `lhs` property; the right-hand side reuses the existing `value`/`valueSource` mechanism:
 
-```
+```ts
 const query: RuleGroupType = {
-
   combinator: 'and',
-
   rules: [
-
     // LHS wrapper → `ABS(discount) > 5`
-
     {
-
       field: 'discount',
-
       operator: '>',
-
       value: 5,
-
       lhs: { kind: 'func', fn: 'abs', args: [{ kind: 'field', field: 'discount' }] },
-
     },
-
     // RHS expression → `price = (quantity * 2)`
-
     {
-
       field: 'price',
-
       operator: '=',
-
       valueSource: 'expression',
-
       value: {
-
         kind: 'func',
-
         fn: 'multiply',
-
         args: [
-
           { kind: 'field', field: 'quantity' },
-
           { kind: 'value', value: 2 },
-
         ],
-
       },
-
     },
-
   ],
-
 };
 ```
 
 Because the LHS keeps the rule's plain `field`, and the RHS rides on `valueSource`, queries containing expressions remain valid `RuleGroupType` objects. Only the [export processors](#export) interpret the expression nodes; standard `formatQuery` ignores `lhs` and won't serialize an `"expression"` value source meaningfully.
 
-## Components[​](#components "Direct link to Components")
+## Components
 
 Wrap your `QueryBuilder` in the `QueryBuilderExpressions` [context provider](/docs/components/querybuilder.md#context). It overrides the field selector, value-source selector, and value editor to host expressions, and supplies the function metadata to those controls. Rules without expressions render exactly as before.
 
-```
+```tsx
 import { QueryBuilder } from 'react-querybuilder';
-
 import { QueryBuilderExpressions } from '@react-querybuilder/expr/ui';
 
-
-
 const App = () => (
-
   <QueryBuilderExpressions>
-
     <QueryBuilder fields={fields} query={query} onQueryChange={setQuery} />
-
   </QueryBuilderExpressions>
-
 );
 ```
 
-### Right-hand side: the `"expression"` value source[​](#right-hand-side-the-expression-value-source "Direct link to right-hand-side-the-expression-value-source")
+### Right-hand side: the `"expression"` value source
 
 The right-hand side reuses the standard [value source](/docs/components/querybuilder.md#getvaluesources) mechanism. Add `"expression"` to a field's `valueSources` (or return it from the `getValueSources` callback) to offer it in that rule's value-source selector:
 
-```
+```ts
 const fields: Field[] = [
-
   { name: 'price', label: 'Price', valueSources: ['value', 'expression'] },
-
   { name: 'quantity', label: 'Quantity' },
-
 ];
 ```
 
 When the user selects **expression** as the value source, the editor seeds `rule.value` with a default function call and renders a recursive editor where each operand can be a field reference, a literal value, or a further function call.
 
-note
+> **Note:** A value-source selector only appears when a field has more than one value source, so list at least `['value', 'expression']` (or `['field', 'expression']`, etc.).
 
-A value-source selector only appears when a field has more than one value source, so list at least `['value', 'expression']` (or `['field', 'expression']`, etc.).
-
-### Left-hand side: `allowFunctionsOnLHS`[​](#left-hand-side-allowfunctionsonlhs "Direct link to left-hand-side-allowfunctionsonlhs")
+### Left-hand side: `allowFunctionsOnLHS`
 
 By default the left-hand side is just the field selector. Set `allowFunctionsOnLHS` to add a wrapper selector *in front of* the field selector that wraps the field in a function—every function that accepts at least one argument is offered. The field becomes the function's **first (governing) argument**, so it still drives operator selection, the value editor, and validation. For a multi-argument function, the remaining arguments are edited by nested expression editors that appear after the field selector (each may be a field, a literal, or a further function call). Selecting "no function" (the `—` option) clears `rule.lhs`.
 
-```
+```tsx
 <QueryBuilderExpressions allowFunctionsOnLHS>
-
   <QueryBuilder fields={fields} query={query} onQueryChange={setQuery} />
-
 </QueryBuilderExpressions>
 ```
 
 `allowFunctionsOnLHS` accepts a `boolean` (applies to every rule) or a predicate to gate the wrapper per field/operator:
 
-```
+```tsx
 // Only allow LHS functions on numeric fields:
-
 <QueryBuilderExpressions allowFunctionsOnLHS={(field, operator) => numericFields.has(field)}>
-
   <QueryBuilder fields={fields} />
-
 </QueryBuilderExpressions>
 ```
 
 Changing the rule's field re-points the wrapper's governing argument (arg 0) automatically—preserving any extra arguments—or drops the wrapper if the new field disallows functions, applied atomically with the field change so the operator/value reset cascade behaves like an ordinary field change.
 
-### Composing with theme providers[​](#composing-with-theme-providers "Direct link to Composing with theme providers")
+### Composing with theme providers
 
 `QueryBuilderExpressions` composes with the compat/theme packages and [`@react-querybuilder/dnd`](/docs/dnd.md). It captures any control inherited from an outer provider *before* overriding it, so non-expression rules—and the nested selectors/inputs inside the expression editors—render with your theme. Nest it inside the theme provider:
 
-```
+```tsx
 <QueryBuilderMantine>
-
   <QueryBuilderExpressions allowFunctionsOnLHS>
-
     <QueryBuilder fields={fields} query={query} onQueryChange={setQuery} />
-
   </QueryBuilderExpressions>
-
 </QueryBuilderMantine>
 ```
 
-## Functions[​](#functions "Direct link to Functions")
+## Functions
 
 Functions—including the arithmetic operators—are split into two concerns, mirroring the datetime package's format-specific processors:
 
@@ -205,43 +136,30 @@ Functions—including the arithmetic operators—are split into two concerns, mi
 
 Keeping them separate means the UI and validator never carry serialization logic, and you only implement the formats you actually export.
 
-```
+```ts
 interface ExpressionFunctionMeta {
-
   /** UI label, e.g. '×' or 'Absolute value'. Falls back to the registry key. */
-
   label?: string;
-
   /** Fixed arity (number) or inclusive [min, max] range. Omit for unconstrained. */
-
   arity?: number | [min: number, max: number];
-
 }
 ```
 
 Serializers are **opts-first**—each receives the `formatQuery` options (for preset/`parseNumbers` awareness) followed by the already-serialized argument strings:
 
-```
+```ts
 type SQLSerializerFn = (opts: ValueProcessorOptions, ...args: string[]) => string;
 
-
-
 // A SQL serializer is either a single function, or a preset-keyed map for dialect
-
 // variance (`default` covers any preset without an explicit override):
-
 type SQLSerializer =
-
   SQLSerializerFn | ({ default: SQLSerializerFn } & Partial<Record<SQLPreset, SQLSerializerFn>>);
 
-
-
 // JSONLogic: an operator name (wraps args in `{ [op]: args }`) or a function:
-
 type JsonLogicSerializer = string | ((opts: ValueProcessorOptions, ...args: unknown[]) => unknown);
 ```
 
-### Built-in functions[​](#built-in-functions "Direct link to Built-in functions")
+### Built-in functions
 
 `defaultFunctionMeta` ships the arithmetic operators plus a handful of common functions. The matching serializers live in `defaultSQLSerializers`, `defaultParameterizedSerializers` (identical to the SQL map), and `defaultJsonLogicSerializers`.
 
@@ -258,105 +176,72 @@ type JsonLogicSerializer = string | ((opts: ValueProcessorOptions, ...args: unkn
 | `upper`    | `UPPER` | 1     | `UPPER(a)`      | `upper`   |
 | `lower`    | `LOWER` | 1     | `LOWER(a)`      | `lower`   |
 
-note
+> **Note:** `min`/`max` emit `LEAST`/`GREATEST` by default (PostgreSQL, MySQL 8+, Oracle, SQL Server 2022+), overridden to the scalar `MIN`/`MAX` for the `sqlite` [preset](/docs/utils/export.md#presets). This dialect variance uses the preset-keyed serializer form shown above.
 
-`min`/`max` emit `LEAST`/`GREATEST` by default (PostgreSQL, MySQL 8+, Oracle, SQL Server 2022+), overridden to the scalar `MIN`/`MAX` for the `sqlite` [preset](/docs/utils/export.md#presets). This dialect variance uses the preset-keyed serializer form shown above.
-
-### Custom functions[​](#custom-functions "Direct link to Custom functions")
+### Custom functions
 
 A custom function needs metadata (for the UI and validator) plus a serializer for each export format you use. Most applications export a single format, so you typically register just one serializer.
 
 Provide metadata to `QueryBuilderExpressions` via the `functions` prop; it is merged over `defaultFunctionMeta`, so you extend the built-ins by default (later entries win, letting you override a built-in by reusing its key):
 
-```
+```tsx
 import { QueryBuilderExpressions } from '@react-querybuilder/expr/ui';
 
-
-
 const functions = {
-
   pow: { label: 'POWER', arity: 2 },
-
 };
 
-
-
 <QueryBuilderExpressions functions={functions} allowFunctionsOnLHS>
-
   <QueryBuilder fields={fields} />
-
 </QueryBuilderExpressions>;
 ```
 
 Then register a matching serializer when you build each [export processor](#custom-serializers) you need:
 
-```
+```ts
 const sqlSerializers = {
-
   pow: (_opts, base, exp) => `POWER(${base}, ${exp})`,
-
 };
 ```
 
-warning
-
-The UI `functions` metadata and each processor's serializer registry are validated independently. A function present in the UI but missing a serializer for the export format is treated as unknown, and its rule is omitted from that format's output.
+> **Warning:** The UI `functions` metadata and each processor's serializer registry are validated independently. A function present in the UI but missing a serializer for the export format is treated as unknown, and its rule is omitted from that format's output.
 
 Use `mergeFunctionMeta(...registries)` to combine metadata registries yourself (the first source defaults to `defaultFunctionMeta`):
 
-```
+```ts
 import { mergeFunctionMeta } from '@react-querybuilder/expr';
-
-
 
 const meta = mergeFunctionMeta(functions);
 ```
 
-## Export[​](#export "Direct link to Export")
+## Export
 
 `formatQuery` needs an expression-aware **rule processor** to serialize the `lhs`/`rhs` nodes; without one, `lhs` is ignored and the `"expression"` value source isn't handled. The package provides ready-to-use processors bound to the built-in serializers for every supported format (see the [table below](#supported-formats)):
 
-```
+```ts
 import { formatQuery } from 'react-querybuilder';
-
 import {
-
   expressionRuleProcessorSQL,
-
   expressionRuleProcessorParameterized,
-
   expressionRuleProcessorJsonLogic,
-
 } from '@react-querybuilder/expr';
 
-
-
 formatQuery(query, { format: 'sql', ruleProcessor: expressionRuleProcessorSQL });
-
 // "((price * quantity) = 100)"
 
-
-
 formatQuery(query, {
-
   format: 'parameterized',
-
   ruleProcessor: expressionRuleProcessorParameterized,
-
 });
-
 // { sql: "((price * quantity) = ?)", params: [100] }
 
-
-
 formatQuery(query, { format: 'jsonlogic', ruleProcessor: expressionRuleProcessorJsonLogic });
-
 // { "==": [{ "*": [{ var: "price" }, { var: "quantity" }] }, 100] }
 ```
 
 The parameterized processor also supports the `parameterized_named` format and respects presets (e.g. PostgreSQL's `$1` numbered placeholders), continuing the binding sequence across preceding rules. SQL-dialect presets also select the matching function serializer—e.g. `min`/`max` emit `MIN`/`MAX` under the `sqlite` preset and `LEAST`/`GREATEST` otherwise.
 
-### Supported formats[​](#supported-formats "Direct link to Supported formats")
+### Supported formats
 
 Every export format that can represent a computed operand has a ready-to-use `expressionRuleProcessor*` (bound to that format's built-in serializers) and a matching `getExpressionRuleProcessor*` factory:
 
@@ -380,161 +265,103 @@ Every export format that can represent a computed operand has a ready-to-use `ex
 
 The library-backed formats need the same `context` helpers their stock processors need. For example, `drizzle` and `sequelize`:
 
-```
+```ts
 import { getOperators } from 'drizzle-orm';
-
 import { col, literal, Op, where } from 'sequelize';
-
 import {
-
   expressionRuleProcessorDrizzle,
-
   expressionRuleProcessorSequelize,
-
 } from '@react-querybuilder/expr';
 
-
-
 const drizzleWhere = formatQuery(query, {
-
   format: 'drizzle',
-
   preset: 'sqlite', // resolves min/max to MIN/MAX (else LEAST/GREATEST)
-
   ruleProcessor: expressionRuleProcessorDrizzle,
-
   context: { columns, drizzleOperators: getOperators() },
-
 });
-
-
 
 const sequelizeWhere = formatQuery(query, {
-
   format: 'sequelize',
-
   preset: 'sqlite',
-
   ruleProcessor: expressionRuleProcessorSequelize,
-
   context: {
-
     sequelizeOperators: Op,
-
     sequelizeWhere: where,
-
     sequelizeLiteral: literal,
-
     sequelizeCol: col,
-
   },
-
 });
 ```
 
-note
+> **Note:** JSONLogic's `+ - * /`, `%`, `min`, and `max` are stock operations, but `abs`, `upper`, and `lower` (and any custom function) are not—register them before evaluating. The package exports `jsonLogicExpressionOperators` covering the built-ins:
+>
+> ```ts
+> import { add_operation } from 'json-logic-js';
+> import { jsonLogicExpressionOperators } from '@react-querybuilder/expr';
+>
+> for (const [op, fn] of Object.entries(jsonLogicExpressionOperators)) {
+>   add_operation(op, fn);
+> }
+> ```
 
-JSONLogic's `+ - * /`, `%`, `min`, and `max` are stock operations, but `abs`, `upper`, and `lower` (and any custom function) are not—register them before evaluating. The package exports `jsonLogicExpressionOperators` covering the built-ins:
-
-```
-import { add_operation } from 'json-logic-js';
-
-import { jsonLogicExpressionOperators } from '@react-querybuilder/expr';
-
-
-
-for (const [op, fn] of Object.entries(jsonLogicExpressionOperators)) {
-
-  add_operation(op, fn);
-
-}
-```
-
-### Custom serializers[​](#custom-serializers "Direct link to Custom serializers")
+### Custom serializers
 
 When you use [custom functions](#custom-functions), pass matching serializers to that format's processor factory. Each factory takes a single serializer registry, merged over the format's built-in serializers—so you extend the defaults, and reusing a key overrides a built-in:
 
-```
+```ts
 import {
-
   getExpressionRuleProcessorSQL,
-
   getExpressionRuleProcessorJsonLogic,
-
 } from '@react-querybuilder/expr';
 
-
-
 const sqlProcessor = getExpressionRuleProcessorSQL({
-
   pow: (_opts, base, exp) => `POWER(${base}, ${exp})`,
-
 });
-
-
 
 const jsonLogicProcessor = getExpressionRuleProcessorJsonLogic({
-
   pow: (_opts, base, exp) => ({ pow: [base, exp] }),
-
 });
 
-
-
 formatQuery(query, { format: 'sql', ruleProcessor: sqlProcessor });
-
 formatQuery(query, { format: 'jsonlogic', ruleProcessor: jsonLogicProcessor });
 ```
 
 Each format has its own `getExpressionRuleProcessor*` factory (see the [table above](#supported-formats)); only build the processors for the formats you actually export.
 
-tip
+> **Tip:** To vary a SQL serializer by dialect, use the preset-keyed form. For example, string concatenation differs across databases:
+>
+> ```ts
+> const sqlProcessor = getExpressionRuleProcessorSQL({
+>   concat: {
+>     default: (_opts, a, b) => `CONCAT(${a}, ${b})`, // MySQL, SQL Server
+>     postgresql: (_opts, a, b) => `(${a} || ${b})`, // ANSI string concat
+>     sqlite: (_opts, a, b) => `(${a} || ${b})`,
+>     oracle: (_opts, a, b) => `(${a} || ${b})`,
+>   },
+> });
+> ```
 
-To vary a SQL serializer by dialect, use the preset-keyed form. For example, string concatenation differs across databases:
-
-```
-const sqlProcessor = getExpressionRuleProcessorSQL({
-
-  concat: {
-
-    default: (_opts, a, b) => `CONCAT(${a}, ${b})`, // MySQL, SQL Server
-
-    postgresql: (_opts, a, b) => `(${a} || ${b})`, // ANSI string concat
-
-    sqlite: (_opts, a, b) => `(${a} || ${b})`,
-
-    oracle: (_opts, a, b) => `(${a} || ${b})`,
-
-  },
-
-});
-```
-
-### Supported operators and fallback[​](#supported-operators-and-fallback "Direct link to Supported operators and fallback")
+### Supported operators and fallback
 
 The processors handle the scalar comparison operators (`=`, `!=`, `<`, `<=`, `>`, `>=`), the unary `null` / `notNull` operators, and `between` / `notBetween` (with expression bounds). A rule with any other operator—or with no expression at all—falls back to the corresponding stock rule processor, so mixing expression and non-expression rules in one query works transparently. Rules whose expressions fail [validation](#validation) are omitted from the output (an empty string for SQL, `false` for JSONLogic, `undefined` for the library-backed formats).
 
 String-match operators (`contains`, `beginsWith`, `endsWith`, and their negations) support expression operands—including an expression RHS (search term) and/or LHS—for every export format except `tanstack_db`, each emitting its dialect's native construct (e.g. SQL `LIKE`, CEL `.startsWith()`, Cypher `STARTS WITH`, SPARQL `STRSTARTS`, JSONata `$substring`/`$contains`, Painless `.startsWith()` for `elasticsearch`, `$indexOfCP`/`$substrCP` aggregation for `mongodb_query`). The `tanstack_db` format omits string-match rules with an expression operand, since its `like` requires a static pattern. The `sequelize` format omits a string-match rule whose search term is a bare field reference (`valueSource: 'field'`).
 
-## Import (parsing)[​](#import-parsing "Direct link to Import (parsing)")
+## Import (parsing)
 
 Several export processors have an import-side mirror: a `getExpression` handler that turns arithmetic/function operands back into expression nodes. Each format supplies a ready-to-use handler bound to its built-in inverse (and a factory for custom operations). The [SQL](#sql), [JsonLogic](#jsonlogic), [JSONata](#jsonata), [MongoDB](#mongodb), [CEL](#cel), and [SpEL](#spel) parsers are covered below.
 
 An operand on the left of the comparison becomes the rule's `lhs`; on the right it becomes `value` with `valueSource: 'expression'`. `between` bounds parse into a two-element `value` tuple. The handler auto-validates each node and returns `null`—dropping the rule—for unknown functions/operators, arity mismatches, or (via `ctx.fieldExists`) unknown field leaves.
 
-### SQL[​](#sql "Direct link to SQL")
+### SQL
 
 `expressionParserSQL` is the ready-to-use handler for [`parseSQL`](/docs/utils/import.md#sql), bound to the built-in SQL inverse:
 
-```
+```ts
 import { parseSQL } from '@react-querybuilder/core/parseSQL';
-
 import { expressionParserSQL } from '@react-querybuilder/expr';
 
-
-
 parseSQL('(price * quantity) > 100', { getExpression: expressionParserSQL });
-
 // { field: 'price'..., operator: '>', valueSource: 'expression', value: { kind: 'func', fn: 'multiply', args: [...] } }
 ```
 
@@ -542,211 +369,141 @@ Ambiguous inverses accept all known spellings: `%`/`MOD` → `mod`, `LEAST`/`MIN
 
 To parse [custom functions](#custom-functions), build a handler with `getExpressionParserSQL`, mirroring [`getExpressionRuleProcessorSQL`](#custom-serializers). Pass a partial inverse registry (function names and/or operator tokens → `fn` keys) and matching arity metadata:
 
-```
+```ts
 import { getExpressionParserSQL } from '@react-querybuilder/expr';
 
-
-
 const getExpression = getExpressionParserSQL(
-
   { functions: { POWER: 'pow' }, operators: { '^': 'pow' } },
-
   { pow: { label: 'pow', arity: 2 } }
-
 );
-
-
 
 parseSQL('POWER(x, 2) >= 9', { getExpression });
 ```
 
-### JsonLogic[​](#jsonlogic "Direct link to JsonLogic")
+### JsonLogic
 
 `expressionParserJsonLogic` is the ready-to-use handler for [`parseJsonLogic`](/docs/utils/import.md#jsonlogic), bound to the built-in JsonLogic inverse:
 
-```
+```ts
 import { parseJsonLogic } from '@react-querybuilder/core/parseJsonLogic';
-
 import { expressionParserJsonLogic } from '@react-querybuilder/expr';
 
-
-
 parseJsonLogic(
-
   { '>': [{ '*': [{ var: 'price' }, { var: 'quantity' }] }, 100] },
-
   {
-
     getExpression: expressionParserJsonLogic,
-
   }
-
 );
-
 // { field: '', operator: '>', lhs: { kind: 'func', fn: 'multiply', args: [...] }, value: 100 }
 ```
 
 The stock arithmetic operators (`+ - * / %`), `min`/`max`, and the custom `abs`/`upper`/`lower` operations map back to their `fn` keys; unknown operations drop the rule. To parse custom operations, build a handler with `getExpressionParserJsonLogic`, passing a partial inverse registry (operation key → `fn` key) and matching arity metadata:
 
-```
+```ts
 import { getExpressionParserJsonLogic } from '@react-querybuilder/expr';
 
-
-
 const getExpression = getExpressionParserJsonLogic(
-
   { pow: 'pow' },
-
   { pow: { label: 'pow', arity: 2 } }
-
 );
-
-
 
 parseJsonLogic({ '>=': [{ pow: [{ var: 'x' }, 2] }, 9] }, { getExpression });
 ```
 
-### JSONata[​](#jsonata "Direct link to JSONata")
+### JSONata
 
 `expressionParserJSONata` is the ready-to-use handler for [`parseJSONata`](/docs/utils/import.md#jsonata), bound to the built-in JSONata inverse:
 
-```
+```ts
 import { parseJSONata } from '@react-querybuilder/core/parseJSONata';
-
 import { expressionParserJSONata } from '@react-querybuilder/expr';
 
-
-
 parseJSONata('price > (cost * 2)', { getExpression: expressionParserJSONata });
-
 // { field: 'price'..., operator: '>', valueSource: 'expression', value: { kind: 'func', fn: 'multiply', args: [...] } }
 ```
 
 The stock arithmetic operators (`+ - * / %`) and the built-in functions `$abs`/`$min`/`$max`/`$uppercase`/`$lowercase` map back to their `fn` keys (`abs`/`min`/`max`/`upper`/`lower`); unknown operators/functions drop the rule. To parse custom functions, build a handler with `getExpressionParserJSONata`, passing a partial inverse registry (operator token and/or function name—without the leading `$`—→ `fn` key) and matching arity metadata:
 
-```
+```ts
 import { getExpressionParserJSONata } from '@react-querybuilder/expr';
 
-
-
 const getExpression = getExpressionParserJSONata(
-
   { functions: { power: 'pow' } },
-
   { pow: { label: 'pow', arity: 2 } }
-
 );
-
-
 
 parseJSONata('$power(x, 2) >= 9', { getExpression });
 ```
 
-### MongoDB[​](#mongodb "Direct link to MongoDB")
+### MongoDB
 
 `expressionParserMongoDB` is the ready-to-use handler for [`parseMongoDB`](/docs/utils/import.md#mongodb), bound to the built-in MongoDB inverse. It handles `$expr` aggregation-expression operands:
 
-```
+```ts
 import { parseMongoDB } from '@react-querybuilder/core/parseMongoDB';
-
 import { expressionParserMongoDB } from '@react-querybuilder/expr';
 
-
-
 parseMongoDB(
-
   { $expr: { $gt: ['$price', { $multiply: ['$cost', 2] }] } },
-
   {
-
     getExpression: expressionParserMongoDB,
-
   }
-
 );
-
 // { field: 'price'..., operator: '>', valueSource: 'expression', value: { kind: 'func', fn: 'multiply', args: [...] } }
 ```
 
 The built-in aggregation operators `$add`/`$subtract`/`$multiply`/`$divide`/`$min`/`$max`/`$abs`/`$mod`/`$toUpper`/`$toLower` map back to their `fn` keys (`add`/`subtract`/`multiply`/`divide`/`min`/`max`/`abs`/`mod`/`upper`/`lower`); unknown operators drop the rule. Only `$expr` operands route through expression parsing; bare field references and literals fall through to the stock MongoDB logic. To parse custom operators, build a handler with `getExpressionParserMongoDB`, passing a partial inverse registry (aggregation-operator token, *with* the leading `$` → `fn` key) and matching arity metadata:
 
-```
+```ts
 import { getExpressionParserMongoDB } from '@react-querybuilder/expr';
 
-
-
 const getExpression = getExpressionParserMongoDB(
-
   { $pow: 'pow' },
-
   { pow: { label: 'pow', arity: 2 } }
-
 );
-
-
 
 parseMongoDB({ $expr: { $gte: [{ $pow: ['$x', 2] }, 9] } }, { getExpression });
 ```
 
-### CEL[​](#cel "Direct link to CEL")
+### CEL
 
 `expressionParserCEL` is the ready-to-use handler for [`parseCEL`](/docs/utils/import.md#common-expression-language-cel), bound to the built-in CEL inverse. It handles arithmetic, function-call, and `min`/`max` template operands:
 
-```
+```ts
 import { parseCEL } from '@react-querybuilder/core/parseCEL';
-
 import { expressionParserCEL } from '@react-querybuilder/expr';
 
-
-
 parseCEL('price > (cost * 2)', { getExpression: expressionParserCEL });
-
 // { field: 'price'..., operator: '>', valueSource: 'expression', value: { kind: 'func', fn: 'multiply', args: [...] } }
 ```
 
 The infix arithmetic operators (`+ - * / %`) map back to their `fn` keys (`add`/`subtract`/`multiply`/`divide`/`mod`), and the emulated `min`/`max` templates (`(a < b ? a : b)` / `(a > b ? a : b)`) are recovered structurally; unknown operators/functions drop the rule. To parse custom functions, build a handler with `getExpressionParserCEL`, passing a partial inverse registry (function-call name → `fn` key) and matching arity metadata:
 
-```
+```ts
 import { getExpressionParserCEL } from '@react-querybuilder/expr';
 
-
-
 const getExpression = getExpressionParserCEL(
-
   { functions: { pow: 'pow' } },
-
   { pow: { label: 'pow', arity: 2 } }
-
 );
-
-
 
 parseCEL('price > pow(cost, 2)', { getExpression });
 ```
 
-note
+> **Note:** Unlike the other formats, `abs`/`upper`/`lower` are **not** invertible on the CEL import side: the CEL grammar cannot parse the unary-minus in the `abs` template (`(x < 0 ? -x : x)`) nor the empty-argument `.upperAscii()`/`.lowerAscii()` method calls the exporters emit. Rules using them are dropped on import.
 
-Unlike the other formats, `abs`/`upper`/`lower` are **not** invertible on the CEL import side: the CEL grammar cannot parse the unary-minus in the `abs` template (`(x < 0 ? -x : x)`) nor the empty-argument `.upperAscii()`/`.lowerAscii()` method calls the exporters emit. Rules using them are dropped on import.
-
-### SpEL[​](#spel "Direct link to SpEL")
+### SpEL
 
 `expressionParserSpEL` is the ready-to-use handler for [`parseSpEL`](/docs/utils/import.md#spring-expression-language-spel), bound to the built-in SpEL inverse. It handles infix arithmetic, method call, and function call operands:
 
-```
+```ts
 import { parseSpEL } from '@react-querybuilder/core/parseSpEL';
-
 import { expressionParserSpEL } from '@react-querybuilder/expr';
 
-
-
 parseSpEL('price > (cost * 2)', { getExpression: expressionParserSpEL });
-
 // { field: 'price'..., operator: '>', valueSource: 'expression', value: { kind: 'func', fn: 'multiply', args: [...] } }
 
-
-
 parseSpEL('price > T(java.lang.Math).abs(cost)', { getExpression: expressionParserSpEL });
-
 // { field: 'price'..., operator: '>', valueSource: 'expression', value: { kind: 'func', fn: 'abs', args: [...] } }
 ```
 
@@ -754,89 +511,60 @@ The infix arithmetic operators (`+ - * / %`) map back to their `fn` keys (`add`/
 
 To parse custom operations, build a handler with `getExpressionParserSpEL`, passing a partial inverse registry and matching arity metadata. The registry has three maps: `operators` (arithmetic node type → `fn` key), `functions` (static/bare call name → `fn` key), and `methods` (instance method name → `fn` key):
 
-```
+```ts
 import { getExpressionParserSpEL } from '@react-querybuilder/expr';
 
-
-
 const getExpression = getExpressionParserSpEL(
-
   {
-
     operators: { 'op-multiply': 'scale' },
-
     functions: { pow: 'pow' },
-
     methods: { trim: 'trim' },
-
   },
-
   {
-
     scale: { label: 'scale', arity: 2 },
-
     pow: { label: 'pow', arity: 2 },
-
     trim: { label: 'trim', arity: 1 },
-
   }
-
 );
-
-
 
 parseSpEL('price > pow(cost, 2)', { getExpression });
 ```
 
-note
+> **Note:** `min`/`max` are exported as nested binary calls (`T(java.lang.Math).min(T(java.lang.Math).min(a, b), c)`), so re-importing a call with three or more arguments produces nested two-argument nodes rather than a single variadic node.
 
-`min`/`max` are exported as nested binary calls (`T(java.lang.Math).min(T(java.lang.Math).min(a, b), c)`), so re-importing a call with three or more arguments produces nested two-argument nodes rather than a single variadic node.
-
-## Validation[​](#validation "Direct link to Validation")
+## Validation
 
 `createExpressionValidator` returns a [`QueryValidator`](/docs/utils/validation.md) that flags rules whose expressions are invalid—an unknown function, an arity mismatch, or an empty field reference—checked against the same merged metadata the UI uses. Pass the same `functions` metadata you gave `QueryBuilderExpressions`:
 
-```
+```ts
 import { createExpressionValidator } from '@react-querybuilder/expr';
-
-
 
 const validator = createExpressionValidator(functions);
 ```
 
 Use it as `formatQuery`'s `validator` option (to annotate [`format: 'diagnostics'`](/docs/utils/export.md#diagnostics) output and skip invalid rules from exports) or as a `<QueryBuilder validator>` prop for live in-UI feedback:
 
-```
+```tsx
 <QueryBuilderExpressions functions={functions} allowFunctionsOnLHS>
-
   <QueryBuilder fields={fields} validator={validator} query={query} onQueryChange={setQuery} />
-
 </QueryBuilderExpressions>
 ```
 
 The validator produces a sparse `ValidationMap`: only invalid, expression-bearing rules get an entry (keyed by `rule.id`). Rules without expressions and valid rules are treated as valid. Validation is format-agnostic; the per-format serializer checks happen in the rule processors at export time.
 
-## Translations[​](#translations "Direct link to Translations")
+## Translations
 
 Override the expression UI's labels and titles per-key with the `translations` prop:
 
-```
+```tsx
 <QueryBuilderExpressions
-
   allowFunctionsOnLHS
-
   translations={{
-
     exprLhsFunction: { title: 'Wrap the field in a function' },
-
     exprLhsNone: { label: '(none)', title: 'Use the field directly' },
-
     valueSourceExpression: { label: 'expression', title: 'Compare against an expression' },
-
   }}>
-
   <QueryBuilder fields={fields} />
-
 </QueryBuilderExpressions>
 ```
 

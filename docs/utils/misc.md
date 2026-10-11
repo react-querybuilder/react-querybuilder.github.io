@@ -4,11 +4,11 @@
 
 A partial list of exports from `react-querybuilder`.
 
-## Utilities[​](#utilities "Direct link to Utilities")
+## Utilities
 
-### `transformQuery`[​](#transformquery "Direct link to transformquery")
+### `transformQuery`
 
-```
+```ts
 function transformQuery(query: RuleGroupTypeAny, options: QueryTransformerOptions): any;
 ```
 
@@ -23,13 +23,11 @@ This function recursively processes a query object (`RuleGroupType` or `RuleGrou
 
 See the [test suite](https://github.com/react-querybuilder/react-querybuilder/blob/main/packages/core/src/utils/transformQuery.test.ts) for example usage.
 
-### `defaultValidator`[​](#defaultvalidator "Direct link to defaultvalidator")
+### `defaultValidator`
 
-```
+```ts
 function defaultValidator(query: RuleGroupTypeAny): {
-
   [id: string]: { valid: boolean; reasons?: string[] };
-
 };
 ```
 
@@ -40,9 +38,9 @@ Pass `validator={defaultValidator}` to automatically validate groups (rules are 
 
 You can see the default validator in action in the [demo](/demo) by checking the ['Use validation' option](/demo#validateQuery=true). Empty groups display bold text on their "+ Rule" button and a description where rules normally appear.
 
-### `findPath`[​](#findpath "Direct link to findpath")
+### `findPath`
 
-```
+```ts
 function findPath(path: Path, query: RuleGroupTypeAny): RuleType | RuleGroupTypeAny | null;
 ```
 
@@ -50,21 +48,19 @@ function findPath(path: Path, query: RuleGroupTypeAny): RuleType | RuleGroupType
 
 More extensive documentation on the `path` property is [here](/docs/tips/path.md).
 
-### `findID`[​](#findid "Direct link to findid")
+### `findID`
 
-```
+```ts
 function findID(id: string, query: RuleGroupTypeAny): RuleType | RuleGroupTypeAny | null;
 ```
 
 `findID` finds the rule or group within the query hierarchy that has a given `id`.
 
-### `convertQuery`[​](#convertquery "Direct link to convertquery")
+### `convertQuery`
 
-```
+```ts
 function convertQuery(query: RuleGroupType): RuleGroupTypeIC;
-
 // OR
-
 function convertQuery(query: RuleGroupTypeIC): RuleGroupType;
 ```
 
@@ -72,7 +68,7 @@ function convertQuery(query: RuleGroupTypeIC): RuleGroupType;
 
 `convertToIC` and `convertFromIC` perform the same function as `convertQuery` but only in the directions indicated by their names.
 
-## Number parsing[​](#number-parsing "Direct link to Number parsing")
+## Number parsing
 
 HTML `<input>` controls store values as strings (even for `type="number"`), but your requirements may call for true numeric values. The [`parseNumbers`](/docs/components/querybuilder.md#parsenumbers) prop on the `QueryBuilder` component and the `formatQuery` function's [`parseNumbers`](/docs/utils/export.md#parse-numbers) option can be used to convert values to numeric types from the UI or during export, respectively. Both configuration options have the same valid values (per the type below) and behave similarly.
 
@@ -88,81 +84,50 @@ HTML `<input>` controls store values as strings (even for `type="number"`), but 
 * `"enhanced"` uses `numeric-quantity` with `allowTrailingInvalid: true`.
 * `"native"` uses JavaScript's native `parseFloat` method, which is similar to the "enhanced" algorithm in that it will strip trailing invalid characters, but it will return `NaN` for non-numeric values instead of the original value.
 
-#### Examples[​](#examples "Direct link to Examples")
+#### Examples
 
-```
+```ts
 const query: RuleGroupType = {
-
   combinator: 'and',
-
   not: false,
-
   rules: [
-
     { field: 'digits', operator: '=', value: '20' },
-
     { field: 'age', operator: 'between', value: '26, 52' },
-
     { field: 'lastName', operator: '=', value: 'Vai' },
-
   ],
-
 };
 
-
-
 // Default configuration - all values are strings:
-
 formatQuery(query, { format: 'sql' });
-
 // "(digits = '20' and age between '26' and '52' and lastName = 'Vai')"
 
-
-
 // `parseNumbers: true` - numeric strings converted to actual numbers:
-
 formatQuery(query, { format: 'sql', parseNumbers: true });
-
 // "(digits = 20 and age between 26 and 52 and lastName = 'Vai')"
 ```
 
-More about the "strict" option
+> **More about the "strict" option:** To avoid information loss, the `true` and `"strict*"` options are more strict about what qualifies as "numeric" than [the standard `parseFloat` function](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/parseFloat). To oversimplify a bit, `parseFloat` works with any string that *starts* with a numeric sequence, ignoring the rest of the string beginning with the first non-numeric character. In contrast, when `parseNumbers` is `true`, `formatQuery` will only convert a `value` to a `number` if it appears to be numeric *in its entirety* (after trimming whitespace).
+>
+> Each of the following expressions evaluates to `true`:
+>
+> ```ts
+> // Everything after the '3' is ignored by `parseFloat`
+> parseFloat('000123abcdef') === 123;
+>
+> // `value` contains non-numeric characters, so remains as-is
+> formatQuery(
+>   { rules: [{ field: 'f', operator: '=', value: '000123abcdef' }] },
+>   { format: 'sql', parseNumbers: true }
+> ) === "(f = '000123abcdef')";
+>
+> // `value` is wholly numeric (after trimming whitespace) so it gets converted to a number
+> formatQuery(
+>   { rules: [{ field: 'f', operator: '=', value: '  000123  ' }] },
+>   { format: 'sql', parseNumbers: true }
+> ) === '(f = 123)';
+> ```
 
-To avoid information loss, the `true` and `"strict*"` options are more strict about what qualifies as "numeric" than [the standard `parseFloat` function](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/parseFloat). To oversimplify a bit, `parseFloat` works with any string that *starts* with a numeric sequence, ignoring the rest of the string beginning with the first non-numeric character. In contrast, when `parseNumbers` is `true`, `formatQuery` will only convert a `value` to a `number` if it appears to be numeric *in its entirety* (after trimming whitespace).
-
-Each of the following expressions evaluates to `true`:
-
-```
-// Everything after the '3' is ignored by `parseFloat`
-
-parseFloat('000123abcdef') === 123;
-
-
-
-// `value` contains non-numeric characters, so remains as-is
-
-formatQuery(
-
-  { rules: [{ field: 'f', operator: '=', value: '000123abcdef' }] },
-
-  { format: 'sql', parseNumbers: true }
-
-) === "(f = '000123abcdef')";
-
-
-
-// `value` is wholly numeric (after trimming whitespace) so it gets converted to a number
-
-formatQuery(
-
-  { rules: [{ field: 'f', operator: '=', value: '  000123  ' }] },
-
-  { format: 'sql', parseNumbers: true }
-
-) === '(f = 123)';
-```
-
-## Defaults[​](#defaults "Direct link to Defaults")
+## Defaults
 
 The default configuration objects are exported for convenience, including the following.
 

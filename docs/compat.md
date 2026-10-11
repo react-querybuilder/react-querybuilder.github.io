@@ -2,7 +2,7 @@
 
 React Query Builder's default components use basic HTML5 form controls that are highly customizable through styling, especially via the [`controlClassnames` prop](/docs/components/querybuilder.md#controlclassnames). However, some UI libraries require specific components or HTML structures to properly style their form controls.
 
-## Packages[​](#packages "Direct link to Packages")
+## Packages
 
 Official component packages for several popular style libraries are available under the [`@react-querybuilder` org on npm](https://www.npmjs.com/org/react-querybuilder).
 
@@ -21,7 +21,7 @@ See each component package in action by selecting the "Style library" option on 
 | [React Native](https://reactnative.dev/)            | [@react-querybuilder/native](https://www.npmjs.com/package/@react-querybuilder/native)       | [Expo Snack](/sandbox?p=snack\&t=native-expo) | [CodeSandbox](/sandbox?t=native)    | [StackBlitz](/sandbox?p=sb\&t=native)    |
 | [Tremor](https://www.tremor.so/)                    | [@react-querybuilder/tremor](https://www.npmjs.com/package/@react-querybuilder/tremor)       | [Demo](/demo/tremor)                          | [CodeSandbox](/sandbox?t=tremor)    | [StackBlitz](/sandbox?p=sb\&t=tremor)    |
 
-## Other frameworks[​](#other-frameworks "Direct link to Other frameworks")
+## Other frameworks
 
 React is not a requirement for the query builder. Official ports to other frameworks, each maintained in its own repo, wrap the same framework-agnostic derivations from [`@react-querybuilder/core`](/docs/utils/framework-adapters.md) that the React components use. Query shapes, [import](/docs/utils/import.md)/[export](/docs/utils/export.md) utilities, and most configuration options (`fields`, `operators`, etc.) behave identically; the component API itself is idiomatic to each framework.
 
@@ -33,37 +33,25 @@ React is not a requirement for the query builder. Official ports to other framew
 
 The rendered DOM is class-compatible with React Query Builder, so existing [class name](/docs/styling/classnames.md)-based styles and themes carry over unchanged.
 
-## Usage[​](#usage "Direct link to Usage")
+## Usage
 
 The recommended approach is to wrap `<QueryBuilder />` in the appropriate `QueryBuilder*` context provider from the compatibility package.
 
 This example uses the Ant Design library:
 
-```
+```tsx
 import { QueryBuilderAntD } from '@react-querybuilder/antd';
-
 import 'antd/dist/antd.compact.css'; // <- include this only if using `antd@<5`
-
 import { QueryBuilder } from 'react-querybuilder';
-
 import 'react-querybuilder/dist/query-builder.css';
-
 import { defaultQuery, fields } from './constants';
 
-
-
 export function App() {
-
   return (
-
     <QueryBuilderAntD>
-
       <QueryBuilder fields={fields} defaultQuery={defaultQuery} />
-
     </QueryBuilderAntD>
-
   );
-
 }
 ```
 
@@ -81,87 +69,53 @@ Each compatibility package exports its own context provider, except `@react-quer
 | `@react-querybuilder/prime`     | `QueryBuilderPrime`     |
 | `@react-querybuilder/tremor`    | `QueryBuilderTremor`    |
 
-tip
+> **Tip:** Context providers can be nested to combine features. For example, nest a UI library provider under `QueryBuilderDnD` to add both drag-and-drop functionality and styled components.
+>
+> This example uses the Bulma library *and* enables drag-and-drop:
+>
+> ```tsx
+> import { QueryBuilderBulma } from '@react-querybuilder/bulma';
+> import { QueryBuilderDnD } from '@react-querybuilder/dnd';
+> import 'bulma/bulma.sass';
+> import { QueryBuilder } from 'react-querybuilder';
+> import 'react-querybuilder/dist/query-builder.css';
+> import { defaultQuery, fields } from './constants';
+>
+> export function App() {
+>   return (
+>     <QueryBuilderDnD>
+>       <QueryBuilderBulma>
+>         <QueryBuilder fields={fields} defaultQuery={defaultQuery} />
+>       </QueryBuilderBulma>
+>     </QueryBuilderDnD>
+>   );
+> }
+> ```
 
-Context providers can be nested to combine features. For example, nest a UI library provider under `QueryBuilderDnD` to add both drag-and-drop functionality and styled components.
-
-This example uses the Bulma library *and* enables drag-and-drop:
-
-```
-import { QueryBuilderBulma } from '@react-querybuilder/bulma';
-
-import { QueryBuilderDnD } from '@react-querybuilder/dnd';
-
-import 'bulma/bulma.sass';
-
-import { QueryBuilder } from 'react-querybuilder';
-
-import 'react-querybuilder/dist/query-builder.css';
-
-import { defaultQuery, fields } from './constants';
-
-
-
-export function App() {
-
-  return (
-
-    <QueryBuilderDnD>
-
-      <QueryBuilderBulma>
-
-        <QueryBuilder fields={fields} defaultQuery={defaultQuery} />
-
-      </QueryBuilderBulma>
-
-    </QueryBuilderDnD>
-
-  );
-
-}
-```
-
-## Other exports[​](#other-exports "Direct link to Other exports")
+## Other exports
 
 Each compatibility package exports a `*ControlElements` object for the [`controlElements` prop](/docs/components/querybuilder.md#controlelements). Some packages also include `*ControlClassnames` and `*Translations` objects for their respective props. Use these exports when you need granular control over component replacement. See [Customization](#customization) below for advanced usage.
 
 This example uses the Bootstrap library:
 
-```
+```tsx
 import {
-
   bootstrapControlClassnames,
-
   bootstrapControlElements,
-
 } from '@react-querybuilder/bootstrap';
-
 import 'bootstrap/dist/css/bootstrap.css';
-
 import { QueryBuilder } from 'react-querybuilder';
-
 import { defaultQuery, fields } from './constants';
 
-
-
 export function App() {
-
   return (
-
     <QueryBuilder
-
       fields={fields}
-
       defaultQuery={defaultQuery}
-
       controlElements={bootstrapControlElements}
-
       controlClassnames={bootstrapControlClassnames}
-
     />
-
   );
-
 }
 ```
 
@@ -177,7 +131,7 @@ export function App() {
 | `@react-querybuilder/native`    | `nativeControlElements`    |
 | `@react-querybuilder/tremor`    | `tremorControlElements`    |
 
-## Customization[​](#customization "Direct link to Customization")
+## Customization
 
 All compatibility components except the `*ValueEditor`s accept props defined by the style library for the actual rendered component in addition to the standard props defined by `react-querybuilder`. This allows you to idiomatically customize the style library's component while leaving query builder integration to the compatibility layer.
 
@@ -185,49 +139,28 @@ For example, the `AntDActionElement` component from `@react-querybuilder/antd` r
 
 In the example below, the `size` prop is accepted because it's an `antd` `Button` prop (from the `ButtonProps` interface), even though it's not in the `ActionProps` interface.
 
-```
+```tsx
 import { AntDActionElement, antdControlElements } from '@react-querybuilder/antd';
-
 import { QueryBuilder, type ActionProps } from 'react-querybuilder';
-
-
 
 const MyAntDActionElement = (props: ActionProps) => <AntDActionElement {...props} size="large" />;
 
-
-
 export function App() {
-
   return (
-
     <QueryBuilder
-
       controlElements={{
-
         ...antdControlElements,
-
         addRuleAction: MyAntDActionElement,
-
         addGroupAction: MyAntDActionElement,
-
         cloneRuleAction: MyAntDActionElement,
-
         cloneGroupAction: MyAntDActionElement,
-
         lockRuleAction: MyAntDActionElement,
-
         lockGroupAction: MyAntDActionElement,
-
         removeRuleAction: MyAntDActionElement,
-
         removeGroupAction: MyAntDActionElement,
-
       }}
-
     />
-
   );
-
 }
 ```
 
@@ -264,221 +197,123 @@ This list shows which library components' props are accepted by the compatibilit
 | `TremorNotToggle`                  | `NotToggleProps`         | `import { Switch } from '@tremor/react'`                        |
 | `TremorValueSelector`              | `VersatileSelectorProps` | `import { MultiSelect, Select } from '@tremor/react'`           |
 
-## Preload MUI components[​](#preload-mui-components "Direct link to Preload MUI components")
+## Preload MUI components
 
-tip
-
-As of v6.2.0, MUI components are loaded synchronously in traditional environments. However, preloading MUI components *may* still be necessary when using React Server Components, even if the component file rendering the query builder includes the `"use client"` directive.
+> **Tip:** As of v6.2.0, MUI components are loaded synchronously in traditional environments. However, preloading MUI components *may* still be necessary when using React Server Components, even if the component file rendering the query builder includes the `"use client"` directive.
 
 Prior to v6.2.0, the `@react-querybuilder/material` compatibility package loaded components from `@mui/material` asynchronously to properly inherit the theme context ([issue](https://github.com/react-querybuilder/react-querybuilder/issues/321)/[PR](https://github.com/react-querybuilder/react-querybuilder/pull/324)). This meant the query builder was initially rendered with default components, then—very quickly, if all went well—the MUI components would replace them.
 
 To avoid rendering default components and render MUI components immediately instead, import the MUI components in your application code and assign them as properties of the `muiComponents` prop on the `QueryBuilderMaterial` context provider. (Individual MUI compatibility components—`MaterialValueEditor`, `MaterialActionElement`, etc.—also accept an optional `muiComponents` prop.)
 
-```
+```tsx
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-
 import { QueryBuilderMaterial } from '@react-querybuilder/material';
-
 import { QueryBuilder } from 'react-querybuilder';
-
 import { defaultQuery, fields } from './constants';
-
 import CloseIcon from '@mui/icons-material/Close';
-
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
-
 import DragIndicator from '@mui/icons-material/DragIndicator';
-
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
-
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
-
 import LockIcon from '@mui/icons-material/Lock';
-
 import LockOpenIcon from '@mui/icons-material/LockOpen';
-
 import RedoIcon from '@mui/icons-material/Redo';
-
 import UndoIcon from '@mui/icons-material/Undo';
-
 import Button from '@mui/material/Button';
-
 import Checkbox from '@mui/material/Checkbox';
-
 import FormControl from '@mui/material/FormControl';
-
 import FormControlLabel from '@mui/material/FormControlLabel';
-
 import InputLabel from '@mui/material/InputLabel'; // (after 8.9.2)
-
 import ListSubheader from '@mui/material/ListSubheader';
-
 import MenuItem from '@mui/material/MenuItem';
-
 import Radio from '@mui/material/Radio';
-
 import RadioGroup from '@mui/material/RadioGroup';
-
 import Select from '@mui/material/Select';
-
 import Switch from '@mui/material/Switch';
-
 import TextareaAutosize from '@mui/material/TextareaAutosize';
-
 // (Use `Input` instead of `TextField` in versions lower than 7.7.1)
-
 import TextField from '@mui/material/TextField';
 
-
-
 const muiComponents = {
-
   Button,
-
   Checkbox,
-
   CloseIcon,
-
   ContentCopyIcon,
-
   DragIndicator,
-
   FormControl,
-
   FormControlLabel,
-
   InputLabel, // (after 8.9.2)
-
   KeyboardArrowDownIcon,
-
   KeyboardArrowUpIcon,
-
   ListSubheader,
-
   LockIcon,
-
   LockOpenIcon,
-
   MenuItem,
-
   Radio,
-
   RadioGroup,
-
   RedoIcon, // (after 8.22.0)
-
   Select,
-
   Switch,
-
   TextareaAutosize,
-
   TextField, // (Use `Input` instead of `TextField` in versions lower than 7.7.1)
-
   UndoIcon, // (after 8.22.0)
-
 };
-
-
 
 const muiTheme = createTheme();
 
-
-
 export function App() {
-
   return (
-
     <ThemeProvider theme={muiTheme}>
-
       <QueryBuilderMaterial muiComponents={muiComponents}>
-
         <QueryBuilder fields={fields} defaultQuery={defaultQuery} />
-
       </QueryBuilderMaterial>
-
     </ThemeProvider>
-
   );
-
 }
 ```
 
-## shadcn/ui[​](#shadcnui "Direct link to shadcn/ui")
+## shadcn/ui
 
 Because [shadcn/ui](https://ui.shadcn.com/) components are copied directly into your project rather than installed as a dependency, React Query Builder provides a **shadcn registry** instead of an npm compatibility package.
 
-### Installation[​](#installation "Direct link to Installation")
+### Installation
 
 Run the following command in your project (requires shadcn CLI and an existing shadcn/ui setup):
 
-* npm
-* Bun
-* Yarn
-* pnpm
-
-```
+```bash
 npx shadcn add https://react-querybuilder.js.org/r/query-builder.json
-```
-
-```
-bun x shadcn add https://react-querybuilder.js.org/r/query-builder.json
-```
-
-```
-yarn dlx shadcn add https://react-querybuilder.js.org/r/query-builder.json
-```
-
-```
-pnpm dlx shadcn add https://react-querybuilder.js.org/r/query-builder.json
 ```
 
 This installs the React Query Builder components into your project's configured components directory (e.g. `src/components/query-builder/`) and automatically pulls in the required shadcn primitives (`button`, `checkbox`, `input`, `label`, `radio-group`, `select`, `switch`, `textarea`).
 
-### Usage[​](#usage-1 "Direct link to Usage")
+### Usage
 
-```
+```tsx
 import { QueryBuilder } from 'react-querybuilder';
-
 import { defaultQuery, fields } from './constants';
-
 import 'react-querybuilder/dist/query-builder.css';
-
 import { QueryBuilderShadcn } from '@/components/query-builder';
 
-
-
 export function App() {
-
   return (
-
     <QueryBuilderShadcn>
-
       <QueryBuilder fields={fields} defaultQuery={defaultQuery} />
-
     </QueryBuilderShadcn>
-
   );
-
 }
 ```
 
-### Manual usage[​](#manual-usage "Direct link to Manual usage")
+### Manual usage
 
 If you prefer not to use the CLI, copy the component files from [`website/registry/default/query-builder/`](https://github.com/react-querybuilder/react-querybuilder/tree/main/website/registry/default/query-builder) in the React Query Builder repository into your project.
 
 The `shadcnControlElements` named export is also available for the [`controlElements` prop](/docs/components/querybuilder.md#controlelements):
 
-```
+```tsx
 import { QueryBuilder } from 'react-querybuilder';
-
 import { shadcnControlElements } from '@/components/query-builder';
 
-
-
 export function App() {
-
   return <QueryBuilder controlElements={shadcnControlElements} fields={fields} />;
-
 }
 ```

@@ -1,43 +1,24 @@
 # Rules engine
 
-Live demo
-
-Try the interactive [Rules Engine demo](/demo/rules-engine) with a musician-themed example, including live execution against sample data.
+> **Live demo:** Try the interactive [Rules Engine demo](/demo/rules-engine) with a musician-themed example, including live execution against sample data.
 
 The [`@react-querybuilder/rules-engine`](https://www.npmjs.com/package/@react-querybuilder/rules-engine) package augments React Query Builder with rules engine functionality, allowing you to build executable rule sets with conditions and consequences.
 
-## What is a Rules Engine?[​](#what-is-a-rules-engine "Direct link to What is a Rules Engine?")
+## What is a Rules Engine?
 
 A rules engine is a system that evaluates conditions and executes corresponding actions (consequences) based on those evaluations. Unlike static query builders that generate query strings, a rules engine creates executable logic that can be processed at runtime.
 
 The rules engine extension transforms `react-querybuilder` queries into structured rule definitions that can be executed by rules engine libraries like [`json-rules-engine`](https://github.com/CacheControl/json-rules-engine).
 
-## Installation[​](#installation "Direct link to Installation")
+## Installation
 
-* npm
-* Bun
-* Yarn
-* pnpm
-
-```
+```bash
 npm install react-querybuilder @react-querybuilder/rules-engine
 ```
 
-```
-bun add react-querybuilder @react-querybuilder/rules-engine
-```
+## Core concepts
 
-```
-yarn add react-querybuilder @react-querybuilder/rules-engine
-```
-
-```
-pnpm add react-querybuilder @react-querybuilder/rules-engine
-```
-
-## Core concepts[​](#core-concepts "Direct link to Core concepts")
-
-### Rules engine structure[​](#rules-engine-structure "Direct link to Rules engine structure")
+### Rules engine structure
 
 A rules engine consists of:
 
@@ -45,147 +26,96 @@ A rules engine consists of:
 * **Consequences**: Actions to execute when conditions are met (then statements)
 * **Default Consequence**: Fallback action when no conditions match (else statement)
 
-### Relationship to `QueryBuilder`[​](#relationship-to-querybuilder "Direct link to relationship-to-querybuilder")
+### Relationship to `QueryBuilder`
 
 While the standard `QueryBuilder` component generates queries for databases or search APIs, `RulesEngineBuilder` creates executable rule definitions that can be processed by rules engines to trigger actions, validations, or business logic.
 
-## Basic usage[​](#basic-usage "Direct link to Basic usage")
+## Basic usage
 
 The `RulesEngineBuilder` component provides a specialized interface for creating rules with conditions and consequences:
 
-```
+```tsx
 import { RulesEngineBuilder } from '@react-querybuilder/rules-engine';
 
-
-
 function App() {
-
   return <RulesEngineBuilder />;
-
 }
 ```
 
-### Controlled vs uncontrolled[​](#controlled-vs-uncontrolled "Direct link to Controlled vs uncontrolled")
+### Controlled vs uncontrolled
 
 Using `RulesEngineBuilder` as an uncontrolled component by setting the `defaultRulesEngine` prop is the recommended approach. For a controlled component, use the `rulesEngine` prop.
 
-```
+```tsx
 import { useState } from 'react';
-
 import { RulesEngineBuilder } from '@react-querybuilder/rules-engine';
-
 import type { RulesEngine } from '@react-querybuilder/rules-engine';
 
-
-
 function App() {
-
   const [rulesEngine, setRulesEngine] = useState<RulesEngine>({
-
     conditions: [],
-
     defaultConsequent: { type: 'default-action' },
-
   });
 
-
-
   return (
-
     <RulesEngineBuilder
-
       // Uncontrolled:
-
       defaultRulesEngine={rulesEngine}
-
       // Controlled:
-
       // rulesEngine={rulesEngine}
-
       onRulesEngineChange={setRulesEngine}
-
       consequentTypes={[
-
         { name: 'email-alert', label: 'Send Email' },
-
         { name: 'sms-alert', label: 'Send SMS' },
-
         { name: 'log-event', label: 'Log Event' },
-
         { name: 'default-action', label: 'Default Action' },
-
       ]}
-
     />
-
   );
-
 }
 ```
 
-## State management[​](#state-management "Direct link to State management")
+## State management
 
 The rules engine package uses Redux for internal state management and requires the `QueryBuilderStateProvider`:
 
-```
+```tsx
 import { QueryBuilderStateProvider } from 'react-querybuilder';
-
 import { RulesEngineBuilder } from '@react-querybuilder/rules-engine';
 
-
-
 function App() {
-
   return (
-
     <QueryBuilderStateProvider>
-
       <RulesEngineBuilder />
-
     </QueryBuilderStateProvider>
-
   );
-
 }
 ```
 
-info
+> **Info:** The `RulesEngineBuilder` component automatically wraps itself with `QueryBuilderStateProvider`, so explicit wrapping is only necessary if you need to share state with other components.
 
-The `RulesEngineBuilder` component automatically wraps itself with `QueryBuilderStateProvider`, so explicit wrapping is only necessary if you need to share state with other components.
-
-### Accessing and updating Redux state[​](#accessing-and-updating-redux-state "Direct link to Accessing and updating Redux state")
+### Accessing and updating Redux state
 
 In event handlers, retrieve the current rules engine with `props.schema.getRulesEngine()` and update the entire rules engine object with `props.schema.dispatchRulesEngine(newRulesEngine)`.
 
 In the render phase, access rules engine state using the `useRulesEngineBuilderRulesEngine` hook:
 
-```
+```tsx
 import { useRulesEngineBuilderRulesEngine } from '@react-querybuilder/rules-engine';
 
-
-
 function MyCustomComponent() {
-
   const rulesEngine = useRulesEngineBuilderRulesEngine();
 
-
-
   return (
-
     <div>
-
       <p>Number of conditions: {rulesEngine.conditions?.length ?? 0}</p>
-
       <p>Has default consequent: {!!rulesEngine.defaultConsequent}</p>
-
     </div>
-
   );
-
 }
 ```
 
-## Export[​](#export "Direct link to Export")
+## Export
 
 The `formatRulesEngine` function converts rules engine objects into formats compatible with external rules engines. Four export formats are available:
 
@@ -196,65 +126,39 @@ The `formatRulesEngine` function converts rules engine objects into formats comp
 
 The desired format is passed as the second argument—either a bare string or an options object with a `format` property. All formats honor the [evaluation mode](#evaluation-modes).
 
-### `json-rules-engine`[​](#json-rules-engine "Direct link to json-rules-engine")
+### `json-rules-engine`
 
-```
+```tsx
 import { formatRulesEngine } from '@react-querybuilder/rules-engine';
-
 import { Engine } from 'json-rules-engine';
 
-
-
 const rulesEngine = {
-
   conditions: [
-
     {
-
       antecedent: {
-
         combinator: 'and',
-
         rules: [
-
           { field: 'temperature', operator: '>', value: 85 },
-
           { field: 'humidity', operator: '<', value: 40 },
-
         ],
-
       },
-
       consequent: { type: 'alert', message: 'High temperature detected' },
-
     },
-
   ],
-
   defaultConsequent: { type: 'monitor', action: 'continue-monitoring' },
-
 };
 
-
-
 // Convert to json-rules-engine format
-
 const jsonRules = formatRulesEngine(rulesEngine, 'json-rules-engine');
 
-
-
 // Create and run engine
-
 const engine = new Engine(jsonRules);
-
 engine.run({ temperature: 90, humidity: 35 }).then(events => {
-
   events.forEach(event => console.log(event.type, event.params));
-
 });
 ```
 
-### Additional operators[​](#additional-operators "Direct link to Additional operators")
+### Additional operators
 
 `json-rules-engine` ships with a limited set of built-in operators (`equal`, `notEqual`, `lessThan`, `lessThanInclusive`, `greaterThan`, `greaterThanInclusive`, `in`, `notIn`, `contains`, and `doesNotContain`). Several React Query Builder operators have no direct equivalent, so the export uses a set of supplemental evaluators exported as `jsonRulesEngineAdditionalOperators`:
 
@@ -267,128 +171,87 @@ engine.run({ temperature: 90, humidity: 35 }).then(events => {
 
 These operators must be registered on the `Engine` before it evaluates rules that use them. The simplest way is to pass the engine as `context.engine` to `formatRulesEngine`, which registers every additional operator on it as a side effect:
 
-```
+```tsx
 import { formatRulesEngine } from '@react-querybuilder/rules-engine';
-
 import { Engine } from 'json-rules-engine';
-
-
 
 const engine = new Engine();
 
-
-
 // Passing `context: { engine }` registers `beginsWith`, `between`, etc. on the engine.
-
 const rules = formatRulesEngine(rulesEngine, {
-
   format: 'json-rules-engine',
-
   context: { engine },
-
 });
-
 for (const rule of rules) {
-
   engine.addRule(rule);
-
 }
 
-
-
 engine.run({ name: 'Dr. Strange', age: 42 }).then(({ events }) => {
-
   events.forEach(event => console.log(event.type, event.params));
-
 });
 ```
 
 Alternatively, register them yourself (for example, when you need only a subset):
 
-```
+```tsx
 import { jsonRulesEngineAdditionalOperators } from '@react-querybuilder/rules-engine';
 
-
-
 for (const [name, evaluator] of Object.entries(jsonRulesEngineAdditionalOperators)) {
-
   engine.addOperator(name, evaluator);
-
 }
 ```
 
-### `native`[​](#native "Direct link to native")
+### `native`
 
 The `native` format returns a dependency-free, in-process evaluator function with the signature `(facts) => Consequent[]`. Given a facts object, it returns the consequents of every condition that fires, in order, honoring the [evaluation mode](#evaluation-modes). This is the simplest way to run a rules engine—no external library, no async, and no operator registration.
 
-```
+```tsx
 import { formatRulesEngine } from '@react-querybuilder/rules-engine';
-
-
 
 const evaluate = formatRulesEngine(rulesEngine, 'native');
 
-
-
 const firedConsequents = evaluate({ temperature: 90, humidity: 35 });
-
 // => [{ type: 'alert', message: 'High temperature detected' }]
 ```
 
-### `node-rules`[​](#node-rules "Direct link to node-rules")
+### `node-rules`
 
 The `node-rules` format returns an array of live [node-rules](https://github.com/mithunsatheesh/node-rules) `Rule` objects—complete with `condition`/`consequence` functions—ready to pass to a `RuleEngine`. Antecedents are compiled to the same predicates used by the [`native`](#native) format, so evaluation needs no operator registration. Each fired condition's consequent is pushed onto `fact.events`, mirroring the `json-rules-engine` result shape.
 
-```
+```tsx
 import { formatRulesEngine } from '@react-querybuilder/rules-engine';
-
 import { RuleEngine } from 'node-rules';
-
-
 
 const R = new RuleEngine(formatRulesEngine(rulesEngine, 'node-rules'));
 
-
-
 R.execute({ temperature: 90, humidity: 35 }, ({ events }) => {
-
   events.forEach(event => console.log(event.type, event.message));
-
 });
 ```
 
-### `rulepilot`[​](#rulepilot "Direct link to rulepilot")
+### `rulepilot`
 
 The `rulepilot` format returns a single [rulepilot](https://github.com/andrewbrg/rulepilot) `Rule` whose ordered `conditions` reproduce the rules engine's cascade (each condition pairs a guard with its consequent as `result`). Because `RulePilot.evaluate` returns a **single** result—the first matching condition's—this format models single-outcome decisioning.
 
-```
+```tsx
 import { formatRulesEngine } from '@react-querybuilder/rules-engine';
-
 import { RulePilot } from 'rulepilot';
-
-
 
 const rule = formatRulesEngine(rulesEngine, 'rulepilot');
 
-
-
 // Pass `true` (trustRule) to skip pre-validation of the always-true guards.
-
 const result = await RulePilot.evaluate(rule, { temperature: 90, humidity: 35 }, true);
-
 // => { type: 'alert', message: 'High temperature detected' }
 ```
 
-caution
+> **Caution:** The `rulepilot` format has two limitations relative to the other targets:
+>
+> * **Single result.** A rules engine whose nested or overlapping conditions would fire *multiple* consequents under the other formats yields only the first match. [Cumulative](#evaluation-modes) evaluation mode therefore has no rulepilot representation and **throws**.
+> * **No substring operators.** The `contains`, `beginsWith`, and `endsWith` operators (and their negations) have no faithful rulepilot mapping and are omitted from the exported rule.
+>
+> Guards built from empty antecedents (and cascade defaults) compile to an always-true `{ all: [] }`, which rulepilot's validator rejects; evaluate such rules with `RulePilot.evaluate(rule, criteria, true)` to skip pre-validation.
 
-The `rulepilot` format has two limitations relative to the other targets:
-
-* **Single result.** A rules engine whose nested or overlapping conditions would fire *multiple* consequents under the other formats yields only the first match. [Cumulative](#evaluation-modes) evaluation mode therefore has no rulepilot representation and **throws**.
-* **No substring operators.** The `contains`, `beginsWith`, and `endsWith` operators (and their negations) have no faithful rulepilot mapping and are omitted from the exported rule.
-
-Guards built from empty antecedents (and cascade defaults) compile to an always-true `{ all: [] }`, which rulepilot's validator rejects; evaluate such rules with `RulePilot.evaluate(rule, criteria, true)` to skip pre-validation.
-
-### Evaluation modes[​](#evaluation-modes "Direct link to Evaluation modes")
+### Evaluation modes
 
 Sibling conditions can be exported with one of two evaluation modes, stored as `evaluationMode` on the rules engine object (defaults to `"cascade"`):
 
@@ -399,533 +262,340 @@ In both modes, nested conditions are guarded by their ancestor antecedents (stru
 
 The builder UI also relabels condition blocks to match the active mode: in `"cascade"` mode conditions read `If`/`Else If` and the default consequent reads `Else`; in `"cumulative"` mode every condition reads `When` and the default consequent reads `Always`. These labels are customizable via the `blockLabelWhen` and `blockLabelAlways` translations.
 
-```
+```tsx
 // Read from the rules engine object (defaults to "cascade")
-
 formatRulesEngine({ ...rulesEngine, evaluationMode: 'cumulative' }, 'json-rules-engine');
 
-
-
 // Or override per-call (takes precedence over the object's value)
-
 formatRulesEngine(rulesEngine, { format: 'json-rules-engine', evaluationMode: 'cumulative' });
 ```
 
-note
+> **Note:** Earlier versions emitted every condition independently (equivalent to `"cumulative"`) and always emitted the `defaultConsequent` as an always-true rule. The default is now `"cascade"`: overlapping conditions short-circuit, nested conditions are emitted, and the `defaultConsequent` becomes the `else` branch. To keep the always-true `defaultConsequent` behavior, export with `"cumulative"` mode.
 
-Earlier versions emitted every condition independently (equivalent to `"cumulative"`) and always emitted the `defaultConsequent` as an always-true rule. The default is now `"cascade"`: overlapping conditions short-circuit, nested conditions are emitted, and the `defaultConsequent` becomes the `else` branch. To keep the always-true `defaultConsequent` behavior, export with `"cumulative"` mode.
-
-### Custom export formats[​](#custom-export-formats "Direct link to Custom export formats")
+### Custom export formats
 
 Extend export functionality with custom processors:
 
-```
+```tsx
 import { formatRulesEngine } from '@react-querybuilder/rules-engine';
-
 import type { RulesEngineProcessor } from '@react-querybuilder/rules-engine';
 
-
-
 const customProcessor: RulesEngineProcessor<MyCustomFormat> = rulesEngine => ({
-
   // Transform to your custom format
-
   rules: rulesEngine.conditions.map(condition => ({
-
     when: condition.antecedent,
-
     then: condition.consequent,
-
   })),
-
   fallback: rulesEngine.defaultConsequent,
-
 });
 
-
-
 const customFormat = formatRulesEngine(rulesEngine, {
-
   rulesEngineProcessor: customProcessor,
-
 });
 ```
 
-## Component customization[​](#component-customization "Direct link to Component customization")
+## Component customization
 
-### Default components[​](#default-components "Direct link to Default components")
+### Default components
 
 The rules engine includes specialized components for rules engine functionality:
 
-```
+```tsx
 import { RulesEngineBuilder } from '@react-querybuilder/rules-engine';
-
 import type { ComponentsRE } from '@react-querybuilder/rules-engine';
 
-
-
 const customComponents: Partial<ComponentsRE> = {
-
   consequentSelector: ({ options, value, handleOnChange }) => (
-
     <select value={value} onChange={e => handleOnChange(e.target.value)}>
-
       {options.map(opt => (
-
         <option key={opt.name} value={opt.name}>
-
           {opt.label}
-
         </option>
-
       ))}
-
     </select>
-
   ),
-
 };
 
-
-
 function App() {
-
   return <RulesEngineBuilder components={customComponents} />;
-
 }
 ```
 
-### `QueryBuilder` integration[​](#querybuilder-integration "Direct link to querybuilder-integration")
+### `QueryBuilder` integration
 
 Pass standard `QueryBuilder` props for condition editing:
 
-```
+```tsx
 import { RulesEngineBuilder } from '@react-querybuilder/rules-engine';
 
-
-
 function App() {
-
   return (
-
     <RulesEngineBuilder
-
       queryBuilderProps={{
-
         fields: [
-
           { name: 'temperature', label: 'Temperature', datatype: 'number' },
-
           { name: 'humidity', label: 'Humidity', datatype: 'number' },
-
           { name: 'location', label: 'Location', datatype: 'text' },
-
         ],
-
         operators: [
-
           { name: '>', label: 'greater than' },
-
           { name: '<', label: 'less than' },
-
           { name: '=', label: 'equals' },
-
         ],
-
       }}
-
     />
-
   );
-
 }
 ```
 
-## Configuration[​](#configuration "Direct link to Configuration")
+## Configuration
 
-### Consequent types[​](#consequent-types "Direct link to Consequent types")
+### Consequent types
 
 Define available consequence types for rules:
 
-```
+```tsx
 <RulesEngineBuilder
-
   consequentTypes={[
-
     { name: 'email', label: 'Send Email' },
-
     { name: 'webhook', label: 'Call Webhook' },
-
     { name: 'database', label: 'Update Database' },
-
   ]}
-
   autoSelectConsequentType={true}
-
 />
 ```
 
-### Consequent properties[​](#consequent-properties "Direct link to Consequent properties")
+### Consequent properties
 
 Attach a `properties` array to any consequent type and the built-in consequent body will render an editable input for each property—no custom `consequentBuilderBody` component required. Property values are stored on the consequent under `params[name]`.
 
-```
+```tsx
 <RulesEngineBuilder
-
   consequentTypes={[
-
     {
-
       name: 'email',
-
       label: 'Send Email',
-
       properties: [
-
         { name: 'to', label: 'To' },
-
         { name: 'subject', label: 'Subject' },
-
         { name: 'body', label: 'Body', inputType: 'textarea' },
-
         {
-
           name: 'priority',
-
           label: 'Priority',
-
           inputType: 'select',
-
           defaultValue: 'normal',
-
           values: [
-
             { name: 'low', label: 'Low' },
-
             { name: 'normal', label: 'Normal' },
-
             { name: 'high', label: 'High' },
-
           ],
-
         },
-
       ],
-
     },
-
   ]}
-
 />
 ```
 
 Each property's `inputType` may be `'text'` (default), `'textarea'`, `'number'`, `'checkbox'`, or `'select'`. A `defaultValue` is seeded into `params[name]` when the type is first selected, and `'select'` inputs render the options listed in `values`. Selecting a different consequent type reseeds `params` from the new type's `defaultValue`s, or clears the managed `params` when the new type defines no `properties`.
 
-### Nested conditions[​](#nested-conditions "Direct link to Nested conditions")
+### Nested conditions
 
 Disallow nested condition logic:
 
-```
+```tsx
 <RulesEngineBuilder allowNestedConditions={false} />
 ```
 
-### Default consequents[​](#default-consequents "Direct link to Default consequents")
+### Default consequents
 
 Disallow "else" blocks:
 
-```
+```tsx
 <RulesEngineBuilder allowDefaultConsequents={false} />
 ```
 
-### Shifting conditions[​](#shifting-conditions "Direct link to Shifting conditions")
+### Shifting conditions
 
 Set `showShiftActions` to render up/down buttons in each condition header, letting users reorder sibling conditions. Buttons are automatically disabled at the first and last position within a sibling group.
 
-```
+```tsx
 <RulesEngineBuilder showShiftActions={true} />
 ```
 
 The button titles and labels are customizable via the `shiftActionUp` and `shiftActionDown` [translations](#custom-translations). To intercept, cancel, or replace a shift, use the [`onMoveCondition`](#event-handlers) handler.
 
-### Custom Translations[​](#custom-translations "Direct link to Custom Translations")
+### Custom Translations
 
 Customize UI labels:
 
-```
+```tsx
 import type { TranslationsRE } from '@react-querybuilder/rules-engine';
 
-
-
 const customTranslations: Partial<TranslationsRE> = {
-
   blockLabelIf: { label: 'When' },
-
   blockLabelElseIf: { label: 'Otherwise when' },
-
   blockLabelElse: { label: 'Otherwise' },
-
   blockLabelThen: { label: 'Do' },
-
   addCondition: { label: 'Add condition' },
-
   addConsequent: { label: 'Add action' },
-
 };
-
-
 
 <RulesEngineBuilder translations={customTranslations} />;
 ```
 
-## Styling[​](#styling "Direct link to Styling")
+## Styling
 
-### Standard classes[​](#standard-classes "Direct link to Standard classes")
+### Standard classes
 
 `RulesEngineBuilder` adds specific CSS classes for styling (unless `suppressStandardClassnames` is set):
 
 <!-- -->
 
-```
+```scss
 .rulesEngineBuilder {}
-
 .rulesEngineBuilder-header {}
-
 .rulesEngineBuilder-body {}
-
 .rulesEngineBuilder-evaluationMode {}
-
 .consequentBuilder {}
-
 .consequentBuilder-header {}
-
 .consequentBuilder-body {}
-
 .consequentBuilder-standalone {}
-
 .conditionBuilder {}
-
 .conditionBuilder-header {}
-
 .conditionBuilder-body {}
-
 .shiftActions {}
-
 .blockLabel {}
-
 .blockLabel-if {}
-
 .blockLabel-ifelse {}
-
 .blockLabel-else {}
-
 .blockLabel-then {}
-
 .blockLabel-when {}
-
 .blockLabel-always {}
 ```
 
-### Custom classes[​](#custom-classes "Direct link to Custom classes")
+### Custom classes
 
-```
+```tsx
 import type { ClassnamesRE } from '@react-querybuilder/rules-engine';
 
-
-
 const customClassnames: Partial<ClassnamesRE> = {
-
   rulesEngineBuilder: 'my-rules-engine',
-
   blockLabelIf: 'my-if-label',
-
   blockLabelThen: 'my-then-label',
-
   consequentBuilder: 'my-consequent-section',
-
 };
-
-
 
 <RulesEngineBuilder classnames={customClassnames} />;
 ```
 
-## TypeScript support[​](#typescript-support "Direct link to TypeScript support")
+## TypeScript support
 
-### Core types[​](#core-types "Direct link to Core types")
+### Core types
 
-```
+```tsx
 import type {
-
   RulesEngine,
-
   RulesEngineAny,
-
   RECondition,
-
   Consequent,
-
   ConsequentTypeOption,
-
   FormatRulesEngineOptions,
-
 } from '@react-querybuilder/rules-engine';
 
-
-
 // Basic rules engine structure
-
 const rulesEngine: RulesEngine = {
-
   conditions: [
-
     {
-
       antecedent: { combinator: 'and', rules: [] },
-
       consequent: { type: 'action', data: {} },
-
     },
-
   ],
-
   defaultConsequent: { type: 'default' },
-
 };
 
-
-
 // Consequent type options for the `consequentTypes` prop
-
 const consequentTypes: ConsequentTypeOption[] = [
-
   { name: 'email', label: 'Send Email', properties: [{ name: 'to', label: 'To' }] },
-
 ];
 
-
-
 // Custom consequent type
-
 interface MyConsequent extends Consequent {
-
   type: 'email' | 'sms' | 'webhook';
-
   recipient: string;
-
   message: string;
-
 }
 ```
 
-### Generic usage[​](#generic-usage "Direct link to Generic usage")
+### Generic usage
 
-```
+```tsx
 import type { RuleType } from 'react-querybuilder';
-
 import type { RulesEngine } from '@react-querybuilder/rules-engine';
 
-
-
 interface CustomRule extends RuleType {
-
   metadata?: Record<string, unknown>;
-
 }
-
-
 
 type CustomRulesEngine = RulesEngine<CustomRule, 'and' | 'or' | 'xor'>;
 ```
 
-## Miscellaneous features[​](#miscellaneous-features "Direct link to Miscellaneous features")
+## Miscellaneous features
 
-### Path utilities[​](#path-utilities "Direct link to Path utilities")
+### Path utilities
 
 Manipulate rules engine structure programmatically:
 
-```
+```tsx
 import {
-
   regenerateREIDs,
-
   prepareRulesEngine,
-
   isRulesEngine,
-
 } from '@react-querybuilder/rules-engine';
 
-
-
 // Regenerate IDs for all elements
-
 const withNewIds = regenerateREIDs(rulesEngine);
 
-
-
 // Recursively add `id` properties (only if necessary)
-
 const preparedRE = prepareRulesEngine(partialRulesEngine, {
-
   idGenerator: () => `${Math.random()}`, // override default of `crypto.randomUUID()`
-
 });
 
-
-
 // Type checking
-
 if (isRulesEngine(unknownObject)) {
-
   // Safe to use as rules engine
-
 }
 ```
 
-### Event handlers[​](#event-handlers "Direct link to Event handlers")
+### Event handlers
 
-```
+```tsx
 <RulesEngineBuilder
-
   onAddCondition={(condition, parentPath, rulesEngine) => {
-
     console.log('Condition added:', condition);
-
     return condition; // Return modified condition or true to proceed
-
   }}
-
   onRemoveCondition={(condition, path, rulesEngine) => {
-
     console.log('Condition removed:', condition);
-
     return true; // Return true to proceed with removal
-
   }}
-
   onMoveCondition={(condition, fromPath, direction, rulesEngine, nextRulesEngine) => {
-
     console.log('Condition moved:', direction);
-
     // Return true to apply the default move, false to cancel,
-
     // or a new rules engine object to replace the next state.
-
     return true;
-
   }}
-
 />
 ```
 
-## Migration and compatibility[​](#migration-and-compatibility "Direct link to Migration and compatibility")
+## Migration and compatibility
 
-### Version compatibility[​](#version-compatibility "Direct link to Version compatibility")
+### Version compatibility
 
 * `react`: `>=18`
 * `react-querybuilder`: must match
 * `json-rules-engine`: `>=7` (optional)
 
-### Future stability[​](#future-stability "Direct link to Future stability")
+### Future stability
 
 As this package is in early development, expect:
 
@@ -936,6 +606,6 @@ As this package is in early development, expect:
 
 Keep your implementation flexible and monitor release notes for migration guides as the package matures.
 
-## API reference[​](#api-reference "Direct link to API reference")
+## API reference
 
 For detailed API documentation, see the [TypeScript definitions](/api/@react-querybuilder/rules-engine) and [source code](https://github.com/react-querybuilder/react-querybuilder/tree/main/packages/rules-engine).

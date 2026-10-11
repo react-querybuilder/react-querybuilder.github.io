@@ -2,7 +2,7 @@
 
 The [`@react-querybuilder/dnd`](https://www.npmjs.com/package/@react-querybuilder/dnd) package augments React Query Builder with drag-and-drop functionality. [Click here for demo](/demo#enableDragAndDrop=true).
 
-## Usage[​](#usage "Direct link to Usage")
+## Usage
 
 To enable drag-and-drop on a query builder, render the `QueryBuilderDnD` context provider higher in the component tree than `QueryBuilder`.
 
@@ -12,242 +12,127 @@ The `@react-querybuilder/dnd` package supports multiple drag-and-drop libraries 
 
 When the `enableDragAndDrop` prop is `true`, a [drag handle](/docs/components/draghandle.md) appears on the left side of each rule and group header. Clicking and dragging the handle element allows users to visually reorder rules and groups.
 
-### Using the `@atlaskit/pragmatic-drag-and-drop` adapter[​](#using-the-atlaskitpragmatic-drag-and-drop-adapter "Direct link to using-the-atlaskitpragmatic-drag-and-drop-adapter")
+### Using the `@atlaskit/pragmatic-drag-and-drop` adapter
 
 Install [`@atlaskit/pragmatic-drag-and-drop`](https://www.npmjs.com/package/@atlaskit/pragmatic-drag-and-drop), then create an adapter with `createPragmaticDndAdapter`:
 
-* npm
-* Bun
-* Yarn
-* pnpm
-
-```
+```bash
 npm i react-querybuilder @react-querybuilder/dnd @atlaskit/pragmatic-drag-and-drop
 ```
 
-```
-bun add react-querybuilder @react-querybuilder/dnd @atlaskit/pragmatic-drag-and-drop
-```
-
-```
-yarn add react-querybuilder @react-querybuilder/dnd @atlaskit/pragmatic-drag-and-drop
-```
-
-```
-pnpm add react-querybuilder @react-querybuilder/dnd @atlaskit/pragmatic-drag-and-drop
-```
-
-```
+```tsx
 import { combine } from '@atlaskit/pragmatic-drag-and-drop/combine';
-
 import {
-
   draggable,
-
   dropTargetForElements,
-
   monitorForElements,
-
 } from '@atlaskit/pragmatic-drag-and-drop/element/adapter';
-
 import { QueryBuilderDnD } from '@react-querybuilder/dnd';
-
 import { createPragmaticDndAdapter } from '@react-querybuilder/dnd/pragmatic-dnd';
-
 import { QueryBuilder } from 'react-querybuilder';
 
-
-
 const pragmaticDndAdapter = createPragmaticDndAdapter({
-
   draggable,
-
   dropTargetForElements,
-
   monitorForElements,
-
   combine,
-
 });
 
-
-
 const App = () => (
-
   <QueryBuilderDnD dnd={pragmaticDndAdapter}>
-
     <QueryBuilder />
-
   </QueryBuilderDnD>
-
 );
 ```
 
 Pragmatic drag and drop uses the native HTML5 drag-and-drop API under the hood, so it has zero runtime overhead when not dragging. Unlike `react-dnd`, it does not require a separate backend package.
 
-### Using the `@dnd-kit` adapter[​](#using-the-dnd-kit-adapter "Direct link to using-the-dnd-kit-adapter")
+### Using the `@dnd-kit` adapter
 
 Install [`@dnd-kit/core`](https://www.npmjs.com/package/@dnd-kit/core), then create an adapter with `createDndKitAdapter`:
 
-* npm
-* Bun
-* Yarn
-* pnpm
-
-```
+```bash
 npm i react-querybuilder @react-querybuilder/dnd @dnd-kit/core
 ```
 
-```
-bun add react-querybuilder @react-querybuilder/dnd @dnd-kit/core
-```
-
-```
-yarn add react-querybuilder @react-querybuilder/dnd @dnd-kit/core
-```
-
-```
-pnpm add react-querybuilder @react-querybuilder/dnd @dnd-kit/core
-```
-
-```
+```tsx
 import * as DndKit from '@dnd-kit/core';
-
 import { QueryBuilderDnD } from '@react-querybuilder/dnd';
-
 import { createDndKitAdapter } from '@react-querybuilder/dnd/dnd-kit';
-
 import { QueryBuilder } from 'react-querybuilder';
-
-
 
 const dndKitAdapter = createDndKitAdapter(DndKit);
 
-
-
 const App = () => (
-
   <QueryBuilderDnD dnd={dndKitAdapter}>
-
     <QueryBuilder />
-
   </QueryBuilderDnD>
-
 );
 ```
 
 The dnd-kit adapter uses `PointerSensor` and `KeyboardSensor` by default, with a 5px activation distance to prevent accidental drags. Drag-handle ARIA attributes and sensor event listeners are passed to the [drag handle](/docs/components/draghandle.md) as JSX props through a `dragHandleAttributes` object, so accessibility attributes are applied automatically.
 
-Custom drag handles
+> **Custom drag handles:** The default `DragHandle` component spreads `dragHandleAttributes` for you. If you supply a [custom `dragHandle` component](/docs/components/querybuilder-controlelements.md#draghandle), it must spread `dragHandleAttributes` onto the element that receives the forwarded `ref`, otherwise the handle will not respond to drag interactions:
+>
+> ```tsx
+> import { forwardRef } from 'react';
+> import type { DragHandleProps } from 'react-querybuilder';
+>
+> const CustomDragHandle = forwardRef<HTMLSpanElement, DragHandleProps>(
+>   ({ className, title, label, dragHandleAttributes }, dragRef) => (
+>     <span ref={dragRef} className={className} title={title} {...dragHandleAttributes}>
+>       {label}
+>     </span>
+>   )
+> );
+> ```
 
-The default `DragHandle` component spreads `dragHandleAttributes` for you. If you supply a [custom `dragHandle` component](/docs/components/querybuilder-controlelements.md#draghandle), it must spread `dragHandleAttributes` onto the element that receives the forwarded `ref`, otherwise the handle will not respond to drag interactions:
-
-```
-import { forwardRef } from 'react';
-
-import type { DragHandleProps } from 'react-querybuilder';
-
-
-
-const CustomDragHandle = forwardRef<HTMLSpanElement, DragHandleProps>(
-
-  ({ className, title, label, dragHandleAttributes }, dragRef) => (
-
-    <span ref={dragRef} className={className} title={title} {...dragHandleAttributes}>
-
-      {label}
-
-    </span>
-
-  )
-
-);
-```
-
-### Using the `react-dnd` adapter[​](#using-the-react-dnd-adapter "Direct link to using-the-react-dnd-adapter")
+### Using the `react-dnd` adapter
 
 Install [`react-dnd`](https://www.npmjs.com/package/react-dnd) and either [`react-dnd-html5-backend`](https://www.npmjs.com/package/react-dnd-html5-backend) or [`react-dnd-touch-backend`](https://www.npmjs.com/package/react-dnd-touch-backend) (or both), then create an adapter with `createReactDnDAdapter`:
 
-* npm
-* Bun
-* Yarn
-* pnpm
-
-```
+```bash
 npm i react-querybuilder @react-querybuilder/dnd react-dnd react-dnd-html5-backend react-dnd-touch-backend
 ```
 
-```
-bun add react-querybuilder @react-querybuilder/dnd react-dnd react-dnd-html5-backend react-dnd-touch-backend
-```
-
-```
-yarn add react-querybuilder @react-querybuilder/dnd react-dnd react-dnd-html5-backend react-dnd-touch-backend
-```
-
-```
-pnpm add react-querybuilder @react-querybuilder/dnd react-dnd react-dnd-html5-backend react-dnd-touch-backend
-```
-
-```
+```tsx
 import { QueryBuilderDnD } from '@react-querybuilder/dnd';
-
 import { createReactDnDAdapter } from '@react-querybuilder/dnd/react-dnd';
-
 import * as ReactDnD from 'react-dnd';
-
 import * as ReactDndHtml5Backend from 'react-dnd-html5-backend';
-
 import * as ReactDndTouchBackend from 'react-dnd-touch-backend';
-
 import { QueryBuilder } from 'react-querybuilder';
 
-
-
 const reactDnDAdapter = createReactDnDAdapter({
-
   ...ReactDnD,
-
   ...ReactDndHtml5Backend,
-
   ...ReactDndTouchBackend,
-
 });
 
-
-
 const App = () => (
-
   <QueryBuilderDnD dnd={reactDnDAdapter}>
-
     <QueryBuilder />
-
   </QueryBuilderDnD>
-
 );
 ```
 
-Legacy API
+> **Legacy API:** For backward compatibility, you can still pass the raw `react-dnd` exports directly. They will be automatically wrapped in an adapter:
+>
+> ```tsx
+> <QueryBuilderDnD dnd={{ ...ReactDnD, ...ReactDndHtml5Backend, ...ReactDndTouchBackend }}>
+>   <QueryBuilder />
+> </QueryBuilderDnD>
+> ```
 
-For backward compatibility, you can still pass the raw `react-dnd` exports directly. They will be automatically wrapped in an adapter:
-
-```
-<QueryBuilderDnD dnd={{ ...ReactDnD, ...ReactDndHtml5Backend, ...ReactDndTouchBackend }}>
-
-  <QueryBuilder />
-
-</QueryBuilderDnD>
-```
-
-### Zero-config (auto-loading)[​](#zero-config-auto-loading "Direct link to Zero-config (auto-loading)")
+### Zero-config (auto-loading)
 
 If you omit the `dnd` prop, `QueryBuilderDnD` will asynchronously attempt to load `react-dnd`, `react-dnd-html5-backend`, and `react-dnd-touch-backend`. Drag-and-drop features are only enabled once those packages have loaded. This approach is convenient but provides less control over loading behavior.
 
-## Styling[​](#styling "Direct link to Styling")
+## Styling
 
 The default stylesheet applies special styles during drag-and-drop operations to help anticipate the result of the impending drop. For more information, see [Styling overview § Drag-and-drop](/docs/styling/overview.md#drag-and-drop).
 
-## Cloning and grouping[​](#cloning-and-grouping "Direct link to Cloning and grouping")
+## Cloning and grouping
 
 By default, a successful drag-and-drop action moves a rule or group to a new location within the query builder, but there are three alternative behaviors:
 
@@ -259,57 +144,36 @@ The keys that determine alternate behaviors are configurable. See [`copyModeModi
 
 As a keyboard-free alternative, you can configure timer-based activation with [`copyModeAfterHoverMs`](#copymodeafterhoverms) and [`groupModeAfterHoverMs`](#groupmodeafterhoverms). When set, hovering over a drop target for the specified duration automatically activates copy or group mode. Both methods are additive — modifier keys still work alongside timers.
 
-## Existing drag-and-drop contexts[​](#existing-drag-and-drop-contexts "Direct link to Existing drag-and-drop contexts")
+## Existing drag-and-drop contexts
 
 If your application already uses [`react-dnd`](https://react-dnd.github.io/react-dnd/), use `QueryBuilderDndWithoutProvider` instead of `QueryBuilderDnD`. They are functionally equivalent, but the former assumes a `<DndProvider />` already exists higher in the component tree. The latter renders its own `DndProvider` which conflicts with any pre-existing ones. (If you use the wrong component, you'll probably see the error message "Cannot have two HTML5 backends at the same time" in the console.)
 
-## Custom adapters[​](#custom-adapters "Direct link to Custom adapters")
+## Custom adapters
 
 You can create a custom adapter for any drag-and-drop library by implementing the `DndAdapter` interface:
 
-```
+```tsx
 import type { DndAdapter } from '@react-querybuilder/dnd';
 
-
-
 const myAdapter: DndAdapter = {
-
   // Context provider wrapping the query builder tree
-
   DndProvider: ({ debugMode, children }) => <MyDndContext>{children}</MyDndContext>,
 
-
-
   // Hook providing drag-and-drop behavior for rule components
-
   useRuleDnD: params => {
-
     // Implement using your DnD library's primitives
-
     // Must return: isDragging, dragMonitorId, isOver, dropMonitorId, dragRef, dndRef, dragHandleAttributes?, dropEffect?, groupItems?, dropNotAllowed?
-
   },
-
-
 
   // Hook providing drag-and-drop behavior for rule group components
-
   useRuleGroupDnD: params => {
-
     // Must return: isDragging, dragMonitorId, isOver, dropMonitorId, previewRef, dragRef, dropRef, dragHandleAttributes?, dropEffect?, groupItems?, dropNotAllowed?
-
   },
-
-
 
   // Hook providing drop-target behavior for inline combinators
-
   useInlineCombinatorDnD: params => {
-
     // Must return: isOver, dropMonitorId, dropRef, dropEffect?, groupItems?, dropNotAllowed?
-
   },
-
 };
 ```
 
@@ -317,11 +181,11 @@ The shared logic functions `canDropOnRule`, `canDropOnRuleGroup`, `canDropOnInli
 
 The optional `dragHandleAttributes` field returned by `useRuleDnD`/`useRuleGroupDnD` is spread onto the [drag handle](/docs/components/draghandle.md) as JSX props. Use it to supply drag-handle attributes and event listeners (such as ARIA attributes and pointer/keyboard sensor listeners) without imperative DOM manipulation.
 
-## Props[​](#props "Direct link to Props")
+## Props
 
 The following props are accepted on the `QueryBuilderDnD` and `QueryBuilderDndWithoutProvider` components.
 
-### `dnd`[​](#dnd "Direct link to dnd")
+### `dnd`
 
 `DndAdapter | DndProp`
 
@@ -331,19 +195,19 @@ If omitted, the component asynchronously loads `react-dnd`, `react-dnd-html5-bac
 
 When both backends are provided, the touch backend is preferred when a touch device is detected.
 
-### `canDrop`[​](#candrop "Direct link to candrop")
+### `canDrop`
 
 `(params: { dragging: RuleGroupTypeAny, hovering: RuleGroupTypeAny, groupItems?: boolean }) => boolean`
 
 This function determines whether a "drop" at the current hover location is valid during a drag operation. The `dragging` and `hovering` properties represent the dragged rule/group and the currently hovered rule/group, respectively. Each property includes the object's original `path` and `qbId`. `groupItems` is `true` if the [`groupModeModifierKey`](#groupmodemodifierkey) is currently pressed.
 
-### `copyModeModifierKey`[​](#copymodemodifierkey "Direct link to copymodemodifierkey")
+### `copyModeModifierKey`
 
 `string`
 
 Key code for the modifier key that puts a drag-and-drop action in ["copy" mode](#cloning-and-grouping). Default is `"alt"` (`Alt` on Windows and Linux, `⌥ Option` on macOS).
 
-### `copyModeAfterHoverMs`[​](#copymodeafterhoverms "Direct link to copymodeafterhoverms")
+### `copyModeAfterHoverMs`
 
 `number | undefined`
 
@@ -351,13 +215,13 @@ Milliseconds after hovering a drop target before the drop effect automatically s
 
 Supported by the `@atlaskit/pragmatic-drag-and-drop` and `@dnd-kit/core` adapters. The `react-dnd` adapter ignores this prop.
 
-### `groupModeModifierKey`[​](#groupmodemodifierkey "Direct link to groupmodemodifierkey")
+### `groupModeModifierKey`
 
 `string`
 
 Key code for the modifier key that puts a drag-and-drop action in ["group" mode](#cloning-and-grouping). Default is `"ctrl"` (`Ctrl`).
 
-### `groupModeAfterHoverMs`[​](#groupmodeafterhoverms "Direct link to groupmodeafterhoverms")
+### `groupModeAfterHoverMs`
 
 `number | undefined`
 
@@ -365,13 +229,13 @@ Milliseconds after hovering a drop target before the drop will automatically cre
 
 Supported by the `@atlaskit/pragmatic-drag-and-drop` and `@dnd-kit/core` adapters. The `react-dnd` adapter ignores this prop.
 
-### `hideDefaultDragPreview`[​](#hidedefaultdragpreview "Direct link to hidedefaultdragpreview")
+### `hideDefaultDragPreview`
 
 `boolean`
 
 When `true`, disables the default browser drag preview during drag operations. This is useful when implementing custom drag layers or custom drag preview components ([see relevant React DnD documentation](https://react-dnd.github.io/react-dnd/examples/drag-around/custom-drag-layer)). Default is `false`.
 
-### `updateWhileDragging`[​](#updatewhiledragging "Direct link to updatewhiledragging")
+### `updateWhileDragging`
 
 `boolean`
 
@@ -388,21 +252,19 @@ When this feature is active:
 
 Default is `false`.
 
-```
+```tsx
 <QueryBuilderDnD dnd={pragmaticDndAdapter} updateWhileDragging>
-
   <QueryBuilder />
-
 </QueryBuilderDnD>
 ```
 
-### `onDragMove`[​](#ondragmove "Direct link to ondragmove")
+### `onDragMove`
 
 `(params: { draggedItem, shadowQuery, originalQuery, previewPath }) => void`
 
 Callback invoked on each drag position change when [`updateWhileDragging`](#updatewhiledragging) is `true`. Receives the current shadow query (the preview query with the dragged item at its prospective position), the original query, and the preview path.
 
-### `onRuleDrop`[​](#onruledrop "Direct link to onruledrop")
+### `onRuleDrop`
 
 `(info: RuleDropInfo) => void`
 
@@ -419,24 +281,15 @@ Callback invoked after a drag-and-drop operation completes (both same-builder an
 | `groupItems`     | `boolean`                      | Whether a new group was created around the target |
 | `isCrossBuilder` | `boolean`                      | Whether the drop crossed query builder boundaries |
 
-```
+```tsx
 <QueryBuilderDnD
-
   dnd={pragmaticDndAdapter}
-
   onRuleDrop={info => {
-
     console.log(
-
       `Rule ${info.isCrossBuilder ? 'transferred' : 'moved'} ` +
-
         `from ${info.sourcePath} to ${info.targetPath}`
-
     );
-
   }}>
-
   <QueryBuilder />
-
 </QueryBuilderDnD>
 ```

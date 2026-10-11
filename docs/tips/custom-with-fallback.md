@@ -8,55 +8,31 @@ Instead of duplicating the default `ValueEditor` code, you can leverage its exis
 
 This example creates a custom value editor using the [`react-datepicker`](https://reactdatepicker.com/) library. We'll start by configuring the `fields` array with standard `Field` objects, adding a custom `datatype` attribute to date fields that signals when to display the date picker.
 
-```
+```ts
 // fields.ts
-
 import { Field } from 'react-querybuilder';
 
-
-
 export const fields: Field[] = [
-
   {
-
     name: 'name',
-
     label: 'Name',
-
     operators: [
-
       { name: '=', label: 'is' },
-
       { name: 'beginsWith', label: 'begins with' },
-
     ],
-
   },
-
   {
-
     name: 'dateOfBirth',
-
     label: 'Date of Birth',
-
     operators: [{ name: '=', label: 'is' }],
-
     datatype: 'date',
-
   },
-
   {
-
     name: 'dateRange',
-
     label: 'Date Range',
-
     operators: [{ name: 'between', label: 'is between' }],
-
     datatype: 'dateRange',
-
   },
-
 ];
 ```
 
@@ -68,144 +44,83 @@ The custom value editor displays different interfaces based on the field's `data
 
 We use the [`date-fns`](https://date-fns.org/) library for date parsing and formatting. Storing dates as strings (rather than `Date` objects) keeps the query object serializable for `JSON.stringify`. Date ranges are stored as comma-separated string pairs.
 
-```
+```tsx
 // CustomValueEditor.tsx
-
 import { format, parse } from 'date-fns';
-
 import DatePicker from 'react-datepicker';
-
 import 'react-datepicker/dist/react-datepicker.css';
-
 import { ValueEditor, ValueEditorProps } from 'react-querybuilder';
-
-
 
 const dateFormat = 'yyyy-MM-dd';
 
-
-
 export const CustomValueEditor = (props: ValueEditorProps) => {
-
   if (props.fieldData.datatype === 'date') {
-
     return (
-
       <div>
-
         <DatePicker
-
           dateFormat={dateFormat}
-
           selected={!props.value ? null : parse(props.value, dateFormat, new Date())}
-
           onChange={(d: Date) => props.handleOnChange(d ? format(d, dateFormat) : null)}
-
         />
-
       </div>
-
     );
-
   } else if (props.fieldData.datatype === 'dateRange') {
-
     const [startDate, endDate] = props.value.split(',');
-
     return (
-
       <div>
-
         <DatePicker
-
           selectsRange
-
           dateFormat={dateFormat}
-
           startDate={!startDate ? null : parse(startDate, dateFormat, new Date())}
-
           endDate={!endDate ? null : parse(endDate, dateFormat, new Date())}
-
           onChange={(update: [Date, Date]) => {
-
             const [s, e] = update;
-
             props.handleOnChange(
-
               [!s ? '' : format(s, dateFormat), !e ? '' : format(e, dateFormat)].join(',')
-
             );
-
           }}
-
         />
-
       </div>
-
     );
-
   }
-
   return <ValueEditor {...props} />;
-
 };
 ```
 
-tip
-
-If you're using one of the [compatibility packages](/docs/compat.md), you probably want to fall back to the value editor from that package instead of `ValueEditor` from the main package. For example, when using `@react-querybuilder/antd`, fall back to `AntDValueEditor`:
-
-```
--import { ValueEditor, ValueEditorProps } from 'react-querybuilder';
-
-+import { AntDValueEditor } from '@react-querybuilder/antd';
-
-+import { ValueEditorProps } from 'react-querybuilder';
-```
-
-```
--  return <ValueEditor {...props} />;
-
-+  return <AntDValueEditor {...props} />;
-```
+> **Tip:** If you're using one of the [compatibility packages](/docs/compat.md), you probably want to fall back to the value editor from that package instead of `ValueEditor` from the main package. For example, when using `@react-querybuilder/antd`, fall back to `AntDValueEditor`:
+>
+> ```diff
+> -import { ValueEditor, ValueEditorProps } from 'react-querybuilder';
+> +import { AntDValueEditor } from '@react-querybuilder/antd';
+> +import { ValueEditorProps } from 'react-querybuilder';
+> ```
+>
+> ```diff
+> -  return <ValueEditor {...props} />;
+> +  return <AntDValueEditor {...props} />;
+> ```
 
 Configure the `QueryBuilder` component to use the custom value editor through the `controlElements` prop:
 
-```
+```tsx
 // App.tsx
-
 import { useState } from 'react';
-
 import { CustomValueEditor } from './CustomValueEditor';
-
 import { fields } from './fields';
 
-
-
 export default function App() {
-
   const [query, setQuery] = useState({ combinator: 'and', rules: [] });
-
   return (
-
     <QueryBuilder
-
       fields={fields}
-
       query={query}
-
       onQueryChange={setQuery}
-
       controlElements={{ valueEditor: CustomValueEditor }}
-
     />
-
   );
-
 }
 ```
 
 The interactive demo below shows how each field type behaves: the "Name" field displays a text input, "Date of Birth" shows a standard date picker, and "Date Range" presents a date range picker.
 
-note
-
-Other examples of the "fallback" technique can be seen in the [Limit rule groups](/docs/tips/limit-groups.md#conditionally-allow-new-groups) page and [these](https://stackoverflow.com/questions/68447510/react-query-builder-question-is-there-a-way-to-disable-a-field-option-when-addi/69443288#69443288) [two](https://stackoverflow.com/questions/61768845/progamatically-show-hide-operator-rule-and-group-button-in-react-querybuilder/69443467#69443467) StackOverflow answers.
+> **Note:** Other examples of the "fallback" technique can be seen in the [Limit rule groups](/docs/tips/limit-groups.md#conditionally-allow-new-groups) page and [these](https://stackoverflow.com/questions/68447510/react-query-builder-question-is-there-a-way-to-disable-a-field-option-when-addi/69443288#69443288) [two](https://stackoverflow.com/questions/61768845/progamatically-show-hide-operator-rule-and-group-button-in-react-querybuilder/69443467#69443467) StackOverflow answers.

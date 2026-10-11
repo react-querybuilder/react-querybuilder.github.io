@@ -4,7 +4,7 @@ The query builder library most often compared to React Query Builder (RQB) is [r
 
 This page summarizes the differences as of RQB v8 and RAQB v6.6.15 (May 2025). If you're moving an existing RAQB implementation to RQB, see [Migrating from react-awesome-query-builder](/docs/tips/migrate-from-raqb.md).
 
-## Philosophy[​](#philosophy "Direct link to Philosophy")
+## Philosophy
 
 |                 | React Query Builder                                                                      | react-awesome-query-builder                                                      |
 | --------------- | ---------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------- |
@@ -15,7 +15,7 @@ This page summarizes the differences as of RQB v8 and RAQB v6.6.15 (May 2025). I
 
 RQB's plain-JSON query format means you can store queries in a database, send them over the wire, diff them, and hand-edit them without any conversion step. RQB's discrete props mean you only configure (and only bundle) the parts you use.
 
-## Query model[​](#query-model "Direct link to Query model")
+## Query model
 
 | Aspect         | React Query Builder                                                                                                                           | react-awesome-query-builder                                         |
 | -------------- | --------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------- |
@@ -30,7 +30,7 @@ RQB's plain-JSON query format means you can store queries in a database, send th
 | Value sources  | `value`, `field`, [expressions](/docs/expr.md), [parameters](/docs/tips/parameter-manager.md)                                                 | `value`, `field`, `func`                                            |
 | Left-hand side | Expressions supported on the LHS as well as the RHS                                                                                           | `fieldSrc: "func"`                                                  |
 
-## Formats[​](#formats "Direct link to Formats")
+## Formats
 
 RQB's [`formatQuery`](/docs/utils/export.md) supports considerably more export targets, and its [parsers](/docs/utils/import.md) support more import sources.
 
@@ -39,7 +39,7 @@ RQB's [`formatQuery`](/docs/utils/export.md) supports considerably more export t
 | Export    | JSON, SQL (plain/parameterized/named), MongoDB, CEL, JsonLogic, SpEL, ElasticSearch, JSONata, LDAP, natural language, Drizzle, TanStack DB, Prisma, Sequelize, Cypher, GraphQL, SPARQL, Gremlin, and more | SQL, MongoDB, JsonLogic, SpEL, ElasticSearch (partial), query string |
 | Import    | SQL, CEL, JsonLogic, MongoDB, SpEL, JSONata, Cypher, GraphQL, SPARQL, Gremlin, **RAQB**                                                                                                                   | JsonLogic, SpEL, SQL (separate package)                              |
 
-## Ecosystem[​](#ecosystem "Direct link to Ecosystem")
+## Ecosystem
 
 | Aspect               | React Query Builder                                                                           | react-awesome-query-builder                          |
 | -------------------- | --------------------------------------------------------------------------------------------- | ---------------------------------------------------- |
@@ -54,7 +54,7 @@ RQB's [`formatQuery`](/docs/utils/export.md) supports considerably more export t
 | Validation           | Per-field `validator` plus [`defaultValidator`](/docs/utils/validation.md)                    | `sanitizeTree` / `validateTree` / `isValidTree`      |
 | Styling              | Unstyled by default with CSS custom properties; official style packs                          | Bundled SCSS per UI package                          |
 
-## Feature-by-feature notes[​](#feature-by-feature-notes "Direct link to Feature-by-feature notes")
+## Feature-by-feature notes
 
 Most RAQB concepts have a direct RQB counterpart. These are the exceptions:
 

@@ -8,39 +8,33 @@ Modern applications frequently handle complex, nested data structures such as ob
 
 https\://example.com
 
-AND (and)+ Rule+ Group
+AND (and)
 
 Nested String Array (nestedStringArray)at most (atMost)2
 
-AND (and)+ Rule+ Group
+AND (and)
 
-⨯
-
-containsabc⨯
+containsabc
 
 Nested Number Array (nestedNumberArray)Several (some)
 
-AND (and)+ Rule+ Group
+AND (and)
 
-⨯
-
-between1214⨯
+between1214
 
 Nested Object Array (nestedObjectArray)all
 
-AND (and)+ Rule+ Group
+AND (and)
 
-⨯
+First Name (firstName)begins with (beginsWith)S
 
-First Name (firstName)begins with (beginsWith)S⨯
+Last Name (lastName)does not end with (doesNotEndWith)s
 
-Last Name (lastName)does not end with (doesNotEndWith)s⨯
-
-## Configuring subqueries[​](#configuring-subqueries "Direct link to Configuring subqueries")
+## Configuring subqueries
 
 Enable subqueries for a field by adding a `matchModes` property to its field definition. This property determines available match modes and their labels. You can also control subquery behavior globally using the `getMatchModes` and `getSubQueryBuilderProps` props.
 
-### Match modes configuration[​](#match-modes-configuration "Direct link to Match modes configuration")
+### Match modes configuration
 
 The `matchModes` property accepts several formats:
 
@@ -48,181 +42,105 @@ The `matchModes` property accepts several formats:
 * **`MatchMode[]`** - Array of match mode names (e.g., `['all', 'some', 'none']`)
 * **`Option<MatchMode>[]`** - Array of objects with custom labels (e.g., `[{ name: 'all', label: 'Every' }]`)
 
-```
+```ts
 const fields: Field[] = [
-
   {
-
     name: 'nestedStringArray',
-
     label: 'Nested String Array',
-
     // Enable all match modes with default labels
-
     matchModes: true,
-
   },
-
   {
-
     name: 'nestedNumberArray',
-
     label: 'Nested Number Array',
-
     // Enable specific match modes with custom labels
-
     matchModes: [
-
       { name: 'all', label: 'Every' },
-
       { name: 'none', label: 'Not one' },
-
       { name: 'some', label: 'Several' },
-
     ],
-
   },
-
   {
-
     name: 'nestedObjectArray',
-
     label: 'Nested Object Array',
-
     // Enable specific match modes with default labels
-
     matchModes: ['all', 'none', 'some'],
-
     // Define properties of objects in the nested array
-
     subproperties: [
-
       { name: 'firstName', label: 'First Name' },
-
       { name: 'lastName', label: 'Last Name' },
-
     ],
-
   },
-
 ];
 ```
 
-### Dynamic match mode configuration[​](#dynamic-match-mode-configuration "Direct link to Dynamic match mode configuration")
+### Dynamic match mode configuration
 
 Configure match modes dynamically using the `getMatchModes` prop at the query builder level. This function executes for each field, enabling conditional match mode configuration based on field properties:
 
-```
+```ts
 const getMatchModes = (field: string, misc: { fieldData: Field }) => {
-
   // Return true to enable all match modes for any field
-
   if (field === 'flexibleArray') return true;
 
-
-
   // Return specific match modes based on field type
-
   if (misc.fieldData.datatype === 'array') {
-
     return ['all', 'some', 'none'];
-
   }
 
-
-
   // Return false or undefined to disable subqueries for this field
-
   return false;
-
 };
 
-
-
 <QueryBuilder
-
   fields={fields}
-
   getMatchModes={getMatchModes}
-
   // ... other props
-
 />;
 ```
 
-### Customizing subquery builder props[​](#customizing-subquery-builder-props "Direct link to Customizing subquery builder props")
+### Customizing subquery builder props
 
 The `getSubQueryBuilderProps` prop customizes individual subquery builder configurations. Use this to provide different field sets, operators, or other settings for nested queries:
 
-```
+```ts
 const getSubQueryBuilderProps = (field: string, misc: { fieldData: Field }) => {
-
   // Return props that should override the parent query builder's configuration
-
   if (field === 'nestedObjectArray') {
-
     return {
-
       fields: misc.fieldData.subproperties || [],
-
       operators: [
-
         { name: '=', label: 'equals' },
-
         { name: 'contains', label: 'contains' },
-
         { name: 'beginsWith', label: 'begins with' },
-
       ],
-
       // Disable certain features for subqueries
-
       showCloneButtons: false,
-
       showLockButtons: false,
-
     };
-
   }
-
-
 
   // For primitive arrays, don't show field selector
-
   if (field === 'nestedStringArray') {
-
     return {
-
       fields: [{ name: '', label: '' }],
-
       autoSelectField: true,
-
     };
-
   }
 
-
-
   return {};
-
 };
 
-
-
 <QueryBuilder
-
   fields={fields}
-
   getSubQueryBuilderProps={getSubQueryBuilderProps}
-
   // ... other props
-
 />;
 ```
 
 **Note:** Props like `query`, `onQueryChange`, and `enableDragAndDrop` are automatically managed and cannot be overridden for subquery builders.
 
-### Available match modes[​](#available-match-modes "Direct link to Available match modes")
+### Available match modes
 
 React Query Builder supports six match modes:
 
@@ -235,75 +153,48 @@ React Query Builder supports six match modes:
 | `atMost`  | Threshold | At most N items match the subquery                  | Yes                |
 | `exactly` | Threshold | Exactly N items match the subquery                  | Yes                |
 
-## Working with object properties[​](#working-with-object-properties "Direct link to Working with object properties")
+## Working with object properties
 
 For object arrays (not primitive arrays), use the `subproperties` configuration to specify which object properties are available in subqueries. This functions identically to the main `fields` prop.
 
 When `subproperties` is undefined, subquery rules don't render a field selector, and the `field` property should remain an empty string.
 
-## Query structure[​](#query-structure "Direct link to Query structure")
+## Query structure
 
 Subqueries store as nested `RuleGroupType` objects in the rule's `value` property. The `match` property contains the mode and optional threshold:
 
-```
+```ts
 const exampleQuery: RuleGroupType = {
-
   combinator: 'and',
-
   rules: [
-
     {
-
       field: 'nestedStringArray',
-
       operator: '=', // Ignored when match is present
-
       match: { mode: 'atMost', threshold: 2 },
-
       value: {
-
         combinator: 'and',
-
         rules: [{ field: '', operator: 'contains', value: 'abc' }],
-
       },
-
     },
-
     {
-
       field: 'nestedObjectArray',
-
       operator: '=',
-
       match: { mode: 'all' },
-
       value: {
-
         combinator: 'and',
-
         rules: [
-
           { field: 'firstName', operator: 'beginsWith', value: 'S' },
-
           { field: 'lastName', operator: 'doesNotEndWith', value: 's' },
-
         ],
-
       },
-
     },
-
   ],
-
 };
 ```
 
-info
+> **Info:** When a rule has a valid `match` property, the `operator` property is ignored. The match mode determines subquery evaluation logic.
 
-When a rule has a valid `match` property, the `operator` property is ignored. The match mode determines subquery evaluation logic.
-
-## Export format support[​](#export-format-support "Direct link to Export format support")
+## Export format support
 
 Export format support for subqueries varies by implementation:
 
@@ -313,13 +204,11 @@ Export format support for subqueries varies by implementation:
 | Partial       | "sql"[2](#user-content-fn-2), "parameterized"[2](#user-content-fn-2), "drizzle"[2](#user-content-fn-2), "elasticsearch"[3](#user-content-fn-3) |
 | None          | "parameterized_named"[4](#user-content-fn-4), "prisma", "sequelize", "tanstack_db", "ldap"                                                     |
 
-caution
-
-In unsupported formats, rules with valid `match` properties are treated as invalid and ignored during export.
+> **Caution:** In unsupported formats, rules with valid `match` properties are treated as invalid and ignored during export.
 
 <!-- -->
 
-## Footnotes[​](#footnote-label "Direct link to Footnotes")
+## Footnotes
 
 1. JsonLogic was the original inspiration for this feature. [↩](#user-content-fnref-1)
 

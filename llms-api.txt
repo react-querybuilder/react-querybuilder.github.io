@@ -1,0 +1,1548 @@
+# React Query Builder API (condensed)
+
+> Every exported symbol of every published package, one line each. Full reference: https://react-querybuilder.js.org/api. Types/props: check the installed `.d.ts` files.
+
+`react-querybuilder` re-exports everything from `@react-querybuilder/core`; re-exports are not repeated.
+
+## @react-querybuilder/antd
+
+- `AntDActionElement` (function)
+- `AntDActionProps` (interface)
+- `antdControlElements` (const)
+- `AntDDragHandle` (const)
+- `AntDDragHandleProps` (type)
+- `AntDNotToggle` (function)
+- `AntDNotToggleProps` (interface)
+- `AntDShiftActions` (function)
+- `antdTranslations` (const)
+- `AntDValueEditor` (function)
+- `AntDValueEditorProps` (interface)
+- `AntDValueSelector` (function)
+- `AntDValueSelectorProps` (type)
+- `QueryBuilderAntD` (const)
+
+## @react-querybuilder/bootstrap
+
+- `bootstrapControlClassnames` (const)
+- `bootstrapControlElements` (const)
+- `BootstrapNotToggle` (function)
+- `bootstrapTranslations` (const)
+- `BootstrapValueEditor` (function)
+- `QueryBuilderBootstrap` (const)
+
+## @react-querybuilder/bulma
+
+- `bulmaControlClassnames` (const)
+- `bulmaControlElements` (const)
+- `BulmaNotToggle` (function)
+- `BulmaValueEditor` (function)
+- `BulmaValueSelector` (function)
+- `QueryBuilderBulma` (const)
+
+## @react-querybuilder/chakra
+
+- `ChakraActionElement` (function)
+- `ChakraActionProps` (interface)
+- `chakraControlElements` (const)
+- `ChakraNotToggle` (function)
+- `ChakraNotToggleProps` (interface)
+- `chakraTranslations` (const)
+- `ChakraValueEditor` (function)
+- `ChakraValueEditorProps` (interface)
+- `ChakraValueSelector` (function)
+- `ChakraValueSelectorProps` (interface)
+- `QueryBuilderChakra` (const)
+
+## @react-querybuilder/core
+
+### @react-querybuilder/core
+
+- `AbortInfo` (interface): Details about an aborted query tool operation.
+- `AbortOptions` (interface): Options for reporting aborted query tool operations.
+- `AbortReason` (type): Why a query tool returned the query unmodified. Query tools never throw; when they cannot carry out an operation they return the original query and report the reason through `AbortOptions.onAbort`.
+- `AccessibleDescriptionGenerator` (type): Signature of `accessibleDescriptionGenerator` prop, used by `QueryBuilder` to generate accessible descriptions for each `RuleGroup`.
+- `ActionElementEventHandler` (type)
+- `add` (const): Adds a rule or group to a query without mutating the original query.
+- `addInPlace` (const): Adds a rule or group to a query in place.
+- `AddMethod` (interface)
+- `AddOptions` (interface): Options for `add`.
+- `Arity` (type): Allowed values of the `FullOperator` property `arity`. A value of `"unary"` or a number less than two will cause the default `ValueEditor` to render `null`.
+- `BaseFullOption` (type): This type is identical to `FullOption` but without the `unknown` index property. Extend from this type instead of `FullOption` directly.
+- `BaseOption` (interface): Do not use this type directly; use `Option`, `ValueOption`, or `FullOption` instead.
+- `BaseOptionMap` (type): Map of option identifiers to their respective `Option`.
+- `BaseTranslation` (interface): A translation for a component with `title` only.
+- `BaseTranslations` (interface): The shape of the `translations` prop.
+- `BaseTranslationsFull` (type): The full `translations` interface with all properties required.
+- `BaseTranslationWithLabel` (interface): A translation for a component with `title` and `label`.
+- `BaseTranslationWithPlaceholders` (interface): A translation for a component with `title` and a placeholder.
+- `betweenOperators` (const): Range operators (`between`, `notBetween`).
+- `bigIntJsonParseReviver` (function): "Reviver" method for JSON.parse's second argument. Converts objects having a single `$bigint: string` property to an actual `bigint` value.
+- `bigIntJsonStringifyReplacer` (function): "Replacer" method for JSON.stringify's second argument. Converts `bigint` values to objects with a `$bigint` property having a value of a string representation of the actual `bigint`-type value.
+- `celCombinatorMap` (const): Maps a `DefaultCombinatorName` to a CEL combinator.
+- `Classname` (type): String of classnames, array of classname strings, or object where the keys are classnames and those with truthy values will be included. Suitable for passing to the `clsx` package.
+- `ClassnameCondition` (interface): A classname applied only when `when` returns true for the current state.
+- `Classnames` (interface): Classnames applied to each component.
+- `ClassnameSpec` (interface): How one derived classname is composed: the `controlClassnames` keys that contribute to it (in application order, after the standard classname), plus any state-dependent classes.
+- `clsx` (function)
+- `coerceBigIntValue` (function): Coerces a value to a `bigint`, falling back to the parsed number when it can't be represented as one (an empty string or a decimal, for example).
+- `coerceInputType` (function): The `type` attribute an `<input>` should use for a rule. `bigint` values and the `in`/`notIn` operators (whose value is a comma-separated list) both require a text input.
+- `Combinator` (type): Combinator definition used in the `combinators` prop of `QueryBuilder`. This type is an extension of `FullCombinator` where only `name` and `label` are required.
+- `CombinatorByValue` (type): Combinator definition used in the `combinators` prop of `QueryBuilder`. This type is an extension of `FullCombinator` where only `value` and `label` are required.
+- `CommonRuleAndGroupProperties` (interface): Properties common to both rules and groups.
+- `CommonRuleSubComponentProps` (interface): Base interface for all rule subcomponents.
+- `ConstituentWordOrder` (type): Constituent word order (as array) for the "natural_language" format.
+- `ConstituentWordOrderString` (type): Constituent word order (as string) for the "natural_language" format.
+- `ControlKey` (type): The name of a query builder control.
+- `controlKeys` (const): The name of every query builder control, alphabetized.
+- `controlKind` (const): Which bulk override, if any, applies to each control: `"action"` for controls that a supplied `actionElement` replaces, `"selector"` for controls that a supplied `valueSelector` replaces, and `null` f…
+- `controlPropKeys` (const): The full set of prop names each default control receives. Ports can use this to declare every prop explicitly instead of relying on fall-through/attribute inheritance.
+- `convertFromIC` (function): Converts a `RuleGroupTypeIC` to `RuleGroupType`.
+- `convertQuery` (function): Converts a `RuleGroupType` to `RuleGroupTypeIC`. For a more explicit operation, use `convertToIC`.
+- `convertToIC` (function): Converts a `RuleGroupType` to `RuleGroupTypeIC`.
+- `createQueryActions` (function): Builds the query builder's seven mutation handlers as pure functions of the current query.
+- `createRule` (function): Creates a rule from the given configuration, applying the same precedence as the `QueryBuilder` component.
+- `createRuleGroup` (function): Creates a group from the given configuration. Pass `true` for `independentCombinators` to omit the `combinator` property.
+- `CreateRuleGroupOptions` (interface): Everything `createRuleGroup` needs to produce a new group.
+- `CreateRuleOptions` (interface): Everything `createRule` needs to produce a new rule. Each member corresponds to the `QueryBuilder` prop (or `useQueryBuilderSetup` output) of the same name.
+- `cypherCombinatorMap` (const): Maps a `DefaultCombinatorName` to a Cypher combinator keyword.
+- `defaultCoalesceMs` (const): Default time window (in milliseconds) within which consecutive changes to the same property of the same rule are coalesced into a single undo step.
+- `DefaultCombinator` (type): A `FullCombinator` definition with a `DefaultCombinatorName` `name` property.
+- `DefaultCombinatorExtended` (type): A `FullCombinator` definition with a `DefaultCombinatorNameExtended` `name` property.
+- `defaultCombinatorLabelMap` (const)
+- `DefaultCombinatorName` (type): Default allowed values for the `combinator` property.
+- `DefaultCombinatorNameExtended` (type): Default allowed values for the `combinator` property, plus `"xor"`.
+- `defaultCombinators` (const): Default combinator list.
+- `DefaultCombinators` (type)
+- `defaultCombinatorsExtended` (const): Default combinator list, with `XOR` added.
+- `DefaultCombinatorsExtended` (type)
+- `defaultControlClassnames` (const): Default classnames for each component.
+- `defaultExportOperatorMap` (const): Default operator map used by `formatQuery` for "natural_language" format.
+- `DefaultFieldProp` (type): The `getDefaultField` option: either a field name or a function that picks one.
+- `defaultJoinChar` (const): Default character used to `.join` and `.split` arrays.
+- `defaultMatchModes` (const): Default match modes.
+- `DefaultMatchModes` (type)
+- `defaultMaxHistory` (const): Default maximum number of undo steps retained by query history.
+- `defaultNLTranslations` (const): Default translations used by `formatQuery` for "natural_language" format.
+- `DefaultOperator` (type): An `FullOperator` definition with a `DefaultOperatorName` `name` property.
+- `defaultOperatorLabelMap` (const)
+- `DefaultOperatorName` (type): Default values for the `operator` property.
+- `defaultOperatorNegationMap` (const): Map of default operators to their respective opposite/negating operators.
+- `defaultOperatorProcessorNL` (const): Default operator processor used by `formatQuery` for "natural_language" format.
+- `defaultOperatorProcessorSQL` (const): Default operator processor used by `formatQuery` for "sql" and "parameterized*" formats.
+- `DefaultOperatorProp` (type): The `getDefaultOperator` option: either an operator name or a function that picks one.
+- `defaultOperators` (const): Default operator list.
+- `DefaultOperators` (type)
+- `defaultPlaceholderFieldGroupLabel` (const): Default `label` for placeholder option group in the `fields` array.
+- `defaultPlaceholderFieldLabel` (const): Default `label` for placeholder option in the `fields` array.
+- `defaultPlaceholderFieldName` (const): Default `name` for placeholder option in the `fields` array.
+- `defaultPlaceholderLabel` (const)
+- `defaultPlaceholderName` (const)
+- `defaultPlaceholderOperatorGroupLabel` (const): Default `label` for placeholder option group in the `operators` array.
+- `defaultPlaceholderOperatorLabel` (const): Default `label` for placeholder option in the `operators` array.
+- `defaultPlaceholderOperatorName` (const): Default `name` for placeholder option in the `operators` array.
+- `defaultPlaceholderValueGroupLabel` (const): Default `label` for placeholder option group in the `values` array.
+- `defaultPlaceholderValueLabel` (const): Default `label` for placeholder option in the `values` array.
+- `defaultPlaceholderValueName` (const): Default `name` for placeholder option in the `values` array.
+- `DefaultRuleGroupArray` (type): The type of the `rules` array in a `DefaultRuleGroupType`.
+- `DefaultRuleGroupICArray` (type): The type of the `rules` array in a `DefaultRuleGroupTypeIC`.
+- `defaultRuleGroupProcessorCEL` (const): Rule group processor used by `formatQuery` for "cel" format.
+- `defaultRuleGroupProcessorCypher` (const): Rule group processor used by `formatQuery` for "cypher" and "gql" formats.
+- `defaultRuleGroupProcessorDiagnostics` (const): Rule group processor used by `formatQuery` for "diagnostics" format.
+- `defaultRuleGroupProcessorDrizzle` (const): Default rule group processor used by `formatQuery` for the "drizzle" format. The returned function can be assigned to the `where` property in the Drizzle relational queries API.
+- `defaultRuleGroupProcessorElasticSearch` (const): Rule group processor used by `formatQuery` for "elasticsearch" format.
+- `defaultRuleGroupProcessorGremlin` (const): Rule group processor used by `formatQuery` for "gremlin" format.
+- `defaultRuleGroupProcessorJSONata` (const): Rule group processor used by `formatQuery` for "jsonata" format.
+- `defaultRuleGroupProcessorJsonLogic` (const): Rule group processor used by `formatQuery` for "jsonlogic" format.
+- `defaultRuleGroupProcessorLDAP` (const): Rule group processor used by `formatQuery` for "ldap" format.
+- `defaultRuleGroupProcessorMongoDB` (const): Rule group processor used by `formatQuery` for "mongodb" format.
+- `defaultRuleGroupProcessorMongoDBQuery` (const): Rule group processor used by `formatQuery` for "mongodb_query" format.
+- `defaultRuleGroupProcessorNL` (const): Rule group processor used by `formatQuery` for "natural_language" format.
+- `defaultRuleGroupProcessorParameterized` (const): Rule group processor used by `formatQuery` for "parameterized" and "parameterized_named" formats.
+- `defaultRuleGroupProcessorPrisma` (const): Rule group processor used by `formatQuery` for "prisma" format.
+- `defaultRuleGroupProcessorSequelize` (const): Rule group processor used by `formatQuery` for "sequelize" format.
+- `defaultRuleGroupProcessorSPARQL` (const): Rule group processor used by `formatQuery` for "sparql" format.
+- `defaultRuleGroupProcessorSpEL` (const): Default rule processor used by `formatQuery` for "spel" format.
+- `defaultRuleGroupProcessorSQL` (const): Default rule processor used by `formatQuery` for "sql" format.
+- `defaultRuleGroupProcessorTanStackDB` (const): Default rule group processor used by `formatQuery` for the "tanstack_db" format. Returns a `WhereCallback` suitable for TanStack DB's `.where()` method.
+- `DefaultRuleGroupType` (type): `RuleGroupType` with the `combinator` property limited to `DefaultCombinatorNameExtended` and `rules` limited to `DefaultRuleType`.
+- `DefaultRuleGroupTypeAny` (type): Shorthand for "either `DefaultRuleGroupType` or `DefaultRuleGroupTypeIC`".
+- `DefaultRuleGroupTypeIC` (interface): `RuleGroupTypeIC` with combinators limited to `DefaultCombinatorName` and rules limited to `DefaultRuleType`.
+- `DefaultRuleOrGroupArray` (type): Shorthand for "either `DefaultRuleGroupArray` or `DefaultRuleGroupICArray`".
+- `defaultRuleProcessorCEL` (const): Default rule processor used by `formatQuery` for "cel" format.
+- `defaultRuleProcessorCypher` (const): Default rule processor used by `formatQuery` for "cypher" and "gql" formats.
+- `defaultRuleProcessorDrizzle` (const): Default rule processor used by `formatQuery` for the "drizzle" format.
+- `defaultRuleProcessorElasticSearch` (const): Default rule processor used by `formatQuery` for "elasticsearch" format.
+- `defaultRuleProcessorGremlin` (const): Default rule processor used by `formatQuery` for "gremlin" format.
+- `defaultRuleProcessorJSONata` (const): Default rule processor used by `formatQuery` for "jsonata" format.
+- `defaultRuleProcessorJsonLogic` (const): Default rule processor used by `formatQuery` for "jsonlogic" format.
+- `defaultRuleProcessorLDAP` (const): Default rule processor used by `formatQuery` for "ldap" format.
+- `defaultRuleProcessorMongoDB` (const): Default rule processor used by `formatQuery` for "mongodb" format.
+- `defaultRuleProcessorMongoDBQuery` (const): Default rule processor used by `formatQuery` for "mongodb_query" format.
+- `defaultRuleProcessorNL` (const): Default rule processor used by `formatQuery` for "natural_language" format.
+- `defaultRuleProcessorParameterized` (const): Default rule processor used by `formatQuery` for "parameterized" and "parameterized_named" formats.
+- `defaultRuleProcessorPrisma` (const): Default rule processor used by `formatQuery` for "prisma" format.
+- `defaultRuleProcessorSequelize` (const): Default rule processor used by `formatQuery` for the "sequelize" format.
+- `defaultRuleProcessorSPARQL` (const): Default rule processor used by `formatQuery` for "sparql" format.
+- `defaultRuleProcessorSpEL` (const): Default rule processor used by `formatQuery` for "spel" format.
+- `defaultRuleProcessorSQL` (const): Default rule processor used by `formatQuery` for "sql" format.
+- `defaultRuleProcessorTanStackDB` (const): Default rule processor used by `formatQuery` for the "tanstack_db" format.
+- `DefaultRuleType` (type): `RuleType` with the `operator` property limited to `DefaultOperatorName`.
+- `defaultTranslations` (const): Default configuration of translatable strings.
+- `defaultValidator` (const): This is an example validation function you can pass to `QueryBuilder` in the `validator` prop.
+- `defaultValueProcessorByRule` (const): Default value processor used by `formatQuery` for "sql" format.
+- `defaultValueProcessorNL` (const): Default value processor used by `formatQuery` for "natural_language" format.
+- `DeriveClassNamesOptions` (interface): Options common to every classname derivation.
+- `derivePathInfo` (function): Builds the `PathInfo` for each child of a group at `path`. A child is disabled if its parent is disabled or if its own path appears in `disabledPaths`.
+- `deriveQueryBuilderClassNames` (function): The outer (wrapper) classname for the query builder itself, including the conditional `disabled`, `valid`, and `invalid` state classes.
+- `deriveRuleClassName` (function): The classname for a single element of a rule, composed from the same table as `deriveRuleClassNames`. Useful where only one is needed, such as the items of a multi-value editor.
+- `deriveRuleClassNames` (function): Classnames for each element rendered by a rule. This is the framework-agnostic core of the `classNames` object returned by the `useRule` hook.
+- `deriveRuleContext` (function): Resolves everything about a single rule that depends on the field/operator configuration: its field data, operators, value editor type, value list, value sources, match modes, and validation result.
+- `deriveRuleGroupClassNames` (function): Classnames for each element rendered by a rule group, including its conditionally-classed `header`. This is the framework-agnostic core of the `classNames` object returned by the `useRuleGroup` hook.
+- `deriveRuleGroupContext` (function): Resolves everything about a rule group that depends on the combinator configuration, plus its validation result.
+- `deriveRuleGroupOuterClassName` (function): The outer (wrapper) classname for a rule group, including every conditional state class.
+- `deriveRuleOuterClassName` (function): The outer (wrapper) classname for a rule, including every conditional state class.
+- `DiagnosticEntry` (interface): A single diagnostic entry produced by the `"diagnostics"` format.
+- `DiagnosticsFieldSummaryEntry` (interface): Per-field summary entry for the `"diagnostics"` format.
+- `DiagnosticsResult` (interface): Top-level result of `formatQuery` for the `"diagnostics"` format.
+- `DiagnosticsStats` (interface): Aggregate statistics for the `"diagnostics"` format.
+- `DndClassNameState` (interface): Drag-and-drop state that can contribute conditional classnames.
+- `DndDropTargetType` (type)
+- `DragCollection` (interface)
+- `DraggedItem` (type)
+- `DrizzleOperatorsLike` (interface): Minimal structural shape of Drizzle's `Operators` object. Declared locally so the public type surface of this package never references `drizzle-orm`, which is an optional peer dependency.
+- `DrizzleWhereCallback` (type): Return type of `defaultRuleGroupProcessorDrizzle`—the function assignable to the `where` property in the Drizzle relational queries API.
+- `DropCollection` (interface)
+- `DropEffect` (type)
+- `DropResult` (interface)
+- `escapeSingleQuotedString` (function): Escapes backslashes and single quotes for embedding in a single-quoted string literal (Gremlin/Groovy, Painless, JS). Used for field names (property keys, `doc['…']`).
+- `exceedsMaxLevels` (function): Whether adding a group beneath `parentPath` would exceed `maxLevels`.
+- `ExportFormat` (type): Available export formats for `formatQuery`.
+- `ExportObjectFormats` (type): Export formats for `formatQuery` that produce objects instead of strings.
+- `ExportOperatorMap` (type): A map of operators to strings to be used in the output of `formatQuery`.
+- `ExpressionNode` (type): A single node in an expression tree. Expressions are recursive: a `func` node's arguments are themselves `ExpressionNode`s, enabling arbitrary nesting.
+- `Field` (type): Field definition used in the `fields` prop of `QueryBuilder`. This type is an extension of `FullField` where only `name` and `label` are required.
+- `FieldByValue` (type): Field definition used in the `fields` prop of `QueryBuilder`. This type is an extension of `FullField` where only `value` and `label` are required.
+- `filterFieldsByComparator` (function): For a given `FullField`, returns the `fields` list filtered for other fields that match by `comparator`.
+- `findID` (function): Returns the `RuleType` or `RuleGroupType`/`RuleGroupTypeIC` with the given `id` within a query.
+- `findPath` (function): Returns the `RuleType` or `RuleGroupType`/`RuleGroupTypeIC` at the given path within a query.
+- `FindPathReturnType` (type): Return type for `findPath`.
+- `FlexibleOption` (type): A generic `Option` with either a `name` or `value` as its primary identifier.
+- `FlexibleOptionGroup` (type): A group of `BaseOption`s, usually within a `FlexibleOptionList`.
+- `FlexibleOptionList` (type): An array of options or option groups, like `OptionList` but the option type may use either `name` or `value` as the primary identifier.
+- `FlexibleOptionListProp` (type): An array of options or option groups, like `OptionList` but the option type may use either `name` or `value` as the primary identifier.
+- `formatQuery` (function): Generates a formatted (indented two spaces) JSON string from a query object.
+- `FormatQueryFinalOptions` (interface): Options object curated by `formatQuery` and passed to a `RuleGroupProcessor`.
+- `formatQueryOptionPresets` (const): A collection of option presets for `formatQuery`.
+- `FormatQueryOptions` (interface): Options object shape for `formatQuery`.
+- `FormatQueryValidateRule` (type): Rule validator for `formatQuery`.
+- `FullCombinator` (type): Full combinator definition used in the `combinators` prop of `QueryBuilder`.
+- `FullField` (type): Full field definition used in the `fields` prop of `QueryBuilder`.
+- `FullOperator` (interface): Full operator definition used in the `operators`/`getOperators` props of `QueryBuilder`.
+- `FullOption` (type): A generic `Option` requiring both `name` _and_ `value` properties.
+- `FullOptionList` (type): An array of options or option groups, like `OptionList`, but using `FullOption` instead of `Option`. This means that every member is guaranteed to have both `name` and `value`.
+- `FullOptionMap` (type): Map of option identifiers to their respective `FullOption`.
+- `FullOptionRecord` (type): Map of option identifiers to their respective `FullOption`. Must include all possible strings from the identifier type.
+- `generateAccessibleDescription` (const): The default `accessibleDescriptionGenerator`. Produces the `aria-label` for a rule group: `"Query builder"` for the root group, `"Rule group at path 0-1"` for any other.
+- `generateID` (function): Default `id` generator. Generates a valid v4 UUID. Uses `crypto.randomUUID()` when available, otherwise uses an alternate method based on `getRandomValues`.
+- `GenericizeRuleGroupType` (type): Converts a narrowed rule group type to its most generic form.
+- `getCommonAncestorPath` (function): Finds the deepest/longest path that two paths have in common.
+- `getFieldData` (function): Resolves the field configuration for a rule's `field`, falling back to a minimal option object when the field isn't present in the field map.
+- `getFirstOption` (function): Gets the first option from an `OptionList`.
+- `getGuardAbortReason` (function): Whether a mutation targeting `pathOrID` is blocked by the given guards, and why. Returns `null` when the mutation may proceed.
+- `getJSPropertyAccessor` (function): Renders a (possibly `.`-delimited) field name as a JS property accessor on `obj` (default `"this"`) for MongoDB `$where` expressions.
+- `getLikeWildcards` (function): Returns the `[prefix, suffix]` `LIKE` wildcards for a string-match operator (e.g. `contains` → `['%', '%']`, `beginsWith` → `['', '%']`, `endsWith` → `['%', '']`). Unknown operators yield `['', '']`.
+- `getMatchModesUtil` (function): Utility function to get the match modes array for the given field. If the field definition does not define a `matchModes` property, the `getMatchModes` prop is used.
+- `getMultiValueUpdate` (function): Produces the next value for a series of value editors when the editor at `index` changes.
+- `getNLTranslataion` (function): Used by `formatQuery` to get a translation based on certain conditions for the "natural_language" format.
+- `getOption` (function): Gets the option from an `OptionList` with the given `name`. Handles `Option` arrays as well as `OptionGroup` arrays.
+- `GetOptionIdentifierType` (type): Extracts the type of the identifying property from a `Option`, `ValueOption`, or `FullOption`.
+- `GetOptionType` (type): Extracts the `Option` type from a `FlexibleOptionList`.
+- `getParametersAsList` (function): Normalizes the result of `getParameters` to a non-empty list or `null`.
+- `getParentPath` (function): Truncates the last element of an array and returns the result as a new array.
+- `getParseNumberMethod` (function)
+- `getPathOfID` (function): Returns the `Path` of the `RuleType` or `RuleGroupType`/`RuleGroupTypeIC` with the given `id` within a query.
+- `getQuotedFieldName` (function): Given a field name and relevant `ValueProcessorOptions`, returns the field name wrapped in the configured quote character(s).
+- `getQuoteFieldNamesWithArray` (function): Converts the `quoteFieldNamesWith` option into an array of two strings. If the option is a string, the array elements are both that string.
+- `getRuleDefaultValue` (function): Computes the default `value` for a rule given its `field`/`operator`/`valueSource`, mirroring the precedence the `QueryBuilder` applies: a field's `defaultValue`, then a `getDefaultValue` override, th…
+- `GetRuleDefaultValueOptions` (interface): Options for `getRuleDefaultValue`.
+- `getRuleGroupCombinator` (function): The effective combinator for a group: its own `combinator` when it has one, otherwise the first configured combinator (which is the case for groups with independent combinators).
+- `GetRuleGroupType` (type): Determines if a type extending `RuleGroupTypeAny` is actually `RuleGroupType` or `RuleGroupTypeIC`.
+- `getRuleInputType` (function): The input type for a rule. A field's own `inputType` takes precedence over `getInputType`.
+- `GetRuleTypeFromGroupWithFieldAndOperator` (type): Determines the `RuleType` of a given `RuleGroupType` or `RuleGroupTypeIC`.
+- `getRuleValidationResult` (function): The validation result for a rule: the entry from a query-level `ValidationMap` if present, otherwise the field's own `validator` result, otherwise `null`.
+- `getRuleValueEditorType` (function): The value editor type for a rule. `valueSource: "field"` always uses a select list, and `valueSource: "parameter"` uses a (multi)select when parameters are available.
+- `getRuleValues` (function): The option list presented by a rule's value editor, resolved from its `valueSource`.
+- `getRuleValueSourceOptions` (function): Value source options for a rule. A `valueSource` present on the rule but absent from the configured list is appended, so the current selection is always representable.
+- `getSQLConcat` (function): Returns a preset-aware SQL string-concatenation function. Emits `CONCAT(a, b, ...)` when `concatOperator` is `"CONCAT"` (case-insensitive), otherwise joins with the infix operator (e.g.
+- `getSubqueryElementAlias` (function): Returns the element alias for a subquery at the given nesting depth.
+- `getValidationClassNames` (function): Gets the standard classname for valid or invalid components based on the given validation result.
+- `getValueEditorReset` (function): Determines whether a rule's `value` needs to be collapsed to a single element because it no longer represents a list, and what it should become.
+- `getValueSelectorUpdate` (function): Produces the next value for a value selector. Multiselect values are normalized to an array first, then comma-joined unless `listsAsArrays` is `true`. Single-select values pass through.
+- `getValueSourcesUtil` (function): Utility function to get the value sources array for the given field and operator. If the field definition does not define a `valueSources` property, the `getValueSources` prop is used.
+- `group` (const): Creates a new group at a target path with its `rules` array containing the current objects at the target path and the source path without mutating the original query.
+- `groupInPlace` (const): Creates a new group at a target path with its `rules` array containing the current objects at the target path and the source path in place.
+- `groupInvalidReasons` (const): Default reason codes for a group being invalid.
+- `GroupMethod` (interface)
+- `GroupOptions` (interface): Options for `group`.
+- `GroupVariantCondition` (type): Rule group condition identifier for the "natural_language" format.
+- `GuardOptions` (interface): Options that block a mutation before it is attempted.
+- `hideValueControlsForOperator` (function): Whether the value editor(s) should be hidden for an operator, based on its `arity`.
+- `inOperators` (const): List-membership operators (`in`, `notIn`).
+- `InputType` (type): HTML5 input types
+- `insert` (const): Inserts a rule or group into a query without mutating the original query.
+- `insertInPlace` (const): Inserts a rule or group into a query in place.
+- `InsertMethod` (interface)
+- `InsertOptions` (interface): Options for `insert`.
+- `isAncestor` (function): Determines if the first path is an ancestor of the second path. The first path must be shorter and exactly match the second path up through the length of the first path.
+- `isBetweenOperator` (function): Whether an operator's value is a list of two bounds.
+- `isFlexibleOptionArray` (function): Determines if an array is a flat array of `FlexibleOption`.
+- `isFlexibleOptionGroupArray` (function): Determines if a `FlexibleOptionList` is a `FlexibleOptionGroup` array.
+- `isFullOptionArray` (function): Determines if an array is a flat array of `FullOption`.
+- `isFullOptionGroupArray` (function): Determines if a `FlexibleOptionList` is a `OptionGroup` array of `FullOption`.
+- `isOptionGroupArray` (function): Determines if an `OptionList` is an `OptionGroup` array.
+- `isPojo` (function): Determines if a variable is a plain old JavaScript object, aka POJO.
+- `isRuleGroup` (function): Determines if an object is a `RuleGroupType` or `RuleGroupTypeIC`.
+- `isRuleGroupType` (function): Determines if an object is a `RuleGroupType`.
+- `isRuleGroupTypeIC` (function): Determines if an object is a `RuleGroupTypeIC`.
+- `isRuleOrGroupValid` (function): Determines if a rule or group is valid based on a validation result (if defined) or a validator function. Returns `true` if neither are defined and the `muted` property is not `true`.
+- `isRuleType` (function): Determines if an object is a `RuleType` (only checks for a `field` property).
+- `isUnsafeKey` (function): Returns `true` if the key could cause prototype pollution when used as a property name in bracket-notation assignment.
+- `isValidationResult` (function): Determines if an object is useful as a validation result.
+- `isValidValue` (function): Determines whether a value is _anything_ except an empty `string` or `NaN`.
+- `isValueProcessorLegacy` (function): Used by `formatQuery` to determine whether the given value processor is a "legacy" value processor by counting the number of arguments.
+- `joinWith` (function): Joins an array of strings using the given character (see `defaultJoinChar`).
+- `jsonLogicAdditionalOperators` (const): Register these operators with `jsonLogic` before applying the result of `formatQuery(query, 'jsonlogic')`.
+- `JsonLogicAll` (type)
+- `JsonLogicAnd` (type)
+- `JsonLogicDoubleNegation` (type)
+- `JsonLogicEqual` (type)
+- `JsonLogicGreaterThan` (type)
+- `JsonLogicGreaterThanOrEqual` (type)
+- `JsonLogicInArray` (type)
+- `JsonLogicInString` (type)
+- `JsonLogicLessThan` (type)
+- `JsonLogicLessThanOrEqual` (type)
+- `JsonLogicNegation` (type)
+- `JsonLogicNone` (type)
+- `JsonLogicNotEqual` (type)
+- `JsonLogicOr` (type)
+- `JsonLogicReservedOperations` (type)
+- `JsonLogicRulesLogic` (type)
+- `JsonLogicSome` (type)
+- `JsonLogicStrictEqual` (type)
+- `JsonLogicStrictNotEqual` (type)
+- `JsonLogicVar` (type)
+- `lc` (function): Converts a value to lowercase if it's a string, otherwise returns the value as is.
+- `LogType` (const)
+- `mapSQLOperator` (function): Maps a `DefaultOperatorName` to a SQL operator.
+- `MatchConfig` (interface): Quantification mode describing how many elements of the value array must pass the filter for the rule itself to pass.
+- `MatchMode` (type)
+- `MatchModeOptions` (type)
+- `mergeAnyTranslation` (function)
+- `mergeAnyTranslations` (function): Merges any number of partial translations into a single definition.
+- `mergeClassnames` (function): Merges a list of partial `Classnames` definitions into a single definition.
+- `mongoDbFallback` (const): Default fallback object used by `formatQuery` for "mongodb_query" format.
+- `mongoOperators` (const): Maps a (lowercase) `DefaultOperatorName` to a MongoDB operator.
+- `move` (const): Moves a rule or group from one path to another without mutating the original query. In the options parameter, pass `{ clone: true }` to copy instead of move.
+- `moveInPlace` (const): Moves a rule or group from one path to another in place. In the options parameter, pass `{ clone: true }` to copy instead of move.
+- `MoveMethod` (interface)
+- `MoveOptions` (interface): Options for `move`.
+- `NameLabelPair` (type): **Deprecated.**
+- `NLTranslationKey` (type): Keys for the `translations` config object used by the "natural_language" format.
+- `NLTranslations` (type): `translations` config object for "natural_language" format.
+- `normalizeConstituentWordOrder` (function): Given a [Constituent word order](https://en.wikipedia.org/wiki/Word_order#Constituent_word_orders) like "svo" or "sov", returns a permutation of `["S", "V", "O"]` based on the first occurrence of each…
+- `normalizeValueSelectorValue` (function): Normalizes a value selector's current value for display. Multiselect values become an array of strings so they match option names, which are always strings (e.g. `[42]` becomes `["42"]`).
+- `nullFreeArray` (function): Determines if an array is free of `null`/`undefined`.
+- `nullOperators` (const): Null-check operators (`null`, `notNull`).
+- `nullOrUndefinedOrEmpty` (function): Simple helper to determine whether a value is null, undefined, or an empty string.
+- `numericRegex` (const): Regex matching numeric strings. Passes for positive/negative integers, decimals, and E notation, with optional surrounding whitespace.
+- `numerifyValues` (function): Returns a new query object with all `string`-type `value` properties converted to `number` where appropriate.
+- `objectEntries` (const): A strongly-typed version of `Object.entries()`.
+- `objectKeys` (const): A strongly-typed version of `Object.keys()`.
+- `Operator` (type): Operator definition used in the `operators`/`getOperators` props of `QueryBuilder`. This type is an extension of `FullOperator` where only `name` and `label` are required.
+- `OperatorByValue` (type): Operator definition used in the `operators`/`getOperators` props of `QueryBuilder`. This type is an extension of `FullOperator` where only `value` and `label` are required.
+- `Option` (type): A generic option. Used directly in `OptionList` or as the child element of an `OptionGroup`.
+- `OptionGroup` (interface): A group of `Option`s, usually within an `OptionList`.
+- `OptionList` (type): Either an array of `Option`s or an array of `OptionGroup`s.
+- `optionsEqual` (function): Whether two `QueryManagerOptions` objects describe the same configuration, per `valuesEqual`: data by value, functions by identity.
+- `OuterClassNameOptions` (interface): Inputs to `deriveRuleOuterClassName` and `deriveRuleGroupOuterClassName`.
+- `OuterClassNameOptionsBase` (interface): Inputs common to every outer (wrapper) classname derivation.
+- `ParameterizedNamedSQL` (interface): Object produced by `formatQuery` for the `"parameterized_named"` format.
+- `ParameterizedSQL` (interface): Object produced by `formatQuery` for the `"parameterized"` format.
+- `parseNumber` (function): Converts a string to a number. Uses native `parseFloat` if `parseNumbers` is "native", otherwise uses [`numeric-quantity`](https://jakeboone02.github.io/numeric-quantity/).
+- `ParseNumberMethod` (type): Parsing algorithms used by `parseNumber`.
+- `ParseNumberOptions` (interface): Options object for `parseNumber`.
+- `ParseNumbersPropConfig` (type): Options for the `parseNumbers` prop of `QueryBuilder`.
+- `Path` (type)
+- `PathInfo` (interface): The path of a child rule or group, and whether it is disabled.
+- `pathIsDisabled` (function): Determines if the rule or group at the specified path is either disabled itself or disabled by an ancestor group.
+- `pathIsDisabledByPaths` (function): Determines if the rule or group at the specified path is disabled by `disabledPaths`—the array form of the `QueryBuilder` `disabled` prop, which disables nodes by position rather than by a `disabled`…
+- `pathsAreEqual` (function): Determines if two paths (each `Path`) are equivalent.
+- `Placeholder` (interface): Placeholder strings for option lists.
+- `preferAnyProp` (function): For given default, prop, and context values, return the first provided of prop, context, and default, in that order.
+- `preferFlagProps` (function): For a given set of defaults, props, and context values, return the first provided of prop, context, and default—in that order—for each property in the defaults object.
+- `preferProp` (function): For given default, prop, and context values, return the first provided of prop, context, and default, in that order.
+- `PreparedOptionList` (interface): Result of `prepareOptionList`.
+- `prepareOptionList` (function): Normalizes any accepted option list shape—array, option groups, or a record—into a `FullOptionList`, applying `baseOption` properties and (when `autoSelectOption` is `false`) a leading placeholder opt…
+- `PrepareOptionListParams` (interface): Parameters for `prepareOptionList`.
+- `PreparerOptions` (interface): Options for `prepareRule`/`prepareRuleGroup`.
+- `prepareRule` (function): Ensures that a rule is valid by adding an `id` property if it does not already exist.
+- `prepareRuleGroup` (function): Ensures that a rule group is valid by recursively adding an `id` property to the group itself and all its rules and subgroups where one does not already exist.
+- `prepareRuleOrGroup` (function): Ensures that a rule or group is valid. See `prepareRule` and `prepareRuleGroup`.
+- `prismaFallback` (const): Default fallback object used by `formatQuery` for "prisma" format.
+- `prismaOperators` (const): Maps a (lowercase) `DefaultOperatorName` to a Prisma ORM operator.
+- `processMatchMode` (function): Transforms - `match: { mode: "atLeast", threshold: 1 }` to `match: { mode: "some" }` - `match: { mode: "atMost", threshold: 0 }` to `match: { mode: "none" }`.
+- `QueryActionCallbacks` (interface): Confirmation callbacks invoked before a mutation is applied. Their return values are interpreted differently depending on the operation:
+- `QueryActionHandlers` (interface): The seven mutations a query builder performs. Each takes the current query and returns the next one, or `undefined` when the mutation was aborted—because the target is disabled, a confirmation callbac…
+- `QueryActions` (interface): Functions included in the `actions` prop passed to every subcomponent.
+- `QueryActionsConfig` (interface): Configuration for `createQueryActions`.
+- `QueryBuilderClassNameState` (interface): State that contributes conditional classnames to the query builder's wrapper element.
+- `queryBuilderFlagDefaults` (const): Default values for all `boolean` `QueryBuilder` options.
+- `QueryBuilderFlags` (interface)
+- `QueryHistoryOptions` (interface): Options controlling how query changes are recorded for undo/redo.
+- `QueryManager` (class): Stateful wrapper around the `add`/`remove`/`update`/`move`/ `insert`/`group` query tools, plus rule/group factories, `validation`, and `formatting`.
+- `QueryManagerError` (class): Thrown by `QueryManager` methods in `strict` mode when an operation cannot be carried out because its target could not be used.
+- `QueryManagerOptions` (interface): Options for `QueryManager`. Mirrors the subset of `QueryBuilder` props that affect query _structure_ rather than rendering, so the same configuration objects can drive both.
+- `QueryNode` (interface): A single rule or group encountered by `QueryManager.walk`, along with where it was found.
+- `QueryToolOptions` (interface): Options shared by every query tool.
+- `QueryValidator` (type): Function that validates a query.
+- `quoteCypherIdentifier` (function): Renders a (possibly `.`-delimited) field name as a Cypher/GQL property path. Segments that aren't plain identifiers are backtick-quoted, with embedded backticks doubled (e.g.
+- `regenerateID` (function): Generates a new `id` property for a rule.
+- `RegenerateIdOptions` (interface): Options object for `regenerateID`/`regenerateIDs`.
+- `regenerateIDs` (function): Recursively generates new `id` properties for a rule group and all its rules and subgroups.
+- `relationalOperators` (const): Relational/comparison operators (`=`, `!=`, `<`, `>`, `<=`, `>=`).
+- `remove` (const): Removes a rule or group from a query without mutating the original query.
+- `removeInPlace` (const): Removes a rule or group from a query in place.
+- `RemoveMethod` (interface)
+- `RemoveNullability` (type): Utility type to make all properties non-nullable.
+- `RemoveOptions` (interface): Options for `remove`.
+- `resolveCandidateQuery` (function): Resolves the query a query builder should render from the available sources, in precedence order: the controlled `query`, then whatever is already in the store, then the uncontrolled `defaultQuery`, t…
+- `resolveDefaultOperator` (function): Resolves the default operator for a field, applying the same precedence as the `QueryBuilder` component: the field's own `defaultOperator`, then the `getDefaultOperator` option (a string or a function…
+- `resolveOperatorList` (function): Resolves the operator list for a field, applying the same precedence as the `QueryBuilder` component: the field's own `operators`, then the `getOperators` callback, then the query-level operator list.
+- `ResolveOptionListOptions` (interface): Options shared by the resolvers below that produce a normalized option list.
+- `resolveValueEditorType` (function): Resolves the value editor type for a field/operator pair, applying the same precedence as the `QueryBuilder` component: the field's own `valueEditorType` (a string or a function of the operator), then…
+- `resolveValueList` (function): Resolves the value option list for a field/operator pair, applying the same precedence as the `QueryBuilder` component: the field's own `values`, then the `getValues` callback, then an empty list.
+- `rootPath` (const): The `Path` of the root group.
+- `RQBJsonLogic` (type): JsonLogic rule object with additional operators generated by `formatQuery` and accepted by `parseJsonLogic`.
+- `RQBJsonLogicEndsWith` (interface)
+- `RQBJsonLogicStartsWith` (interface)
+- `RQBJsonLogicVar` (interface)
+- `RuleClassnameKey` (type): Keys of the `classNames` object returned for a rule.
+- `RuleClassNameState` (interface): State that contributes conditional classnames to a rule's wrapper element.
+- `RuleContext` (interface): Everything `deriveRuleContext` resolves for a single rule.
+- `RuleContextResolvers` (interface): Functions used by `deriveRuleContext` to resolve a rule's configuration. Each corresponds to the `QueryBuilder` prop (or `useQueryBuilderSetup` output) of the same name.
+- `RuleDiagnosticsResult` (type): A `RuleType` annotated with diagnostics results, as produced by `formatQuery` for the `"diagnostics"` format.
+- `RuleFacet` (type): The subset of a rule that determines its configuration. Accepting only these properties (rather than the whole rule) lets React callers keep granular memoization dependencies, so editing a rule's `val…
+- `RuleGroupArray` (type): The type of the `rules` array in a `RuleGroupType`.
+- `RuleGroupClassnameKey` (type): Keys of the `classNames` object returned for a rule group.
+- `RuleGroupContext` (interface): Everything `deriveRuleGroupContext` resolves for a single rule group.
+- `RuleGroupDiagnosticsArray` (type): The type of the `rules` array in a `RuleGroupDiagnosticsResult`.
+- `RuleGroupDiagnosticsResult` (interface): A `RuleGroupType` annotated with diagnostics results, as produced by `formatQuery` for the `"diagnostics"` format.
+- `RuleGroupICArray` (type): The type of the `rules` array in a `RuleGroupTypeIC`.
+- `RuleGroupICDiagnosticsArray` (type): The type of the `rules` array in a `RuleGroupICDiagnosticsResult`.
+- `RuleGroupICDiagnosticsResult` (interface): A `RuleGroupTypeIC` annotated with diagnostics results, as produced by `formatQuery` for the `"diagnostics"` format (independent combinators).
+- `RuleGroupProcessor` (type): Function to produce a result that `formatQuery` uses when processing a `RuleGroupType` or `RuleGroupTypeIC` object.
+- `RuleGroupType` (interface): The main rule group type. This type is used for query definitions as well as all sub-groups of queries.
+- `RuleGroupTypeAny` (type): Shorthand for "either `RuleGroupType` or `RuleGroupTypeIC`".
+- `RuleGroupTypeIC` (interface): The main rule group interface when using independent combinators. This type is used for query definitions as well as all sub-groups of queries.
+- `RuleOrGroupArray` (type): Shorthand for "either `RuleGroupArray` or `RuleGroupICArray`".
+- `RuleProcessor` (type): Function to produce a result that `formatQuery` uses when processing a `RuleType` object.
+- `RuleType` (interface): The main rule type. The `field`, `operator`, and `value` properties can be narrowed with generics.
+- `RuleValidator` (type): Function that validates a rule.
+- `SequelizeWhereOptionsLike` (interface): Structural stand-in for Sequelize's `WhereOptions`. Declared locally so the public type surface of this package never references `sequelize`, which is an optional peer dependency.
+- `setAutoFreeze` (const): Globally enables or disables immer's auto-freeze, i.e. the deep freeze applied to every query returned by `add`, `update`, `remove`, `move`, `insert`, and `group`.
+- `shouldCoalesce` (function): Determines whether a change should be absorbed into the current history entry instead of pushing a new one.
+- `shouldRenderAsNumber` (function): Determines whether `formatQuery` should render the given value as a number.
+- `signatureOf` (function): Describes _what changed_ between two versions of a query as a short string, so that consecutive edits to the same property of the same rule (e.g.
+- `sparqlVar` (function): Auto-prefix a SPARQL variable name with `?` unless it's already prefixed, a URI, or a prefixed name.
+- `splitBy` (function): Splits a string by a given character (see `defaultJoinChar`). Escaped characters (characters preceded by a backslash) will not apply to the split, and the backslash will be removed in the array elemen…
+- `sqlDialectPresets` (const): A collection of option presets for `formatQuery`, specifically for SQL-based formats.
+- `SQLPreset` (type): Available presets for the "sql" export format.
+- `standardClassnames` (const): Standard classnames applied to each component.
+- `strictAbortReasons` (const): Abort reasons that `QueryManager`'s `strict` mode treats as errors.
+- `StrictOptions` (interface): Per-call overrides for `QueryManager`'s abort handling. Every mutating method accepts these alongside the options of the query tool it delegates to.
+- `StringUnionToFlexibleOptionArray` (type)
+- `StringUnionToFullOptionArray` (type)
+- `stripParamPrefix` (function): Strips a leading `paramPrefix` from a named-parameter value if present. Inverse of `withParamPrefix`; used to normalize parameter names for validation/lookup.
+- `structuralSignature` (const): Signature returned when a change alters the _shape_ of the query—rules or groups added, removed, moved, or reordered—rather than the properties of a single node.
+- `subqueryElementAliasBase` (const): Base alias assigned to the element binding of a subquery generated for a rule's `mode` (e.g. `unnest(field) as elem_alias`).
+- `SubscriptionChange` (interface): What changed in the notification a `QueryManager.subscribe` listener is receiving.
+- `substringOperators` (const): Substring/text-matching operators (`contains`, `beginsWith`, `endsWith`, and negations).
+- `TestID` (const): Component identifiers for testing.
+- `toArray` (function): Splits a string by comma then trims each element. Arrays are returned as is except any string elements are trimmed.
+- `toFlatOptionArray` (function): Flattens `FlexibleOptionGroup` arrays into `BaseOption` arrays. If the array is already flat, it is returned as is.
+- `ToFlexibleOption` (type): Utility type to turn an `Option`, `ValueOption`, or `BaseOption` into a `FlexibleOption`.
+- `toFullOption` (function): Converts an `Option` or `ValueOption` (i.e., `BaseOption`) into a `FullOption`. Full options are left unchanged.
+- `ToFullOption` (type): Utility type to turn an `Option`, `ValueOption` or `BaseOption` into a `FullOption`.
+- `toFullOptionList` (function): Converts an `OptionList` or `FlexibleOptionList` into a `FullOptionList`. Lists of full options are left unchanged.
+- `toFullOptionMap` (function): Converts a `FlexibleOptionList` into a `FullOptionList`. Lists of full options are left unchanged.
+- `ToRuleGroupType` (type): Converts a `RuleGroupTypeIC` extension to the corresponding `RuleGroupType` type, preserving any additional properties. If the type already extends `RuleGroupType` (non-IC), it is returned as-is.
+- `ToRuleGroupTypeIC` (type): Converts a `RuleGroupType` extension to the corresponding `RuleGroupTypeIC` type, preserving any additional properties. If the type already extends `RuleGroupTypeIC`, it is returned as-is.
+- `trimIfString` (function): Trims the value if it is a string. Otherwise returns the value as is.
+- `unchangedSignature` (const): Signature returned when two queries differ by reference only, with no observable difference in their properties.
+- `ungroup` (const): Replaces a group with its own rules in its parent group, without mutating the original query.
+- `ungroupInPlace` (const): Replaces a group with its own rules in its parent group, in place.
+- `UngroupMethod` (interface)
+- `UngroupOptions` (interface): Options for `ungroup`.
+- `uniqByIdentifier` (function): Generates a new array of objects with duplicates removed based on the identifying property (`value` or `name`)
+- `uniqByName` (function): **Deprecated.**
+- `uniqOptGroups` (function): Generates a new `OptionGroup` array with duplicates removed based on the identifying property (`value` or `name`).
+- `uniqOptList` (function): Generates a new `Option` or `OptionGroup` array with duplicates removed based on the identifier property (`value` or `name`).
+- `update` (const): Updates one or more properties of a rule or group within a query without mutating the original query.
+- `UpdateableProperties` (type): All updateable properties of rules and groups (everything except `id`, `path`, and `rules`).
+- `updateInPlace` (const): Updates one or more properties of a rule or group within a query in place. See `update` for the supported argument forms and ordering semantics.
+- `UpdateMethod` (interface): Updates a single property of a rule or group.
+- `UpdateOptions` (interface): Options for `update`.
+- `UpdateValueMap` (type): A map of `UpdateableProperties` to their new values, for updating multiple properties of a rule or group in a single operation.
+- `uuidV4regex` (const)
+- `ValidationMap` (type): Map of rule/group `id` to its respective `ValidationResult`.
+- `ValidationResult` (interface): Object with a `valid` boolean value and optional `reasons`.
+- `ValueChangeEventHandler` (type)
+- `ValueEditorType` (type): Type of `ValueEditor` that will be displayed.
+- `ValueOption` (type): Like `Option` but requiring `value` instead of `name`.
+- `ValueProcessor` (type)
+- `ValueProcessorByRule` (type): Function that produces a processed value for a given `RuleType`.
+- `ValueProcessorLegacy` (type): Function that produces a processed value for a given `field`, `operator`, `value`, and `valueSource`.
+- `ValueProcessorOptions` (interface): Options object for `ValueProcessorByRule` functions.
+- `valuesEqual` (function): Structural equality for `QueryManagerOptions` values. Arrays and plain objects are compared by value; everything else — functions, class instances, `Map`s, `Date`s — by identity.
+- `ValueSource` (type): A source for the `value` property of a rule.
+- `ValueSourceFlexibleOptions` (type)
+- `ValueSourceFullOptions` (type)
+- `ValueSources` (type): A valid array of potential value sources.
+- `WalkOptions` (interface): Options for `QueryManager.walk` and its derivatives.
+- `withParamPrefix` (function): Prefixes a named-parameter value with the given `paramPrefix` unless the value already begins with it. Used by `formatQuery` to render rules whose `valueSource` is `"parameter"` (e.g.
+- `WithRequired` (type): Utility type to make one or more properties required.
+- `WithUnknownIndex` (type): Adds an `unknown` index property to an interface.
+- `wrapLikeFragment` (function): Wraps an already-serialized SQL fragment (a quoted field name or an expression) with the `LIKE` wildcards for the given (lowercase) string-match operator, concatenating the literal `%` markers via the…
+
+### @react-querybuilder/core/formatQuery
+
+- `defaultCELValueProcessor` (const): **Deprecated.**
+- `defaultMongoDBValueProcessor` (const): **Deprecated.**
+- `defaultSpELValueProcessor` (const): **Deprecated.**
+- `defaultValueProcessor` (const): **Deprecated.** Default value processor used by `formatQuery` for "sql" format.
+- `defaultValueProcessorCELByRule` (const): **Deprecated.**
+- `defaultValueProcessorMongoDBByRule` (const): **Deprecated.**
+- `defaultValueProcessorSpELByRule` (const): **Deprecated.**
+
+### @react-querybuilder/core/parseCEL
+
+- `CELAddition` (interface)
+- `CELBooleanLiteral` (interface)
+- `CELBytesLiteral` (interface)
+- `CELConditionalAnd` (interface)
+- `CELConditionalExpr` (interface)
+- `CELConditionalOr` (interface)
+- `CELDivision` (interface)
+- `CELDynamicPropertyAccessor` (interface)
+- `CELExpression` (interface)
+- `CELExpressionGroup` (interface)
+- `CELExpressionList` (interface)
+- `CELExpressionOperand` (type): A CEL operand subtree that `ParseCELOptions.getExpression` may receive — an arithmetic infix node (`Addition`/`Subtraction`/`Multiplication`/`Division`/`Modulo`, optionally wrapped in an `ExpressionGr…
+- `CELExpressionType` (type)
+- `CELFieldInit` (interface)
+- `CELFieldInits` (interface)
+- `CELFloatLiteral` (interface)
+- `CELFunctionCall` (interface)
+- `celGenerateFlatAndOrList` (function)
+- `celGenerateMixedAndOrList` (function)
+- `CELIdentifier` (interface)
+- `CELIntegerLiteral` (interface)
+- `CELLikeExpression` (interface)
+- `CELList` (interface)
+- `CELLiteral` (type)
+- `CELMap` (interface)
+- `CELMapInit` (interface)
+- `CELMapInits` (interface)
+- `CELMathOperation` (type)
+- `CELMember` (interface)
+- `CELMemberIdentifierChain` (interface)
+- `CELMemberNegatedIdentifier` (interface)
+- `CELMemberNegatedIdentifierChain` (interface)
+- `CELMessageInit` (interface)
+- `CELModulo` (interface)
+- `CELMultiplication` (interface)
+- `CELNegatedLikeExpression` (interface)
+- `CELNegatedSubqueryExpression` (interface)
+- `CELNegation` (interface)
+- `CELNegative` (interface)
+- `celNormalizeCombinator` (function)
+- `celNormalizeOperator` (function)
+- `CELNullLiteral` (interface)
+- `CELNumericLiteral` (type)
+- `CELPrimary` (type)
+- `CELProperty` (interface)
+- `CELRelation` (interface)
+- `CELRelop` (type)
+- `CELStringLiteral` (interface)
+- `CELSubqueryExpression` (interface)
+- `CELSubtraction` (interface)
+- `CELUnsignedIntegerLiteral` (interface)
+- `evalCELLiteralValue` (function)
+- `extractSubqueryComponents` (function)
+- `getCELIdentifierFromChain` (function)
+- `getCELIdentifierFromNegatedChain` (function)
+- `isCELAddition` (function)
+- `isCELBooleanLiteral` (function)
+- `isCELBytesLiteral` (function)
+- `isCELConditionalAnd` (function)
+- `isCELConditionalExpr` (function)
+- `isCELConditionalOr` (function)
+- `isCELDivision` (function)
+- `isCELDynamicPropertyAccessor` (function)
+- `isCELExpressionGroup` (function)
+- `isCELExpressionList` (function)
+- `isCELExpressionOperand` (function): Whether a relation operand should be routed to `getExpression`: an arithmetic infix node, a `FunctionCall`, or a `ConditionalExpr` (`min`/`max` template) — optionally wrapped in one or more `Expressio…
+- `isCELFieldInit` (function)
+- `isCELFieldInits` (function)
+- `isCELFloatLiteral` (function)
+- `isCELFunctionCall` (function)
+- `isCELIdentifier` (function)
+- `isCELIdentifierOrChain` (function)
+- `isCELIntegerLiteral` (function)
+- `isCELLikeExpression` (function)
+- `isCELList` (function)
+- `isCELLiteral` (function)
+- `isCELMap` (function)
+- `isCELMapInit` (function)
+- `isCELMapInits` (function)
+- `isCELMathOperation` (function): A CEL arithmetic infix node (`Addition`/`Subtraction`/`Multiplication`/`Division`/`Modulo`).
+- `isCELMember` (function)
+- `isCELMessageInit` (function)
+- `isCELModulo` (function)
+- `isCELMultiplication` (function)
+- `isCELNegatedIdentifier` (function)
+- `isCELNegatedIdentifierOrChain` (function)
+- `isCELNegatedLikeExpression` (function)
+- `isCELNegatedSubqueryExpression` (function)
+- `isCELNegation` (function)
+- `isCELNegative` (function)
+- `isCELNullLiteral` (function)
+- `isCELNumericLiteral` (function)
+- `isCELProperty` (function)
+- `isCELRelation` (function)
+- `isCELStringLiteral` (function)
+- `isCELSubqueryExpression` (function)
+- `isCELSubtraction` (function)
+- `isCELUnsignedIntegerLiteral` (function)
+- `parseCEL` (function): Converts a CEL string expression into a query suitable for the `QueryBuilder` component's `query` or `defaultQuery` props (`DefaultRuleGroupType`).
+- `ParseCELExpressionContext` (interface): Context passed to `ParseCELOptions.getExpression`.
+- `ParseCELOptions` (type): Options object for `parseCEL`.
+- `ParseCELOptionsIC` (interface)
+- `ParseCELOptionsStandard` (interface)
+- `ParsedCEL` (interface)
+- `transformAliasInExpression` (function)
+
+### @react-querybuilder/core/parseCypher
+
+- `parseCypher` (function): Parses a Cypher query string into a `DefaultRuleGroupType`.
+- `ParseCypherOptions` (interface): Options for `parseCypher`.
+- `parseGQL` (function): Parses a GQL query string. GQL is ~95% compatible with Cypher; the parser handles the same syntax.
+
+### @react-querybuilder/core/parseGremlin
+
+- `parseGremlin` (function): Parses a Gremlin traversal string into a `DefaultRuleGroupType`.
+- `ParseGremlinOptions` (interface): Options for `parseGremlin`.
+
+### @react-querybuilder/core/parseJSONata
+
+- `getFieldFromPath` (function)
+- `getValidValue` (function)
+- `isJSONataBoolean` (function)
+- `isJSONataExpressionOperand` (function): A JSONata comparison operand that is a candidate expression subtree: an arithmetic infix node (`+ - * / %`) or a function-call node (excluding the `not`/`contains` predicates handled elsewhere).
+- `isJSONataIdentifier` (function)
+- `isJSONataList` (function)
+- `isJSONataNull` (function)
+- `isJSONataNumber` (function)
+- `isJSONataString` (function)
+- `JSONataAnd` (interface)
+- `JSONataBinaryNode` (interface)
+- `JSONataBlock` (interface)
+- `JSONataBoolean` (interface)
+- `JSONataContains` (interface)
+- `JSONataEqual` (interface)
+- `JSONataExpressionOperand` (type): A JSONata operand subtree that `ParseJSONataOptions.getExpression` may receive — an arithmetic infix node (`+ - * / %`) or a function-call node (`$abs`/`$min`/`$max`/`$uppercase`/`$lowercase`, etc.).
+- `JSONataExprNode` (interface)
+- `JSONataGreaterThan` (interface)
+- `JSONataGreaterThanOrEqual` (interface)
+- `JSONataIdentifier` (interface)
+- `JSONataIn` (interface)
+- `JSONataLessThan` (interface)
+- `JSONataLessThanOrEqual` (interface)
+- `JSONataList` (interface)
+- `JSONataName` (interface)
+- `JSONataNot` (interface)
+- `JSONataNotEqual` (interface)
+- `JSONataNull` (interface)
+- `JSONataNumber` (interface)
+- `JSONataOr` (interface)
+- `JSONataPath` (interface)
+- `JSONataRegex` (interface)
+- `JSONataString` (interface)
+- `JSONataToMillis` (interface)
+- `parseJSONata` (function): Converts a JSONata string expression into a query suitable for the `QueryBuilder` component's `query` or `defaultQuery` props (`DefaultRuleGroupType`).
+- `ParseJSONataExpressionContext` (interface): Context passed to `ParseJSONataOptions.getExpression`.
+- `ParseJSONataOptions` (interface): Options object for `parseJSONata`.
+
+### @react-querybuilder/core/parseJsonLogic
+
+- `isJsonLogicExpressionOperand` (function): A JsonLogic comparison operand that is a candidate expression subtree: a plain object that is not a variable reference (i.e. an arithmetic/function operation object).
+- `isRQBJsonLogicVar` (function)
+- `JsonLogicBetweenExclusive` (interface)
+- `JsonLogicBetweenInclusive` (interface)
+- `JsonLogicExpressionOperand` (type): A JsonLogic operand subtree that `ParseJsonLogicOptions.getExpression` may receive — an arithmetic/function operation object, a variable reference, or a literal.
+- `parseJsonLogic` (function): Converts a JsonLogic object into a query suitable for the `QueryBuilder` component's `query` or `defaultQuery` props (`DefaultRuleGroupType`).
+- `ParseJsonLogicExpressionContext` (interface): Context passed to `ParseJsonLogicOptions.getExpression`.
+- `ParseJsonLogicOptions` (interface): Options object for `parseJsonLogic`.
+
+### @react-querybuilder/core/parseMongoDB
+
+- `isMongoDBExpressionOperand` (function): A MongoDB `$expr` comparison operand that is a candidate expression subtree: an aggregation-operator object (e.g. `{ $multiply: [...] }`).
+- `MongoDBExpressionOperand` (type): A MongoDB aggregation-expression operand that `ParseMongoDbOptions.getExpression` may receive — an aggregation-operator object (`{ $add: [...] }`, `{ $abs: x }`, etc.), a `"$field"` path reference, or…
+- `mongoDbFieldRef` (function): Reads a MongoDB field-path operand (`"$field"`), returning the field name or `null`.
+- `MongoDbSupportedOperators` (type)
+- `parseMongoDB` (function): Converts a MongoDB query object or parseable string into a query suitable for the `QueryBuilder` component's `query` or `defaultQuery` props (`DefaultRuleGroupType`).
+- `ParseMongoDBExpressionContext` (interface): Context passed to `ParseMongoDbOptions.getExpression`.
+- `ParseMongoDbOptions` (interface): Options object for `parseMongoDB`.
+
+### @react-querybuilder/core/parseSPARQL
+
+- `parseSPARQL` (function): Parses a SPARQL query string into a `DefaultRuleGroupType`.
+- `ParseSPARQLOptions` (interface): Options for `parseSPARQL`.
+
+### @react-querybuilder/core/parseSpEL
+
+- `generateFlatAndOrList` (function)
+- `generateMixedAndOrList` (function)
+- `isSpELBetweenFields` (function)
+- `isSpELBetweenValues` (function)
+- `isSpELBooleanLiteral` (function)
+- `isSpELCompoundNode` (function)
+- `isSpELExpressionOperand` (function): Whether a relation operand should be routed to `getExpression`: an arithmetic infix node or a method/function invocation.
+- `isSpELIdentifier` (function)
+- `isSpELListNode` (function)
+- `isSpELMathOperation` (function): A SpEL arithmetic infix node (`op-plus`/`op-minus`/`op-multiply`/`op-divide`/`op-modulus`).
+- `isSpELMethodCall` (function): A method/function invocation node (`.toUpperCase()`, `T(java.lang.Math).abs(x)`, `myFunc(a)`).
+- `isSpELMethodNode` (function)
+- `isSpELNullLiteral` (function)
+- `isSpELNumericLiteral` (function)
+- `isSpELOpAnd` (function)
+- `isSpELOpMatches` (function)
+- `isSpELOpOr` (function)
+- `isSpELPrimitive` (function)
+- `isSpELPropertyNode` (function)
+- `isSpELRelationOp` (function)
+- `isSpELStringLiteral` (function)
+- `normalizeOperator` (function)
+- `parseSpEL` (function): Converts a SpEL string expression into a query suitable for the `QueryBuilder` component's `query` or `defaultQuery` props (`DefaultRuleGroupType`).
+- `ParseSpELExpressionContext` (interface): Context passed to `ParseSpELOptions.getExpression`.
+- `ParseSpELOptions` (interface): Options object for `parseSpEL`.
+- `processCompiledExpression` (function)
+- `SpELBaseNode` (interface)
+- `SpELBetweenFields` (interface)
+- `SpELBetweenValues` (interface)
+- `SpELBooleanLiteral` (interface)
+- `SpELCompoundNode` (interface)
+- `SpELExpressionNode` (interface)
+- `SpELExpressionOperand` (type): A SpEL operand subtree that `ParseSpELOptions.getExpression` may receive — either an arithmetic infix node (`op-plus`/`op-minus`/`op-multiply`/`op-divide`/`op-modulus`) or a method/function invocation…
+- `SpELIdentifier` (interface)
+- `SpELIdentifierType` (type)
+- `SpELListNode` (interface)
+- `SpELListOfFields` (interface)
+- `SpELListOfValues` (interface)
+- `SpELMethodCall` (interface): A method/function invocation. Arguments are stored as `children`; instance-call receivers are stored as `SpELProcessedExpression.target`, and static-call types as `SpELProcessedExpression.typeRef`.
+- `SpELMethodNode` (interface): A SpEL method/function invocation node. Note that arguments are _not_ children — they are exposed as raw (unprocessed) nodes through `getRaw()`.
+- `SpELNodeType` (type)
+- `SpELNullLiteral` (interface)
+- `SpELNumericLiteral` (interface)
+- `SpELOpAnd` (interface)
+- `SpELOpMatches` (interface)
+- `SpELOpOr` (interface)
+- `SpELPrimitive` (type)
+- `SpELPrimitiveType` (type)
+- `SpELProcessedExpression` (interface)
+- `SpELPropertyNode` (interface)
+- `SpELQualifiedIdentifierNode` (interface): The dotted segments of a `T(...)` type reference, e.g. `["java", "lang", "Math"]`.
+- `SpELRelation` (interface)
+- `SpELRelOp` (type)
+- `SpELRelOpType` (type)
+- `SpELStringLiteral` (interface)
+
+### @react-querybuilder/core/parseSQL
+
+- `AndOperator` (type)
+- `ComparisonOperator` (type)
+- `evalSQLLiteralValue` (function)
+- `getFieldName` (function)
+- `isSQLBitExpression` (function)
+- `isSQLExpressionOperand` (function): An operand that is neither a bare identifier nor a (signed) literal nor a placeholder.
+- `isSQLFunctionCall` (function)
+- `isSQLIdentifier` (function)
+- `isSQLLiteralOrSignedNumberValue` (function)
+- `isSQLLiteralValue` (function)
+- `isSQLPlaceHolder` (function)
+- `isSQLSignedNumber` (function)
+- `MixedAndXorOrList` (type)
+- `normalizeOperator` (function)
+- `NotOpt` (type)
+- `OrOperator` (type)
+- `ParsedSQL` (interface)
+- `parseSQL` (function): Converts a SQL `SELECT` statement into a query suitable for the `QueryBuilder` component's `query` or `defaultQuery` props (`DefaultRuleGroupType`).
+- `ParseSQLExpressionContext` (interface): Context passed to a `ParseSQLOptions.getExpression` handler alongside the operand node.
+- `ParseSQLOptions` (interface): Options object for `parseSQL`.
+- `SQLAndExpression` (interface)
+- `SQLBetweenPredicate` (interface)
+- `SQLBitExpression` (interface)
+- `SQLBooleanExtra` (interface)
+- `SQLBooleanPrimary` (type)
+- `SQLBooleanValue` (interface)
+- `SQLCaseWhen` (interface)
+- `SQLComparisonBooleanPrimary` (interface)
+- `SQLComparisonSubQueryBooleanPrimary` (interface)
+- `SQLContainsExpr` (interface)
+- `SQLEndsWithExpr` (interface)
+- `SQLExpression` (type)
+- `SQLExpressionList` (interface)
+- `SQLExpressionOperand` (type): A SQL operand subtree that a `ParseSQLOptions.getExpression` handler may receive: a bare identifier, a (signed) literal, a placeholder, an arithmetic `SQLBitExpression`, a `SQLFunctionCall`, or a pare…
+- `SQLFunctionCall` (interface)
+- `SQLIdentifier` (interface)
+- `SQLIdentifierExpr` (interface)
+- `SQLInExpressionListPredicate` (interface)
+- `SQLInSubQueryPredicate` (interface)
+- `SQLIsExpression` (interface)
+- `SQLIsNullBooleanPrimary` (interface)
+- `SQLLikePredicate` (interface)
+- `SQLLiteralValue` (type)
+- `SQLNotExpression` (interface)
+- `SQLNumberValue` (interface)
+- `SQLOrExpression` (interface)
+- `SQLPlaceHolder` (interface)
+- `SQLPredicate` (type)
+- `SQLPrefix` (interface)
+- `SQLRegexpPredicate` (interface)
+- `SQLSignedNumberValue` (interface)
+- `SQLSimpleExpression` (type)
+- `SQLSimpleExprParentheses` (interface)
+- `SQLSoundsLikePredicate` (interface)
+- `SQLStartsWithExpr` (interface)
+- `SQLStringValue` (interface)
+- `SQLSubQuery` (interface)
+- `SQLWhereObject` (interface)
+- `SQLWhereObjectAny` (interface)
+- `SQLXorExpression` (interface)
+- `XorOperator` (type)
+
+### @react-querybuilder/core/transformQuery
+
+- `transformQuery` (function): Recursively process a query heirarchy using this versatile utility function.
+- `TransformQueryOptions` (interface): Options object for `transformQuery`.
+
+## @react-querybuilder/datetime
+
+### @react-querybuilder/datetime
+
+- `datetimeRuleProcessorJsonLogic` (const): Date/time rule processor for use by `formatQuery` with the "jsonlogic" format.
+- `datetimeValueProcessorNL` (const): Generates a value processor with date/time features for use by `formatQuery` with the "natural_language" format.
+- `defaultDateTimeNLOperatorMap` (const)
+- `getDatetimeJsonLogicOperations` (function): Custom operations for use with JsonLogic objects generated by `datetimeRuleProcessorJsonLogic`.
+- `getDatetimeRuleProcessorCEL` (function): Generates a rule processor with date/time features for use by `formatQuery` with the "cel" format.
+- `getDatetimeRuleProcessorCypher` (function): Generates a rule processor with date/time features for use by `formatQuery` with the "cypher" or "gql" format.
+- `getDatetimeRuleProcessorDrizzle` (function): Generates a rule processor with date/time features for use by `formatQuery` with the "drizzle" format.
+- `getDatetimeRuleProcessorElasticSearch` (function): Generates a rule processor with date/time features for use by `formatQuery` with the "elasticsearch" format.
+- `getDatetimeRuleProcessorGremlin` (function): Generates a rule processor with date/time features for use by `formatQuery` with the "gremlin" format.
+- `getDatetimeRuleProcessorJSONata` (function): Generates a rule processor with date/time features for use by `formatQuery` with the "jsonata" format.
+- `getDatetimeRuleProcessorLDAP` (function): Generates a rule processor with date/time features for use by `formatQuery` with the "ldap" format.
+- `getDatetimeRuleProcessorMongoDB` (function): Generates a rule processor with date/time features for use by `formatQuery` with the (deprecated) "mongodb" format.
+- `getDatetimeRuleProcessorMongoDBQuery` (function): Generates a rule processor with date/time features for use by `formatQuery` with the "mongodb_query" format.
+- `getDatetimeRuleProcessorNL` (function): Generates a rule processor with date/time features for use by `formatQuery` with the "natural_language" format.
+- `getDatetimeRuleProcessorParameterized` (function): Generates a rule processor with date/time features for use by `formatQuery` with the "parameterized" and "parameterized_named" formats.
+- `getDatetimeRuleProcessorPrisma` (function): Generates a rule processor with date/time features for use by `formatQuery` with the "prisma" format.
+- `getDatetimeRuleProcessorSequelize` (function): Generates a rule processor with date/time features for use by `formatQuery` with the "sequelize" format.
+- `getDatetimeRuleProcessorSPARQL` (function): Generates a rule processor with date/time features for use by `formatQuery` with the "sparql" format.
+- `getDatetimeRuleProcessorSpEL` (function): Generates a rule processor with date/time features for use by `formatQuery` with the "spel" format.
+- `getDatetimeRuleProcessorSQL` (function): Generates a rule processor with date/time features for use by `formatQuery` with the "sql" format.
+- `getDatetimeRuleProcessorTanStackDB` (function): Generates a rule processor with date/time features for use by `formatQuery` with the "tanstack_db" format.
+- `getDatetimeValueProcessorANSI` (function): Generates a value processor with date/time features for use by `formatQuery` with the "sql" format and "ansi" preset.
+- `getDatetimeValueProcessorMSSQL` (function): Generates a value processor with date/time features for use by `formatQuery` with the "sql" format and "mssql" preset.
+- `getDatetimeValueProcessorMySQL` (function): Generates a value processor with date/time features for use by `formatQuery` with the "sql" format and "mysql" preset.
+- `getDatetimeValueProcessorOracle` (function): Generates a value processor with date/time features for use by `formatQuery` with the "sql" format and "oracle" preset.
+- `getDatetimeValueProcessorPostgreSQL` (function): Generates a value processor with date/time features for use by `formatQuery` with the "sql" format and "postgresql" preset.
+- `IsDateField` (type)
+- `IsDateFieldFunction` (type)
+- `RelativeDateTimeAnchor` (type): Reference point (zero-offset) for a `RelativeDateTimeValue`. `'now'` is the current date/time; the `startOf*`/`endOf*` anchors truncate to the start or end of the corresponding calendar period.
+- `RelativeDateTimeTruncationUnit` (type): Unit of measure for truncating a date/time to the start or end of a period (the subset of `RelativeDateTimeUnit` that represents a calendar period).
+- `RelativeDateTimeUnit` (type): Unit of measure for a relative date/time offset.
+- `RelativeDateTimeValue` (interface): Structured representation of a relative date/time value, e.g. "three months ago" or "the beginning of this year".
+- `RQBDateTimeJsonLogic` (type): JsonLogic rule object with additional operators generated by `formatQuery` and accepted by `parseJsonLogic`.
+- `RQBDateTimeLibraryAPI` (interface)
+- `RQBJsonLogicDateAfter` (interface)
+- `RQBJsonLogicDateBefore` (interface)
+- `RQBJsonLogicDateBetween` (interface)
+- `RQBJsonLogicDateIn` (interface)
+- `RQBJsonLogicDateNotBetween` (interface)
+- `RQBJsonLogicDateNotIn` (interface)
+- `RQBJsonLogicDateNotOn` (interface)
+- `RQBJsonLogicDateOn` (interface)
+- `RQBJsonLogicDateOnOrAfter` (interface)
+- `RQBJsonLogicDateOnOrBefore` (interface)
+- `RQBJsonLogicDateRelative` (interface)
+- `RQBJsonLogicDateTimeOperations` (type)
+
+### @react-querybuilder/datetime/date-fns
+
+- `datetimeRuleProcessorCEL` (const): `formatQuery` rule processor for "cel" format using date-fns
+- `datetimeRuleProcessorCypher` (const): `formatQuery` rule processor for "cypher"/"gql" format using date-fns
+- `datetimeRuleProcessorDrizzle` (const): `formatQuery` rule processor for "drizzle" format
+- `datetimeRuleProcessorElasticSearch` (const): `formatQuery` rule processor for "elasticsearch" format
+- `datetimeRuleProcessorGremlin` (const): `formatQuery` rule processor for "gremlin" format
+- `datetimeRuleProcessorJSONata` (const): `formatQuery` rule processor for "jsonata" format using date-fns
+- `datetimeRuleProcessorLDAP` (const): `formatQuery` rule processor for "ldap" format
+- `datetimeRuleProcessorMongoDB` (const): `formatQuery` rule processor for (deprecated) "mongodb" format
+- `datetimeRuleProcessorMongoDBQuery` (const): `formatQuery` rule processor for "mongodb_query" format using date-fns
+- `datetimeRuleProcessorNL` (const): `formatQuery` rule processor for "natural_language" format using date-fns
+- `datetimeRuleProcessorParameterized` (const): `formatQuery` rule processor for "parameterized"/"parameterized_named" formats
+- `datetimeRuleProcessorPrisma` (const): `formatQuery` rule processor for "prisma" format
+- `datetimeRuleProcessorSequelize` (const): `formatQuery` rule processor for "sequelize" format
+- `datetimeRuleProcessorSPARQL` (const): `formatQuery` rule processor for "sparql" format using date-fns
+- `datetimeRuleProcessorSpEL` (const): `formatQuery` rule processor for "spel" format
+- `datetimeRuleProcessorSQL` (const): `formatQuery` rule processor for "sql" format using date-fns
+- `datetimeRuleProcessorTanStackDB` (const): `formatQuery` rule processor for "tanstack_db" format
+- `datetimeValueProcessorANSI` (const): `formatQuery` value processor for "sql" format ("ansi" preset) using date-fns
+- `datetimeValueProcessorMSSQL` (const): `formatQuery` value processor for "sql" format ("mssql" preset) using date-fns
+- `datetimeValueProcessorMySQL` (const): `formatQuery` value processor for "sql" format ("mysql" preset) using date-fns
+- `datetimeValueProcessorOracle` (const): `formatQuery` value processor for "sql" format ("oracle" preset) using date-fns
+- `datetimeValueProcessorPostgreSQL` (const): `formatQuery` value processor for "sql" format ("postgresql" preset) using date-fns
+- `jsonLogicDateTimeOperations` (const): Custom JsonLogic date/time operations using date-fns
+- `rqbDateTimeLibraryAPI` (const): `RQBDateTimeLibraryAPI` for date-fns
+
+### @react-querybuilder/datetime/dayjs
+
+- `datetimeRuleProcessorCEL` (const): `formatQuery` rule processor for "cel" format using Day.js
+- `datetimeRuleProcessorCypher` (const): `formatQuery` rule processor for "cypher"/"gql" format using Day.js
+- `datetimeRuleProcessorDrizzle` (const): `formatQuery` rule processor for "drizzle" format using Day.js
+- `datetimeRuleProcessorElasticSearch` (const): `formatQuery` rule processor for "elasticsearch" format using Day.js
+- `datetimeRuleProcessorGremlin` (const): `formatQuery` rule processor for "gremlin" format using Day.js
+- `datetimeRuleProcessorJSONata` (const): `formatQuery` rule processor for "jsonata" format using Day.js
+- `datetimeRuleProcessorLDAP` (const): `formatQuery` rule processor for "ldap" format using Day.js
+- `datetimeRuleProcessorMongoDB` (const): `formatQuery` rule processor for (deprecated) "mongodb" format using Day.js
+- `datetimeRuleProcessorMongoDBQuery` (const): `formatQuery` rule processor for "mongodb_query" format using Day.js
+- `datetimeRuleProcessorNL` (const): `formatQuery` rule processor for "natural_language" format using Day.js
+- `datetimeRuleProcessorParameterized` (const): `formatQuery` rule processor for "parameterized"/"parameterized_named" formats using Day.js
+- `datetimeRuleProcessorPrisma` (const): `formatQuery` rule processor for "prisma" format using Day.js
+- `datetimeRuleProcessorSequelize` (const): `formatQuery` rule processor for "sequelize" format using Day.js
+- `datetimeRuleProcessorSPARQL` (const): `formatQuery` rule processor for "sparql" format using Day.js
+- `datetimeRuleProcessorSpEL` (const): `formatQuery` rule processor for "spel" format using Day.js
+- `datetimeRuleProcessorSQL` (const): `formatQuery` rule processor for "sql" format using Day.js
+- `datetimeRuleProcessorTanStackDB` (const): `formatQuery` rule processor for "tanstack_db" format using Day.js
+- `datetimeValueProcessorANSI` (const): `formatQuery` value processor for "sql" format ("ansi" preset) using Day.js
+- `datetimeValueProcessorMSSQL` (const): `formatQuery` value processor for "sql" format ("mssql" preset) using Day.js
+- `datetimeValueProcessorMySQL` (const): `formatQuery` value processor for "sql" format ("mysql" preset) using Day.js
+- `datetimeValueProcessorOracle` (const): `formatQuery` value processor for "sql" format ("oracle" preset) using Day.js
+- `datetimeValueProcessorPostgreSQL` (const): `formatQuery` value processor for "sql" format ("postgresql" preset) using Day.js
+- `jsonLogicDateTimeOperations` (const): Custom JsonLogic date/time operations using Day.js
+- `rqbDateTimeLibraryAPI` (const): `RQBDateTimeLibraryAPI` for Day.js
+
+### @react-querybuilder/datetime/jsdate
+
+- `datetimeRuleProcessorCEL` (const): `formatQuery` rule processor for "cel" format using JavaScript `Date`
+- `datetimeRuleProcessorCypher` (const): `formatQuery` rule processor for "cypher"/"gql" format using JavaScript `Date`
+- `datetimeRuleProcessorDrizzle` (const): `formatQuery` rule processor for "drizzle" format
+- `datetimeRuleProcessorElasticSearch` (const): `formatQuery` rule processor for "elasticsearch" format
+- `datetimeRuleProcessorGremlin` (const): `formatQuery` rule processor for "gremlin" format
+- `datetimeRuleProcessorJSONata` (const): `formatQuery` rule processor for "jsonata" format using JavaScript `Date`
+- `datetimeRuleProcessorLDAP` (const): `formatQuery` rule processor for "ldap" format
+- `datetimeRuleProcessorMongoDB` (const): `formatQuery` rule processor for (deprecated) "mongodb" format
+- `datetimeRuleProcessorMongoDBQuery` (const): `formatQuery` rule processor for "mongodb_query" format using JavaScript `Date`
+- `datetimeRuleProcessorNL` (const): `formatQuery` rule processor for "natural_language" format using JavaScript `Date`
+- `datetimeRuleProcessorParameterized` (const): `formatQuery` rule processor for "parameterized"/"parameterized_named" formats
+- `datetimeRuleProcessorPrisma` (const): `formatQuery` rule processor for "prisma" format
+- `datetimeRuleProcessorSequelize` (const): `formatQuery` rule processor for "sequelize" format
+- `datetimeRuleProcessorSPARQL` (const): `formatQuery` rule processor for "sparql" format using JavaScript `Date`
+- `datetimeRuleProcessorSpEL` (const): `formatQuery` rule processor for "spel" format
+- `datetimeRuleProcessorSQL` (const): `formatQuery` rule processor for "sql" format using JavaScript `Date`
+- `datetimeRuleProcessorTanStackDB` (const): `formatQuery` rule processor for "tanstack_db" format
+- `datetimeValueProcessorANSI` (const): `formatQuery` value processor for "sql" format ("ansi" preset) using JavaScript `Date`
+- `datetimeValueProcessorMSSQL` (const): `formatQuery` value processor for "sql" format ("mssql" preset) using JavaScript `Date`
+- `datetimeValueProcessorMySQL` (const): `formatQuery` value processor for "sql" format ("mysql" preset) using JavaScript `Date`
+- `datetimeValueProcessorOracle` (const): `formatQuery` value processor for "sql" format ("oracle" preset) using JavaScript `Date`
+- `datetimeValueProcessorPostgreSQL` (const): `formatQuery` value processor for "sql" format ("postgresql" preset) using JavaScript `Date`
+- `jsonLogicDateTimeOperations` (const): Custom JsonLogic date/time operations using JavaScript `Date`.
+- `rqbDateTimeLibraryAPI` (const): **Deprecated.** `RQBDateTimeLibraryAPI` for JavaScript `Date`
+
+### @react-querybuilder/datetime/luxon
+
+- `datetimeRuleProcessorCEL` (const): `formatQuery` rule processor for "cel" format using Luxon
+- `datetimeRuleProcessorCypher` (const): `formatQuery` rule processor for "cypher"/"gql" format using Luxon
+- `datetimeRuleProcessorDrizzle` (const): `formatQuery` rule processor for "drizzle" format
+- `datetimeRuleProcessorElasticSearch` (const): `formatQuery` rule processor for "elasticsearch" format
+- `datetimeRuleProcessorGremlin` (const): `formatQuery` rule processor for "gremlin" format
+- `datetimeRuleProcessorJSONata` (const): `formatQuery` rule processor for "jsonata" format using Luxon
+- `datetimeRuleProcessorLDAP` (const): `formatQuery` rule processor for "ldap" format
+- `datetimeRuleProcessorMongoDB` (const): `formatQuery` rule processor for (deprecated) "mongodb" format
+- `datetimeRuleProcessorMongoDBQuery` (const): `formatQuery` rule processor for "mongodb_query" format using Luxon
+- `datetimeRuleProcessorNL` (const): `formatQuery` rule processor for "natural_language" format using Luxon
+- `datetimeRuleProcessorParameterized` (const): `formatQuery` rule processor for "parameterized"/"parameterized_named" formats
+- `datetimeRuleProcessorPrisma` (const): `formatQuery` rule processor for "prisma" format
+- `datetimeRuleProcessorSequelize` (const): `formatQuery` rule processor for "sequelize" format
+- `datetimeRuleProcessorSPARQL` (const): `formatQuery` rule processor for "sparql" format using Luxon
+- `datetimeRuleProcessorSpEL` (const): `formatQuery` rule processor for "spel" format
+- `datetimeRuleProcessorSQL` (const): `formatQuery` rule processor for "sql" format using Luxon
+- `datetimeRuleProcessorTanStackDB` (const): `formatQuery` rule processor for "tanstack_db" format
+- `datetimeValueProcessorANSI` (const): `formatQuery` value processor for "sql" format ("ansi" preset) using Luxon
+- `datetimeValueProcessorMSSQL` (const): `formatQuery` value processor for "sql" format ("mssql" preset) using Luxon
+- `datetimeValueProcessorMySQL` (const): `formatQuery` value processor for "sql" format ("mysql" preset) using Luxon
+- `datetimeValueProcessorOracle` (const): `formatQuery` value processor for "sql" format ("oracle" preset) using Luxon
+- `datetimeValueProcessorPostgreSQL` (const): `formatQuery` value processor for "sql" format ("postgresql" preset) using Luxon
+- `jsonLogicDateTimeOperations` (const): Custom JsonLogic date/time operations using Luxon
+- `rqbDateTimeLibraryAPI` (const): `RQBDateTimeLibraryAPI` for Luxon
+
+## @react-querybuilder/dnd
+
+- `AdapterUseInlineCombinatorDnDResult` (interface): Return type for the adapter's `useInlineCombinatorDnD` hook.
+- `AdapterUseRuleDnDResult` (interface): Return type for the adapter's `useRuleDnD` hook. Matches the existing `UseRuleDnD` interface from `react-querybuilder`.
+- `AdapterUseRuleGroupDnDResult` (interface): Return type for the adapter's `useRuleGroupDnD` hook. Matches the existing `UseRuleGroupDnD` interface from `react-querybuilder`.
+- `computeDestinationFromQuadrant` (function): Computes the destination path for a quadrant-based drag target.
+- `computeShadowQuery` (function): Computes a shadow query given the current drag state and target position.
+- `createDndKitAdapter` (function): Creates a `DndAdapter` backed by `@dnd-kit/core`.
+- `createFlipAnimator` (function): Creates a FLIP animator that tracks elements matching the given CSS selector within a container. Elements are identified by their `data-rule-id` or `data-testid` attribute.
+- `createPragmaticDndAdapter` (function): Creates a `DndAdapter` backed by `@atlaskit/pragmatic-drag-and-drop`.
+- `createReactDnDAdapter` (function): Creates a `DndAdapter` backed by `react-dnd`.
+- `CustomCanDropParams` (interface): Parameters passed to custom `canDrop` functions.
+- `DndAdapter` (interface): The DnD adapter interface. Implementations of this interface provide drag-and-drop functionality for react-querybuilder using a specific DnD library.
+- `DndAdapterInlineCombinatorDnDParams` (interface): Parameters for the adapter's `useInlineCombinatorDnD` hook.
+- `DndAdapterProviderProps` (interface): Props for the adapter's DnD context provider component.
+- `DndAdapterRuleDnDParams` (interface): Parameters for the adapter's `useRuleDnD` hook.
+- `DndAdapterRuleGroupDnDParams` (interface): Parameters for the adapter's `useRuleGroupDnD` hook.
+- `DndKitExports` (interface): The `@dnd-kit/core` exports needed by the adapter.
+- `DndProp` (type): Type of the `dnd` prop on `QueryBuilderDnD`/`QueryBuilderDndWithoutProvider` when passing raw `react-dnd` exports (legacy API).
+- `DragPreviewContext` (const)
+- `DragPreviewContextValue` (interface): Context value for the drag preview state during update-while-dragging.
+- `DragPreviewState` (interface): State provided during an active drag with `updateWhileDragging` enabled.
+- `DragTargetPosition` (interface): Parameters describing a drag target position for shadow query computation.
+- `FlipAnimator` (interface)
+- `getQuadrant` (function): Determines whether the cursor is in the upper quadrant (top 25%), lower quadrant (bottom 25%), or middle zone (center 50%) of an element.
+- `InlineCombinatorDnD` (function): The drag-and-drop-enabled inline combinator component.
+- `isDndAdapter` (function): Type guard to check if a value is a `DndAdapter`.
+- `OnDragMoveCallback` (type): Callback invoked on each drag position change when `updateWhileDragging` is enabled.
+- `OnRuleDropCallback` (type): Callback invoked after a drag-and-drop operation completes.
+- `PdndCleanupFn` (type): Structural stand-in for pragmatic-drag-and-drop's `CleanupFn`.
+- `PragmaticDndExports` (interface): The `@atlaskit/pragmatic-drag-and-drop` exports needed by the adapter.
+- `QueryBuilderDnD` (function): Context provider to enable drag-and-drop. If the application already implements `react-dnd`, use `QueryBuilderDndWithoutProvider` instead.
+- `QueryBuilderDndContextProps` (interface): `QueryBuilderDndContext` props.
+- `QueryBuilderDndProps` (interface): `QueryBuilderDnD` props.
+- `QueryBuilderDndWithoutProvider` (function): Context provider to enable drag-and-drop. Only use this provider if the application already implements `react-dnd`, otherwise use `QueryBuilderDnD`.
+- `RdndBackendFactory` (type): Structural stand-in for the backend factories exported by `react-dnd-html5-backend` and `react-dnd-touch-backend`.
+- `RdndConnector` (type): Structural stand-in for `react-dnd`'s `ConnectDragSource`/`ConnectDragPreview`/`ConnectDropTarget`.
+- `RdndDragSpec` (interface): Structural stand-in for `react-dnd`'s `DragSourceHookSpec`.
+- `RdndDropSpec` (interface): Structural stand-in for `react-dnd`'s `DropTargetHookSpec`.
+- `RdndUseDrag` (type)
+- `RdndUseDrop` (type)
+- `ReactDnDExports` (interface): The `react-dnd` exports needed by the adapter.
+- `RuleDnD` (function): Rule component for drag-and-drop. Renders the provided rule component (`Rule` by default), but forwards the drag-and-drop context.
+- `RuleDropInfo` (interface): Info provided to the `OnRuleDropCallback` after a drop completes.
+- `RuleGroupDnD` (function): Rule group component for drag-and-drop. Renders the provided rule group component (`RuleGroup` by default), but forwards the drag-and-drop context so that child rules and groups will render within the…
+- `useReactDnD` (function): **Deprecated.**
+- `UseReactDnD` (type): The `react-dnd` exports needed by the adapter, plus the backends from `react-dnd-html5-backend` and `react-dnd-touch-backend`.
+- `useShadowQuery` (function): Hook for consuming the shadow query during an active drag with `updateWhileDragging` enabled.
+
+## @react-querybuilder/expr
+
+### @react-querybuilder/expr
+
+- `CELExpressionParser` (type): A `getExpression` handler for `parseCEL`.
+- `CELInverse` (interface): Inverse of `defaultCELSerializers` for the import direction (parsing).
+- `celTemplateFns` (const): `fn` keys recovered from CEL emulated templates (structural match, not via `CELInverse`).
+- `createExpressionValidator` (function): Configure-once factory returning a `QueryValidator` that flags rules whose `lhs`/`rhs` expressions are invalid — unknown function, arity mismatch, or empty field reference — checked against `functionM…
+- `defaultCELInverse` (const): Built-in `CELInverse` registry (mirror of the invertible `defaultCELSerializers`).
+- `defaultCELSerializers` (const): Built-in "cel" ([CEL](https://cel.dev/)) expression serializers.
+- `defaultCypherSerializers` (const): Built-in "cypher"/"gql" (openCypher / GQL) expression serializers.
+- `defaultDrizzleSerializers` (const): Built-in "drizzle" serializers. Arithmetic and `mod` emit parenthesized infix `SQL` (`+ - * / %`); `abs` emits `abs(...)`; `min`/`max` emit `least(...)`/`greatest(...)` (or `min(...)`/`max(...)` for t…
+- `defaultFunctionMeta` (const): Built-in expression function metadata (UI label + arity) for the arithmetic operators (`+ - * /`), variadic `min`/`max`, binary `mod`, unary `abs`, and string `upper`/`lower`.
+- `defaultJSONataInverse` (const): Built-in `JSONataInverse` registry (mirror of `defaultJSONataSerializers`).
+- `defaultJSONataSerializers` (const): Built-in "jsonata" ([JSONata](https://jsonata.org/)) expression serializers.
+- `defaultJsonLogicInverse` (const): Built-in `JsonLogicInverse` registry (mirror of `defaultJsonLogicSerializers`).
+- `defaultJsonLogicSerializers` (const): Built-in "jsonlogic" serializers. Arithmetic (`+ - * /`), `min`/`max`, and `mod` (`%`) map to stock JSONLogic operators; `abs`, `upper`, and `lower` emit same-named custom operators (register them on…
+- `defaultMongoDBInverse` (const): Built-in `MongoDBInverse` registry (mirror of `defaultMongoDBSerializers`).
+- `defaultMongoDBSerializers` (const): Built-in "mongodb_query" aggregation-expression serializers. Arithmetic (`$add`, `$subtract`, `$multiply`, `$divide`), `min`/`max` (`$min`/`$max`), `mod` (`$mod`), and `abs` (`$abs`) map to native agg…
+- `defaultNLSerializers` (const): Built-in "natural_language" serializers rendering each function as an English noun phrase (e.g. `the product of X and Y`, `the absolute value of X`). `min`/`max` join their operands with commas.
+- `defaultPainlessSerializers` (const): Built-in "elasticsearch" (Painless script) serializers. Arithmetic and `mod` emit parenthesized infix (`+ - * / %`); `abs` emits `Math.abs(...)`; `min`/`max` fold into nested `Math.min`/`Math.max`; `u…
+- `defaultParameterizedSerializers` (const): Built-in "parameterized" / "parameterized_named" serializers. The parameterized walker binds `value` leaves as placeholders and passes the resulting placeholder/field strings to these serializers exac…
+- `defaultSPARQLSerializers` (const): Built-in "sparql" (SPARQL 1.1 FILTER expression) serializers. Arithmetic uses native infix operators; `abs`/`ucase`/`lcase` are native functions.
+- `defaultSpELInverse` (const): Built-in `SpELInverse` registry (mirror of `defaultSpELSerializers`).
+- `defaultSpELSerializers` (const): Built-in "spel" (Spring Expression Language) expression serializers.
+- `defaultSQLInverse` (const): Built-in `SQLInverse` registry (mirror of `defaultSQLSerializers`).
+- `defaultSQLSerializers` (const): Built-in "sql" serializers: arithmetic (`+ - * /`, infix and parenthesized for precedence safety), variadic `min`/`max`, binary `mod`, unary `abs`, and string `upper`/`lower`.
+- `defaultTanStackDbSerializers` (const): Built-in "tanstack_db" serializers. Arithmetic maps to TanStack DB's `add`/`subtract`/ `multiply`/`divide` expression functions; `upper`/`lower` map to `upper`/`lower`.
+- `DrizzleSerializeContext` (interface): Drizzle serialization context: the `sql` template tag and the `columns` map (both taken from `formatQuery`'s `context`), used to resolve `field` operands to Drizzle `Column`s.
+- `DrizzleSerializer` (type): Drizzle serializer: receives the `sql` tag, the format options, then the already-serialized argument operands (Drizzle `Column`s, `SQL` fragments, or literal values), and returns an `SQL` fragment.
+- `DrizzleSerializerRegistry` (type): Map of registry keys to `DrizzleSerializer` entries.
+- `DrizzleSqlTag` (interface): Drizzle's `sql` template tag (plus its `.join`/`.raw` helpers), typed loosely to avoid a hard dependency on `drizzle-orm`.
+- `ExpressionFunctionMeta` (interface): UI/validation metadata for a function usable in an expression. Arithmetic operators (`+ - * /`) are modeled as ordinary functions.
+- `ExpressionFunctionMetaRegistry` (type): Map of registry keys to `ExpressionFunctionMeta` definitions.
+- `ExpressionNode` (type): A single node in an expression tree. Expressions are recursive: a `func` node's arguments are themselves `ExpressionNode`s, enabling arbitrary nesting.
+- `expressionParserCEL` (const): Ready-to-use CEL expression parser bound to `defaultCELInverse`.
+- `expressionParserJSONata` (const): Ready-to-use JSONata expression parser bound to `defaultJSONataInverse`.
+- `expressionParserJsonLogic` (const): Ready-to-use JsonLogic expression parser bound to `defaultJsonLogicInverse`.
+- `expressionParserMongoDB` (const): Ready-to-use MongoDB expression parser bound to `defaultMongoDBInverse`.
+- `expressionParserSpEL` (const): Ready-to-use SpEL expression parser bound to `defaultSpELInverse`.
+- `expressionParserSQL` (const): Ready-to-use SQL expression parser bound to `defaultSQLInverse`.
+- `expressionRuleProcessorCEL` (const): Ready-to-use "cel" rule processor bound to `defaultCELSerializers`.
+- `expressionRuleProcessorCypher` (const): Ready-to-use "cypher"/"gql" rule processor bound to `defaultCypherSerializers`.
+- `expressionRuleProcessorDrizzle` (const): Ready-to-use "drizzle" rule processor bound to `defaultDrizzleSerializers`.
+- `expressionRuleProcessorElasticSearch` (const): Ready-to-use "elasticsearch" rule processor bound to `defaultPainlessSerializers`.
+- `expressionRuleProcessorJSONata` (const): Ready-to-use "jsonata" rule processor bound to `defaultJSONataSerializers`.
+- `expressionRuleProcessorJsonLogic` (const): Ready-to-use "jsonlogic" rule processor bound to `defaultJsonLogicSerializers`.
+- `expressionRuleProcessorMongoDB` (const): Ready-to-use (deprecated) "mongodb" rule processor bound to `defaultMongoDBSerializers`.
+- `expressionRuleProcessorMongoDBQuery` (const): Ready-to-use "mongodb_query" rule processor bound to `defaultMongoDBSerializers`.
+- `expressionRuleProcessorNL` (const): Ready-to-use "natural_language" rule processor bound to `defaultNLSerializers`.
+- `expressionRuleProcessorParameterized` (const): Ready-to-use "parameterized"/"parameterized_named" rule processor bound to `defaultParameterizedSerializers`.
+- `expressionRuleProcessorSequelize` (const): Ready-to-use "sequelize" rule processor bound to `defaultSQLSerializers`.
+- `expressionRuleProcessorSPARQL` (const): Ready-to-use "sparql" rule processor bound to `defaultSPARQLSerializers`.
+- `expressionRuleProcessorSpEL` (const): Ready-to-use "spel" rule processor bound to `defaultSpELSerializers`.
+- `expressionRuleProcessorSQL` (const): Ready-to-use "sql" rule processor bound to `defaultSQLSerializers`.
+- `expressionRuleProcessorTanStackDB` (const): Ready-to-use "tanstack_db" rule processor bound to `defaultTanStackDbSerializers`.
+- `ExpressionValidationResult` (interface): Result of `validateExpression`.
+- `getExpressionParserCEL` (function): Generates a `getExpression` handler for `parseCEL`. Pass `customInverse` to add arithmetic operators / function-call names or override built-ins (merged over `defaultCELInverse`), and `customMeta` to…
+- `getExpressionParserJSONata` (function): Generates a `getExpression` handler for `parseJSONata`. Pass `customInverse` to add functions/operators or override built-ins (merged over `defaultJSONataInverse`), and `customMeta` to supply arity me…
+- `getExpressionParserJsonLogic` (function): Generates a `getExpression` handler for `parseJsonLogic`. Pass `customInverse` to add operations or override built-ins (merged over `defaultJsonLogicInverse`), and `customMeta` to supply arity metadat…
+- `getExpressionParserMongoDB` (function): Generates a `getExpression` handler for `parseMongoDB`. Pass `customInverse` to add operators or override built-ins (merged over `defaultMongoDBInverse`), and `customMeta` to supply arity metadata for…
+- `getExpressionParserSpEL` (function): Generates a `getExpression` handler for `parseSpEL`. Pass `customInverse` to add arithmetic operators, functions, or methods (or override built-ins; merged over `defaultSpELInverse`), and `customMeta`…
+- `getExpressionParserSQL` (function): Generates a `getExpression` handler for `parseSQL`. Pass `customInverse` to add functions/operators or override built-ins (merged over `defaultSQLInverse`), and `customMeta` to supply arity metadata f…
+- `getExpressionRuleProcessorCEL` (function): Generates a rule processor with expression support for `formatQuery` with the "cel" format.
+- `getExpressionRuleProcessorCypher` (function): Generates a rule processor with expression support for `formatQuery` with the "cypher"/"gql" format.
+- `getExpressionRuleProcessorDrizzle` (function): Generates a rule processor with expression support for use by `formatQuery` with the "drizzle" format.
+- `getExpressionRuleProcessorElasticSearch` (function): Generates a rule processor with expression support for use by `formatQuery` with the "elasticsearch" format.
+- `getExpressionRuleProcessorJSONata` (function): Generates a rule processor with expression support for `formatQuery` with the "jsonata" format.
+- `getExpressionRuleProcessorJsonLogic` (function): Generates a rule processor with expression support for use by `formatQuery` with the "jsonlogic" format.
+- `getExpressionRuleProcessorMongoDB` (function): Generates a rule processor with expression support for use by `formatQuery` with the (deprecated) "mongodb" format. Wraps `getExpressionRuleProcessorMongoDBQuery`, JSON-stringifying its output.
+- `getExpressionRuleProcessorMongoDBQuery` (function): Generates a rule processor with expression support for use by `formatQuery` with the "mongodb_query" format. Expression rules emit MongoDB aggregation-expression form (`{ $expr: { ...
+- `getExpressionRuleProcessorNL` (function): Generates a rule processor with expression support for use by `formatQuery` with the "natural_language" format.
+- `getExpressionRuleProcessorParameterized` (function): Generates a rule processor with expression support for use by `formatQuery` with the "parameterized" and "parameterized_named" formats.
+- `getExpressionRuleProcessorSequelize` (function): Generates a rule processor with expression support for use by `formatQuery` with the "sequelize" format.
+- `getExpressionRuleProcessorSPARQL` (function): Generates a rule processor with expression support for `formatQuery` with the "sparql" format.
+- `getExpressionRuleProcessorSpEL` (function): Generates a rule processor with expression support for `formatQuery` with the "spel" format.
+- `getExpressionRuleProcessorSQL` (function): Generates a rule processor with expression support for use by `formatQuery` with the "sql" format.
+- `getExpressionRuleProcessorTanStackDB` (function): Generates a rule processor with expression support for use by `formatQuery` with the "tanstack_db" format.
+- `getRuleExpressions` (function): Resolves a rule's expression operands: `lhs` from `rule.lhs`, and the right-hand side from `rule.value` when `valueSource` is `"expression"`.
+- `InfixDialect` (interface): Per-format hooks for the shared string ("infix") expression walker. `renderField` quotes a field reference for the target language (e.g.
+- `JSONataExpressionParser` (type): A `getExpression` handler for `parseJSONata`.
+- `JSONataInverse` (interface): Inverse of `defaultJSONataSerializers`: maps JSONata infix operators and function names back to `fn` keys for the import direction (parsing). Mirrors the `SQLInverse` shape.
+- `jsonLogicExpressionOperators` (const): Runtime implementations for the non-stock operators emitted by `defaultJsonLogicSerializers`. Keys match the operator names produced by the default `abs`/`upper`/`lower` serializers.
+- `JsonLogicExpressionParser` (type): A `getExpression` handler for `parseJsonLogic`.
+- `JsonLogicInverse` (type): Inverse of `defaultJsonLogicSerializers`: maps a JsonLogic operation object's key back to an `fn` key for the import direction (parsing).
+- `JsonLogicOperator` (type): A JSONLogic custom-operator implementation (the `code` arg of `json-logic-js`'s `add_operation`).
+- `JsonLogicSerializer` (type): JSONLogic serializer: an operator name (wrapping the serialized args in `{ [op]: args }`), or a function receiving the format options followed by the serialized args.
+- `JsonLogicSerializerRegistry` (type): Map of registry keys to `JsonLogicSerializer` entries.
+- `makeStringExprProcessor` (function): Builds a `getExpressionRuleProcessor…` factory for a string-output format. The returned factory accepts optional serializers merged over the format's built-ins.
+- `mergeCELInverse` (function): Merges a custom `CELInverse` over the built-in `defaultCELInverse`.
+- `mergeFunctionMeta` (function): Merges one or more function-metadata registries (later entries win), defaulting the first source to `defaultFunctionMeta` so callers extend the built-ins by default.
+- `mergeJSONataInverse` (function): Merges a custom `JSONataInverse` (partial) over the built-in `defaultJSONataInverse`.
+- `mergeJsonLogicInverse` (function): Merges a custom `JsonLogicInverse` (partial) over the built-in `defaultJsonLogicInverse`.
+- `mergeMongoDBInverse` (function): Merges a custom `MongoDBInverse` over the built-in `defaultMongoDBInverse`.
+- `mergeSpELInverse` (function): Merges a custom `SpELInverse` over the built-in `defaultSpELInverse`.
+- `mergeSQLInverse` (function): Merges a custom `SQLInverse` (partial) over the built-in `defaultSQLInverse`.
+- `MongoAggSerializer` (type): MongoDB aggregation-expression serializer: an operator name (wrapping the serialized args in `{ [op]: args }`), or a function receiving the format options followed by the serialized args.
+- `MongoAggSerializerRegistry` (type): Map of registry keys to `MongoAggSerializer` entries.
+- `MongoDBExpressionParser` (type): A `getExpression` handler for `parseMongoDB`.
+- `MongoDBInverse` (type): Inverse of `defaultMongoDBSerializers`: maps MongoDB aggregation-operator names to `fn` keys for the import direction (parsing). Keyed by operator token (e.g. `$multiply`).
+- `ParameterizedSerializerRegistry` (type): Map of registry keys to `SQLSerializer` entries (the "parameterized" / "parameterized_named" formats).
+- `QuoteEscapeStyle` (type): Escape style for quoted leaves: `backslash` escapes `\` and quote (`\`, `\'`); `double` doubles quote (`''`, SpEL); `quote-only` backslash-escapes quote only (non-executable NL).
+- `quoteLeaf` (function): Quotes a non-numeric leaf value with `quote`, escaping embedded quote chars when asked.
+- `ResolvedExpressions` (interface): Expression operands resolved from a rule's `lhs` property and its `value`/`valueSource` (when `valueSource` is `"expression"`). Returned by `getRuleExpressions`.
+- `serializeDrizzle` (function): Recursively serializes an expression node to a Drizzle operand (`Column`, `SQL` fragment, or literal).
+- `serializeInfix` (function): Recursively serializes an expression node to a string fragment for the "infix" string formats (cel, spel, cypher, sparql, jsonata).
+- `serializeMongoAgg` (function): Recursively serializes an expression node to a MongoDB aggregation-expression value.
+- `serializeTanStackDb` (function): Recursively serializes an expression node to a TanStack DB expression.
+- `SpELExpressionParser` (type): A `getExpression` handler for `parseSpEL`.
+- `SpELInverse` (interface): Inverse of `defaultSpELSerializers` for the import direction (parsing).
+- `SQLExpressionParser` (type): A `getExpression` handler for `parseSQL`.
+- `SQLInverse` (interface): Inverse of `defaultSQLSerializers`: maps SQL surface syntax back to `fn` keys for the import direction (parsing).
+- `SQLSerializer` (type): A SQL (or parameterized-SQL) serializer entry: either a single `SQLSerializerFn`, or a preset-keyed map for dialect variance. The `default` is used for any preset without an explicit override (e.g.
+- `SQLSerializerFn` (type): SQL serializer function: receives the format options (for preset/`parseNumbers` awareness) followed by the already-serialized argument strings, and returns a SQL fragment.
+- `SQLSerializerRegistry` (type): Map of registry keys to `SQLSerializer` entries (the "sql" format).
+- `StringExprConfig` (interface): Configuration for a string-output ("infix") expression rule processor.
+- `StringMatchKind` (type): Canonical string-match category emitted by a `StringExprConfig.renderStringMatch`.
+- `TanStackDbSerializeContext` (interface): TanStack DB serialization context: the `ops` object (expression functions) and a `resolveField` resolver mapping a field name to its ref column (dotted → `refs.prefix.rest`, bare → `refs[primaryRef].f…
+- `TanStackDbSerializer` (type): TanStack DB serializer: receives the `tanStackDbOperators` object (its expression functions — `add`, `upper`, etc.), the format options, then the already-serialized argument operands (ref columns, nes…
+- `TanStackDbSerializerRegistry` (type): Map of registry keys to `TanStackDbSerializer` entries.
+- `validateExpression` (function): Recursively validates an expression node. Flags unknown functions (not present in the known set — see `ValidateExpressionOptions.functions`), arity mismatches (against `ValidateExpressionOptions.meta`…
+- `ValidateExpressionOptions` (interface): Inputs `validateExpression` checks a node against.
+
+### @react-querybuilder/expr/ui
+
+- `AllowFunctionsOnLHS` (type): Whether (and when) the left-hand side may wrap its field in a function. `boolean` applies globally; a predicate decides per field/operator.
+- `defaultTranslationsExpr` (const): Default `TranslationsExpr` for `QueryBuilderExpressions` — the LHS function-wrapper selector title/option and the `expression` value-source label. Override per-key via the `translations` prop.
+- `ExpressionEditor` (function): Recursive editor for a single `ExpressionNode`. A `kind` selector switches between a field reference, a literal value (parsed as a number when the host's `parseNumbers` is enabled), a named parameter…
+- `ExpressionEditorProps` (interface): Props for `ExpressionEditor`.
+- `ExpressionFieldSelector` (function): Field-selector override hosting the rule's left-hand side. The inherited (or default) field selector still picks the rule's `field` — the _governing field_, which drives operator selection and validat…
+- `ExpressionUIContext` (const): Carries the registry + inherited controls down to the expression control elements.
+- `ExpressionUIContextValue` (interface): Value carried by `ExpressionUIContext`.
+- `ExpressionValueEditor` (function): Value-editor override hosting the rule's right-hand side. When `valueSource` is `expression`, the rule's `value` holds an `ExpressionNode` (rooted at a function call) edited by `ExpressionEditor`.
+- `ExpressionValueSourceSelector` (function): Value-source selector override. Relabels the `expression` option (core emits a raw, lowercase label) and, when it is selected, atomically seeds `value` with a default function node so the `ExpressionV…
+- `ExprTestID` (const): Stable `data-testid` values for the expression UI's selectors and nested editor. Exposed so host tests can target the expression controls without hardcoding strings.
+- `QueryBuilderExpressions` (function): Context provider enabling arithmetic/function expression support for a wrapped `QueryBuilder`: overrides the field selector, value-source selector, and value editor to host left- and right-hand side e…
+- `QueryBuilderExpressionsProps` (interface): Props for `QueryBuilderExpressions`.
+- `TranslationsExpr` (interface): The shape of the `translations` prop for `QueryBuilderExpressions`.
+- `TranslationsFullExpr` (type): The full `translations` interface for `QueryBuilderExpressions`, with all properties required.
+- `useExpressionUI` (function): Reads the `ExpressionUIContext`.
+
+## @react-querybuilder/fluent
+
+- `FluentActionElement` (function)
+- `FluentActionProps` (type)
+- `fluentControlElements` (const)
+- `FluentDragHandle` (const)
+- `FluentNotToggle` (function)
+- `FluentNotToggleProps` (interface)
+- `FluentShiftActions` (function)
+- `fluentTranslations` (const)
+- `FluentValueEditor` (function)
+- `FluentValueEditorProps` (interface)
+- `FluentValueSelector` (function)
+- `FluentValueSelectorProps` (type)
+- `QueryBuilderFluent` (const)
+
+## @react-querybuilder/mantine
+
+- `MantineActionElement` (function)
+- `MantineActionProps` (interface)
+- `mantineControlElements` (const)
+- `MantineNotToggle` (function)
+- `MantineNotToggleProps` (interface)
+- `MantineShiftActions` (function)
+- `MantineValueEditor` (function)
+- `MantineValueEditorProps` (interface)
+- `MantineValueSelector` (function)
+- `MantineValueSelectorProps` (type)
+- `QueryBuilderMantine` (const)
+
+## @react-querybuilder/material
+
+- `defaultMuiComponents` (const)
+- `MaterialActionElement` (function)
+- `MaterialActionProps` (interface)
+- `materialControlElements` (const)
+- `MaterialDragHandle` (const)
+- `MaterialDragHandleProps` (interface)
+- `MaterialNotToggle` (function)
+- `MaterialNotToggleProps` (type)
+- `MaterialShiftActions` (function)
+- `MaterialShiftActionsProps` (interface)
+- `materialTranslations` (const)
+- `MaterialValueEditor` (function)
+- `MaterialValueEditorProps` (interface)
+- `MaterialValueSelector` (function)
+- `MaterialValueSelectorProps` (type)
+- `MuiAugmentation` (interface)
+- `MuiComponentName` (type)
+- `QueryBuilderMaterial` (const)
+- `RQBMaterialComponents` (interface)
+- `RQBMaterialContext` (const)
+- `RQBMaterialContextValue` (interface)
+- `useMuiComponents` (function)
+
+## @react-querybuilder/native
+
+- `ActionNativeProps` (type)
+- `defaultNativeControlElements` (const)
+- `defaultNativeSelectStyles` (const)
+- `defaultNativeStyles` (const)
+- `defaultNativeWebControlElements` (const)
+- `InlineCombinatorNativeProps` (type)
+- `MatchModeEditorNativeProps` (type)
+- `NativeActionElement` (function)
+- `NativeInlineCombinator` (function)
+- `NativeMatchModeEditor` (function): Default `matchModeEditor` component used by `QueryBuilder`.
+- `NativeMatchModeEditorWeb` (function)
+- `NativeNotToggle` (function)
+- `NativeShiftActions` (function)
+- `NativeUndoRedoActions` (function)
+- `NativeValueEditor` (function)
+- `NativeValueEditorWeb` (function)
+- `NativeValueSelector` (function)
+- `NativeValueSelectorWeb` (function)
+- `NotToggleNativeProps` (type)
+- `QueryBuilderNative` (function): An implementation of react-querybuilder for React Native.
+- `QueryBuilderNativeProps` (type)
+- `QueryBuilderNativeStyles` (type)
+- `QueryBuilderNativeStyleSheets` (type)
+- `RuleGroupNative` (function)
+- `RuleGroupNativeProps` (type)
+- `RuleNative` (function)
+- `RuleNativeProps` (type)
+- `SchemaNative` (interface)
+- `ShiftActionsNativeProps` (type)
+- `UndoRedoActionsNativeProps` (type)
+- `ValueEditorNativeProps` (type)
+- `ValueSelectorNativeProps` (type)
+- `WithSchemaNative` (interface)
+- `WrapEachPropertyInStyleProp` (type)
+
+## @react-querybuilder/prime
+
+- `PrimeActionElement` (function)
+- `PrimeActionProps` (type)
+- `primeControlElements` (const)
+- `PrimeDragHandle` (const)
+- `PrimeDragHandleProps` (type)
+- `PrimeNotToggle` (function)
+- `PrimeNotToggleProps` (interface)
+- `PrimeShiftActions` (function)
+- `primeTranslations` (const)
+- `PrimeValueEditor` (function)
+- `PrimeValueEditorProps` (interface)
+- `PrimeValueSelector` (function)
+- `PrimeValueSelectorProps` (type)
+- `QueryBuilderPrime` (const)
+
+## @react-querybuilder/rules-engine
+
+- `ActionElementRE` (const)
+- `ActionElementREProps` (interface)
+- `AddMethodRE` (interface)
+- `AddOptionsRE` (interface): Options for `addRE`.
+- `addRE` (const): Adds a rule or group to a query without mutating the original rules engine.
+- `addREInPlace` (const): Adds a rule or group to a query by mutating the rules engine.
+- `ClassnamesRE` (interface): Classnames applied to each component.
+- `ComponentsRE` (interface): All subcomponents.
+- `ConditionBuilder` (const): Default condition editor for `RulesEngineBuilder`. Analogous to an "if" or "else-if" block.
+- `ConditionBuilderBody` (const): Default body component for `ConditionBuilder`.
+- `ConditionBuilderHeader` (const): Default header component for `ConditionBuilder`.
+- `ConditionCascade` (const): Renders a sequential list of if/else-if/else blocks in a rules engine.
+- `ConditionCascadeProps` (interface): Props for `ConditionCascade`.
+- `ConditionProps` (interface): Props for `ConditionBuilder`.
+- `Consequent` (interface)
+- `ConsequentBase` (type)
+- `ConsequentBuilder` (const): Default consequent editor for `RulesEngineBuilder`. Analogous to the body of an "if" or "else-if" block.
+- `ConsequentBuilderBody` (const): Default body component for `ConsequentBuilder`.
+- `ConsequentBuilderHeader` (const): Default header component for `ConsequentBuilder`.
+- `ConsequentPropertyDef` (interface): Definition of a single editable property of a consequent type. Used by the built-in `ConsequentBuilderBody` to render an appropriate input for each property.
+- `ConsequentPropertyInputType` (type): Supported input types for a built-in consequent property editor.
+- `ConsequentProps` (interface): Props for `ConsequentBuilder`, `ConsequentBuilderHeader`, and `ConsequentBuilderBody`.
+- `ConsequentTypeOption` (type): A consequent type option that may carry editable property definitions. Pass an array of these as the `consequentTypes` prop (or from `getConsequentTypes`) to enable the built-in property editor.
+- `defaultClassnamesRE` (const): Default classnames used by `RulesEngineBuilder`.
+- `defaultComponentsRE` (const): Default components used by `RulesEngineBuilder`.
+- `defaultRuleGroupProcessorJsonRulesEngine` (const)
+- `defaultRuleGroupProcessorNative` (const): Default rule group processor for the `"native"` export format.
+- `defaultRuleGroupProcessorRulePilot` (const): Default rule group processor for the `"rulepilot"` export format.
+- `defaultRuleProcessorJsonRulesEngine` (const)
+- `defaultRuleProcessorNative` (const): Default rule processor for the `"native"` export format. Compiles a single rule into a `NativePredicate` that evaluates the rule's operator (via `nativeOperators`) against the fact identified by the r…
+- `defaultRuleProcessorRulePilot` (const): Default rule processor for the `"rulepilot"` export format. Compiles a single React Query Builder rule into a rulepilot `Constraint` (or a small `Condition` for range/null checks).
+- `defaultRulesEngine` (const)
+- `defaultRulesEngineIC` (const)
+- `defaultRulesEngineProcessorJsonRulesEngine` (const): Default processor for the `json-rules-engine` export format.
+- `defaultRulesEngineProcessorNative` (const): Default processor for the `"native"` export format. Returns an in-process `RulesEngineEvaluator`: a function that, given a facts object, returns the consequents of every condition that fires—in order,…
+- `defaultRulesEngineProcessorNodeRules` (const): Default processor for the `"node-rules"` export format. Returns an array of live [node-rules](https://github.com/mithunsatheesh/node-rules) `Rule` objects with real `condition`/`consequence` functions…
+- `defaultRulesEngineProcessorRulePilot` (const): Default processor for the `"rulepilot"` export format. Returns a single [rulepilot](https://github.com/andrewbrg/rulepilot) `Rule` whose ordered `conditions` reproduce the rules engine's cascade: each…
+- `defaultTranslationsRE` (const): Default configuration of translatable strings for `RulesEngineBuilder`.
+- `EvaluationMode` (type): Determines how sibling conditions in a `RulesEngine` relate to one another when exported.
+- `findConditionID` (function): Returns the `RuleGroupType`/`RuleGroupTypeIC` with the given `id` within a rules engine.
+- `findConditionPath` (function): Returns the `RuleGroupType`/`RuleGroupTypeIC` at the given path within a rules engine.
+- `FindConditionPath` (type): Return type for `findConditionPath`.
+- `FlatRule` (interface): A flattened rules-engine condition: a single combined guard paired with its consequent.
+- `formatRulesEngine` (function): Generates an array of 'json-rules-engine' rules from a rules engine object. The array can be the first argument to `new Engine` or looped to add the rules one at a time.
+- `FormatRulesEngineOptions` (interface): Options object shape for `formatRulesEngine`.
+- `FullConsequentTypeOption` (type): A `ConsequentTypeOption` resolved to a `FullOption` (both `name` and `value` guaranteed). This is the form passed to subcomponents via the schema.
+- `getConditionPathOfID` (function): Returns the `Path` of the `RuleGroupType`/`RuleGroupTypeIC` with the given `id` within a rules engine.
+- `getFactValue` (function): Looks up `path` in a fact object. An exact key match wins (so flat keys that literally contain dots still work); otherwise the path is traversed segment-by-segment (`"profile.age"`).
+- `inRange` (function): Determines whether `factVal` falls within the inclusive range described by `compareVal`, mirroring the robustness of the `"between"` handling in `formatQuery`.
+- `InsertMethodRE` (interface)
+- `InsertOptionsRE` (interface): Options for `insertRE`.
+- `insertRE` (const): Inserts a rule engine condition into a rules engine without mutating the original rules engine.
+- `insertREInPlace` (const): Inserts a rule engine condition into a rules engine by mutating the rules engine.
+- `isRulesEngine` (function): Determines if an object is a `RulesEngine`.
+- `isRulesEngineAny` (function): Determines if an object is a `RulesEngine` or `RulesEngineIC`.
+- `isRulesEngineCondition` (function): Determines if an object is a `RulesEngineAntecedent`.
+- `isRulesEngineConditionAny` (function): Determines if an object is a `RulesEngineAntecedent` or `REConditionIC`.
+- `isRulesEngineConditionIC` (function): Determines if an object is a `REConditionIC`.
+- `isRulesEngineConsequent` (function): Determines if an object is a `RulesEngine` or `RulesEngineIC`.
+- `isRulesEngineIC` (function): Determines if an object is a `RulesEngineIC`.
+- `jsonRulesEngineAdditionalOperators` (const): Operator evaluators for the React Query Builder operators that have no `json-rules-engine` built-in equivalent.
+- `mergeClassnamesRE` (function): Merges a list of partial `ClassnamesRE` definitions into a single definition.
+- `MoveMethodRE` (interface)
+- `MoveOptionsRE` (interface): Options for `moveRE`.
+- `moveRE` (const): Moves a rule engine condition from one path to another without mutating the original rules engine. In the options parameter, pass `{ clone: true }` to copy instead of move.
+- `moveREInPlace` (const): Moves a rule engine condition from one path to another by mutating the rules engine. In the options parameter, pass `{ clone: true }` to copy instead of move.
+- `nativeOperators` (const): Evaluators for every React Query Builder default operator, comparing a fact value against the value stored on a rule.
+- `NativePredicate` (type): A compiled antecedent for the `"native"`/`"node-rules"` export targets: returns `true` when the supplied facts satisfy the rule group it was compiled from.
+- `PreparerOptionsRE` (interface): Options for `prepareRulesEngine`.
+- `prepareRulesEngine` (function): Ensures that a rule group is valid by recursively adding an `id` property to the group itself and all its rules and subgroups where one does not already exist.
+- `prepareRulesEngineCondition` (function)
+- `REAllConditions` (type): Structural stand-in for `json-rules-engine`'s `AllConditions`.
+- `REAnyConditions` (type): Structural stand-in for `json-rules-engine`'s `AnyConditions`.
+- `RECondition` (interface): A condition within a `RulesEngine`. Each condition has an `antecedent` (rule group) and an optional `consequent`. A condition may also itself contain nested conditions.
+- `REConditionAny` (type): Either `RECondition` or `REConditionIC`.
+- `REConditionCascade` (type): Array of conditions within a `RulesEngine` or `RulesEngineIC`.
+- `REConditionIC` (interface): A condition within a `RulesEngine`. Each condition has an `antecedent` (rule group) and an optional `consequent`. A condition may also itself contain nested conditions.
+- `REConditionProperties` (interface): Structural stand-in for `json-rules-engine`'s `ConditionProperties`.
+- `REConditionReference` (type): Structural stand-in for `json-rules-engine`'s `ConditionReference`.
+- `REEvent` (interface): Structural stand-in for `json-rules-engine`'s `Event`.
+- `regenerateREIDs` (function): Recursively generates new `id` properties for a rule group or rules engine and all its rules/conditions and subgroups/subconditions.
+- `RemoveMethodRE` (interface)
+- `removeRE` (const): Removes a rule engine condition from a rules engine without mutating the original rules engine.
+- `removeREInPlace` (const): Removes a rule engine condition from a rules engine by mutating the rules engine.
+- `RENestedCondition` (type): Structural stand-in for `json-rules-engine`'s `NestedCondition`.
+- `RENodeRulesAPI` (interface): Structural stand-in for `node-rules`' `API`.
+- `RENodeRulesConsequence` (interface): Structural stand-in for `node-rules`' `Consequence`.
+- `RENodeRulesFact` (type): Structural stand-in for `node-rules`' `Fact`.
+- `RENodeRulesRule` (type): Structural stand-in for `node-rules`' `Rule`.
+- `RENotConditions` (type): Structural stand-in for `json-rules-engine`'s `NotConditions`.
+- `REOperatorEvaluator` (interface): Structural stand-in for `json-rules-engine`'s `OperatorEvaluator`.
+- `RERulePilotCondition` (interface): Structural stand-in for `rulepilot`'s `Condition`.
+- `RERulePilotConstraint` (interface): Structural stand-in for `rulepilot`'s `Constraint`.
+- `RERulePilotOperator` (type): Structural stand-in for `rulepilot`'s `Operator`.
+- `RERulePilotRule` (interface): Structural stand-in for `rulepilot`'s `Rule`.
+- `RERuleProperties` (interface): Structural stand-in for `json-rules-engine`'s `RuleProperties`.
+- `RETopLevelCondition` (type): Structural stand-in for `json-rules-engine`'s `TopLevelCondition`.
+- `rulePilotUnsupportedOperators` (const): React Query Builder substring operators that the `"rulepilot"` export format cannot represent.
+- `RulesEngine` (interface): Rules engine with standard query objects (`RuleGroupType`). Contains an array of `conditions`, each with an `antecedent` (rule group) and an optional `consequent`.
+- `RulesEngineAny` (type): Either `RulesEngine` or `RulesEngineIC`.
+- `RulesEngineBuilder` (function): The rules engine builder component for React.
+- `RulesEngineBuilderHeader` (const): Default header component for `RulesEngineBuilder`.
+- `RulesEngineBuilderHeaderProps` (interface): Props for `RulesEngineBuilderHeader`.
+- `RulesEngineEvaluator` (type): In-process evaluator returned by `formatRulesEngine(re, 'native')`. Given a facts object, returns the `consequents` of every condition that fires, in order, honoring the `evaluationMode`.
+- `RulesEngineExportFormat` (type): Available export formats for `formatRulesEngine`.
+- `RulesEngineIC` (interface): Rules engine with "independent combinator" query objects `RuleGroupTypeIC`). Contains an array of `conditions`, each with an `antecedent` (rule group) and an optional `consequent`.
+- `RulesEngineProcessor` (type): Function to produce a result that `formatRulesEngine` uses when processing a `RulesEngine` or `RulesEngineIC` object.
+- `RulesEngineProps` (interface): Props for `RulesEngineBuilder`.
+- `SchemaRE` (interface): Configuration options passed in the `schema` prop from `RulesEngineBuilder` to each subcomponent.
+- `ShiftActionsRE` (const)
+- `ShiftActionsREProps` (interface)
+- `standardClassnamesRE` (const): Standard classnames applied by `RulesEngineBuilder`.
+- `TranslationsFullRE` (type): The full `translations` interface for `RulesEngineBuilder`, with all properties required.
+- `TranslationsRE` (interface): The shape of the `translations` prop for `RulesEngineBuilder`.
+- `UpdateMethodRE` (interface)
+- `UpdateOptionsRE` (interface): Options for `updateRE`.
+- `updateRE` (const): Updates a property of a rule or group within a query without mutating the original rules engine.
+- `updateREInPlace` (const): Updates a property of a rule or group within a query by mutating the rules engine.
+- `ValueSelectorRE` (const)
+- `ValueSelectorREProps` (interface)
+- `WalkPrimitives` (interface): Primitives that adapt `walkRulesEngine` to a particular guard representation `G` (e.g. a `json-rules-engine` `TopLevelCondition`, or a `NativePredicate` function).
+- `walkRulesEngine` (function): Flattens a `RulesEngine` into an ordered list of guard/consequent pairs, reproducing the if/else-if/else (`"cascade"`) or independent (`"cumulative"`) semantics shared by the runnable export targets.
+
+## @react-querybuilder/tremor
+
+- `QueryBuilderTremor` (const)
+- `TremorActionElement` (function)
+- `TremorActionProps` (interface)
+- `tremorControlClassnames` (const)
+- `tremorControlElements` (const)
+- `TremorNotToggle` (function)
+- `TremorNotToggleProps` (interface)
+- `TremorShiftActions` (function)
+- `TremorValueEditor` (function)
+- `TremorValueEditorProps` (interface)
+- `TremorValueSelector` (function)
+- `TremorValueSelectorProps` (interface)
+
+## react-querybuilder
+
+- `ActionElement` (function): Default `<button>` component used by `QueryBuilder`.
+- `ActionProps` (interface): Props passed to every action component (rendered as `<button>` by default).
+- `ActionWithRulesAndAddersProps` (interface): **Deprecated.** Props passed to every action component that adds a rule or group.
+- `ActionWithRulesProps` (interface): **Deprecated.** Props passed to every group action component.
+- `CombinatorSelectorProps` (interface): Props for `combinatorSelector` components.
+- `CommonSubComponentProps` (interface): Base interface for all subcomponents.
+- `ControlElementsProp` (type): Subcomponents.
+- `Controls` (type): All subcomponents.
+- `defaultControlElements` (const): Default components used by `QueryBuilder`.
+- `DispatchQueryFn` (type)
+- `DragHandle` (const): Default drag handle component used by `QueryBuilder` when `enableDragAndDrop` is `true`.
+- `DragHandleProps` (interface): Props for `dragHandle` components.
+- `FieldSelectorProps` (interface): Props for `fieldSelector` components.
+- `getCompatContextProvider` (function): Generates a context provider for a compatibility package.
+- `GetCompatContextProviderProps` (type)
+- `getDispatchQueryById` (function): Returns the `dispatchQuery` function for the query builder with the given `qbId`, or `undefined` if no such query builder is mounted.
+- `getQuerySelectorById` (function): Given a `qbId` (passed to every component as part of the `schema` prop), returns a Redux selector for use with `useQueryBuilderSelector`.
+- `getRqbStore` (function): Gets the singleton React Query Builder store instance. DevTools are enabled if either: - globalThis.__RQB_DEVTOOLS__ is truthy - window.__RQB_DEVTOOLS__ is truthy
+- `injectSlice` (function): Injects a slice into the React Query Builder store. Useful for extensions that need to integrate their own state management.
+- `InlineCombinator` (function): Default `inlineCombinator` component used by `QueryBuilder`. A small `<div>` wrapper around the `combinatorSelector` component, used when either `showCombinatorsBetweenRules` or `independentCombinator…
+- `InlineCombinatorProps` (interface): Props passed to `inlineCombinator` components.
+- `LazyLoadedSlices` (interface)
+- `MatchModeEditor` (function): Default `matchModeEditor` component used by `QueryBuilder`.
+- `MatchModeEditorProps` (interface): Props for `matchModeEditor` components.
+- `mergeTranslation` (function)
+- `mergeTranslations` (function): Merges any number of partial `Translations` into a single definition.
+- `messages` (const)
+- `NotToggle` (function): Default `notToggle` (aka inversion) component used by `QueryBuilder`.
+- `NotToggleProps` (interface): Props for `notToggle` components.
+- `OperatorSelectorProps` (interface): Props for `operatorSelector` components.
+- `QueryBuilder` (function): The query builder component for React.
+- `QueryBuilderContext` (const): Context provider for `QueryBuilder`. Any descendant query builders will inherit the props from a context provider.
+- `QueryBuilderContextProps` (interface): Props passed down through context from a `QueryBuilderContextProvider`.
+- `QueryBuilderContextProvider` (type)
+- `QueryBuilderContextProviderProps` (interface)
+- `QueryBuilderProps` (type): Props for `QueryBuilder`.
+- `QueryBuilderStateContext` (const)
+- `QueryBuilderStateProvider` (function): Context provider for the `{@link QueryBuilder}` state store.
+- `queryBuilderStore` (const)
+- `RqbState` (interface)
+- `RqbStore` (type)
+- `Rule` (const): Default component to display `RuleType` objects. This is actually a small wrapper around `RuleComponents`.
+- `RuleComponents` (const): Renders a `React.Fragment` containing an array of form controls for managing a `RuleType`.
+- `RuleComponentsWithSubQuery` (const)
+- `RuleGroup` (const): Default component to display `RuleGroupType` and `RuleGroupTypeIC` objects. This is actually a small wrapper around `RuleGroupHeaderComponents` and `RuleGroupBodyComponents`.
+- `RuleGroupBodyComponents` (const): Renders a `React.Fragment` containing an array of either (1) `Rule` and `RuleGroup`, or (2) `Rule`, `RuleGroup`, and `InlineCombinator`.
+- `RuleGroupHeaderComponents` (const): Renders a `React.Fragment` containing an array of form controls for managing a `RuleGroupType` or `RuleGroupTypeIC`.
+- `RuleGroupProps` (interface): `RuleGroup` props.
+- `RuleProps` (interface): `Rule` props.
+- `RuleWithSubQueryGroupComponentsWrapper` (function)
+- `Schema` (interface): Configuration options passed in the `schema` prop from `QueryBuilder` to each subcomponent.
+- `SelectorOrEditorProps` (interface): Base interface for selectors and editors.
+- `ShiftActions` (function): Default "shift up"/"shift down" buttons used by `QueryBuilder`.
+- `ShiftActionsProps` (interface): Props passed to `shiftActions` components.
+- `toOptions` (function): Generates an array of `<option>` or `<optgroup>` elements from a given `OptionList`.
+- `Translation` (interface): A translation for a component with `title` only.
+- `Translations` (interface): The shape of the `translations` prop.
+- `TranslationsFull` (type): The full `translations` interface with all properties required.
+- `TranslationWithLabel` (interface): A translation for a component with `title` and `label`.
+- `TranslationWithPlaceholders` (interface): A translation for a component with `title` and a placeholder.
+- `UndoRedoActionsProps` (interface): Props passed to `undoRedoActions` components.
+- `useControlledOrUncontrolled` (function): Logs a warning when the component changes from controlled to uncontrolled, vice versa, or both `query` and `defaultQuery` are provided.
+- `UseControlledOrUncontrolledParams` (interface)
+- `useDeprecatedProps` (function): Logs an error to the console if any of the following are true: - `QueryBuilder` is rendered with an `independentCombinators` prop - `RuleGroup` is rendered with `combinator` or `rules` props (deprecat…
+- `useFields` (function)
+- `UseFields` (interface)
+- `useMatchModeEditor` (function)
+- `UseMatchModeEditor` (interface)
+- `useMergedContext` (function): Merges inherited context values with props, giving precedence to props.
+- `UseMergedContext` (interface): Props passed down through context from a `QueryBuilderContextProvider`.
+- `UseMergedContextParams` (type)
+- `useOptionListProp` (function): **Deprecated.**
+- `UseOptionListProp` (interface): Result of `prepareOptionList`.
+- `UseOptionListPropParams` (interface): Parameters for `prepareOptionList`.
+- `usePathsMemo` (function)
+- `usePreferAnyProp` (function): For given default, prop, and context values, return the first provided of prop, context, and default, in that order.
+- `usePreferProp` (function): For given default, prop, and context values, return the first provided of prop, context, and default, in that order.
+- `usePrevious` (function): Returns the prop value from the last render.
+- `useQbId` (function): Manages the `qbId` for a `QueryBuilder` instance.
+- `UseQbId` (interface)
+- `useQueryBuilder` (function): Calls `useQueryBuilderSetup` to massage the props and prepare basic update/generate methods, then passes the result to `useQueryBuilderSchema` to prepare and return all values required to render `Quer…
+- `useQueryBuilderQuery` (function): Retrieves the full, latest query object for the nearest ancestor `QueryBuilder` component.
+- `useQueryBuilderSchema` (function): For given `QueryBuilderProps` and setup values from `useQueryBuilderSetup`, prepares and returns all values required to render a query builder.
+- `UseQueryBuilderSchema` (type)
+- `useQueryBuilderSelector` (const): A Redux `useSelector` hook for RQB's internal store. See also `getQuerySelectorById`.
+- `useQueryBuilderSetup` (function): Massages the props as necessary and prepares the basic update/generate methods for use by the `QueryBuilder` component.
+- `UseQueryBuilderSetup` (type)
+- `useQueryManager` (function): Subscribes to a `QueryManager` and returns its current query alongside the manager itself. The component re-renders whenever the query changes.
+- `useReactDndWarning` (function): Logs a warning if drag-and-drop is enabled but the required dependencies (`react-dnd` and either `react-dnd-html5-backend` or `react-dnd-touch-backend`) were not detected.
+- `useRule` (function): Prepares all values and methods used by the `Rule` component.
+- `UseRule` (interface): `Rule` props.
+- `UseRuleDnD` (interface): Return type of `useRuleDnD` hook.
+- `useRuleGroup` (function): Prepares all values and methods used by the `RuleGroup` component.
+- `UseRuleGroup` (interface): `RuleGroup` props.
+- `UseRuleGroupDnD` (interface): Return type of `useRuleGroupDnD` hook.
+- `useSelectElementChangeHandler` (function): Returns a memoized change handler for HTML `<select>` elements.
+- `UseSelectElementChangeHandlerParams` (interface)
+- `useStopEventPropagation` (function): Wraps an event handler function in another function that calls `event.preventDefault()` and `event.stopPropagation()` first. The returned function accepts and forwards a second `context` argument.
+- `useUndoRedoWarning` (function): Logs a warning if the `showUndoRedo` prop is enabled but no undo/redo controls are available, which generally means the query builder was not wrapped in the `QueryBuilderHistory` component from `react…
+- `useValueEditor` (function): This hook is primarily concerned with multi-value editors like date range pickers, editors for 'in' and 'between' operators, etc.
+- `UseValueEditor` (interface)
+- `useValueSelector` (function): Transforms a value into an array when appropriate and provides a memoized change handler.
+- `UseValueSelectorParams` (type)
+- `ValueEditor` (function): Default `valueEditor` component used by `QueryBuilder`.
+- `ValueEditorProps` (interface): Props passed to `valueEditor` components.
+- `ValueSelector` (function): Default `<select>` component used by `QueryBuilder`.
+- `ValueSelectorProps` (interface): Props for all `value` selector components.
+- `ValueSourceSelectorProps` (interface): Props for `valueSourceSelector` components.
+- `VersatileSelectorProps` (type): Utility type representing props for selector components that could potentially be any of the standard selector types.

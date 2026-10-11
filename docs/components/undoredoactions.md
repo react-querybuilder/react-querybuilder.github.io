@@ -4,83 +4,64 @@ Renders a `<div>` containing two buttons—"undo" and "redo"—in the header of 
 
 The buttons themselves are rendered with the [`actionElement`](/docs/components/querybuilder-controlelements.md#actionelement) control element, so they inherit the same styling and behavior as every other action button, including replacements provided by the [compatibility packages](/docs/compat.md).
 
-info
-
-You generally won't import or configure this component directly—rendering `QueryBuilderHistory` supplies it automatically, and defaults descendant query builders' `showUndoRedo` prop to `true`:
-
-```
-import { QueryBuilder } from 'react-querybuilder';
-
-import { QueryBuilderHistory } from 'react-querybuilder/history';
-
-
-
-<QueryBuilderHistory>
-
-  <QueryBuilder fields={fields} />
-
-</QueryBuilderHistory>;
-```
-
-Pass `showUndoRedo={false}` to a `QueryBuilder` (or to `QueryBuilderHistory` itself) to opt a query builder tree back out while still recording history.
-
-See [Undo/redo](/docs/tips/undo-redo.md) for the full guide.
+> **Info:** You generally won't import or configure this component directly—rendering `QueryBuilderHistory` supplies it automatically, and defaults descendant query builders' `showUndoRedo` prop to `true`:
+>
+> ```tsx
+> import { QueryBuilder } from 'react-querybuilder';
+> import { QueryBuilderHistory } from 'react-querybuilder/history';
+>
+> <QueryBuilderHistory>
+>   <QueryBuilder fields={fields} />
+> </QueryBuilderHistory>;
+> ```
+>
+> Pass `showUndoRedo={false}` to a `QueryBuilder` (or to `QueryBuilderHistory` itself) to opt a query builder tree back out while still recording history.
+>
+> See [Undo/redo](/docs/tips/undo-redo.md) for the full guide.
 
 To use it without `QueryBuilderHistory`, assign it to the [`undoRedoActions`](/docs/components/querybuilder-controlelements.md#undoredoactions) control element yourself. It registers its own history recording, so no provider is required. The buttons still occupy the same slot in the outermost group's header:
 
-```
+```tsx
 import { UndoRedoActions } from 'react-querybuilder/history';
 
-
-
 <QueryBuilder
-
   fields={fields}
-
   showUndoRedo
-
   controlElements={{ undoRedoActions: UndoRedoActions }}
-
 />;
 ```
 
 To place undo/redo controls anywhere else—a toolbar above the query builder, for example—build your own with the [`useQueryBuilderHistory`](/docs/tips/undo-redo.md#usequerybuilderhistory) hook instead.
 
-## React Native[​](#react-native "Direct link to React Native")
+## React Native
 
 `@react-querybuilder/native` exports `NativeUndoRedoActions`, which renders the same two buttons inside a `<View>`. `QueryBuilderNative` assigns it to the `undoRedoActions` control element by default, so it renders whenever [`showUndoRedo`](/docs/components/querybuilder.md#showundoredo) is enabled—either explicitly or by a `QueryBuilderHistory` ancestor. Style the container with the `undoRedoActions` key of the `styles` prop. Pass `controlElements={{ undoRedoActions: null }}` to opt out.
 
 `UndoRedoActionElements`, also exported from `react-querybuilder/history`, renders just the two buttons (no wrapper element) and backs both the web and React Native containers. Use it if you need a custom wrapper.
 
-## Behavior[​](#behavior "Direct link to Behavior")
+## Behavior
 
 * The "undo" button is disabled when there is nothing to undo, and likewise for "redo".
 * Both buttons are disabled when the query builder is [`disabled`](/docs/components/querybuilder.md#disabled).
 * Rendering this component is what opts its query builder in to history recording, since it calls [`useQueryBuilderHistory`](/docs/tips/undo-redo.md#usequerybuilderhistory) with the query builder's `qbId`. A query builder that never renders undo/redo controls (and never uses the hook) retains no history.
 
-## Labels and titles[​](#labels-and-titles "Direct link to Labels and titles")
+## Labels and titles
 
 Configure the button text and tooltips with the [`translations`](/docs/components/querybuilder.md#translations) prop:
 
-```
+```tsx
 <QueryBuilder
-
   showUndoRedo
-
   translations={{
-
     undo: { label: 'Undo', title: 'Undo the last change' },
-
     redo: { label: 'Redo', title: 'Redo the last undone change' },
-
   }}
-
 />
 ```
 
 The default labels are `"↶"` (U+21B6) and `"↷"` (U+21B7). These glyphs do not mirror automatically in right-to-left layouts, so swap them in your translations if appropriate.
 
-## Classnames[​](#classnames "Direct link to Classnames")
+## Classnames
 
 | Classname               | Applied to            |
 | ----------------------- | --------------------- |

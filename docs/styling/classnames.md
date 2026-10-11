@@ -24,9 +24,7 @@ The following standard classnames are not labeled below. For most of them, the e
 
 A full list of standard classnames is [below](#standard-classnames).
 
-tip
-
-Disable application of all standard classnames with the [`suppressStandardClassnames`](/docs/components/querybuilder.md#suppressstandardclassnames) prop.
+> **Tip:** Disable application of all standard classnames with the [`suppressStandardClassnames`](/docs/components/querybuilder.md#suppressstandardclassnames) prop.
 
 <!-- -->
 
@@ -42,143 +40,76 @@ Disable application of all standard classnames with the [`suppressStandardClassn
 
 <!-- -->
 
-.ruleGroup-combinators (and)\[ ].ruleGroup-notToggle.ruleGroup-addRule.ruleGroup-addGroup.ruleGroup-lock
+.ruleGroup-combinators (and)\[ ].ruleGroup-notToggle
 
-.undoRedoActions-undo.undoRedoActions-redo
+.rule-fields (f1).rule-operators (=).rule-value
 
-˄˅
+.ruleGroup-combinators (and)\[ ].ruleGroup-notToggle
 
-.rule-fields (f1).rule-operators (=).rule-value.rule-cloneRule.rule-lock.rule-remove
+.rule-fields (f1).rule-operators (=)This rule is valid
 
-˄˅
+.rule-fields (f2).rule-operators (=)This rule is invalid
 
-.ruleGroup-combinators (and)\[ ].ruleGroup-notToggle.ruleGroup-addRule.ruleGroup-addGroup.ruleGroup-cloneGroup.ruleGroup-lock.ruleGroup-remove
+.ruleGroup-combinators (and).ruleGroup-notToggle
 
-˄˅
+.rule-fields (f1).rule-operators (=)
 
-.rule-fields (f1).rule-operators (=)This rule is valid.rule-cloneRule.rule-lock.rule-remove
+.rule-valueSource (f3).rule-operators (=)valuef1
 
-˄˅
+Value list (fb1)betweenfield.rule-value-list-item (fb2).rule-value-list-item (fb2)
 
-.rule-fields (f2).rule-operators (=)This rule is invalid.rule-cloneRule.rule-lock.rule-remove
+## Standard classnames
 
-˄˅
-
-.ruleGroup-combinators (and).ruleGroup-notToggle.ruleGroup-addRule.ruleGroup-addGroup.ruleGroup-cloneGroup.ruleGroup-lock.ruleGroup-remove
-
-˄˅
-
-.rule-fields (f1).rule-operators (=).rule-cloneRule.rule-lock.rule-remove
-
-˄˅
-
-.rule-valueSource (f3).rule-operators (=)valuef1.rule-cloneRule.rule-lock.rule-remove
-
-˄˅
-
-Value list (fb1)betweenfield.rule-value-list-item (fb2).rule-value-list-item (fb2).rule-cloneRule.rule-lock.rule-remove
-
-## Standard classnames[​](#standard-classnames "Direct link to Standard classnames")
-
-```
+```ts
 export const standardClassnames = {
-
   queryBuilder: 'queryBuilder',
-
   ruleGroup: 'ruleGroup',
-
   header: 'ruleGroup-header',
-
   body: 'ruleGroup-body',
-
   combinators: 'ruleGroup-combinators',
-
   addRule: 'ruleGroup-addRule',
-
   addGroup: 'ruleGroup-addGroup',
-
   cloneRule: 'rule-cloneRule',
-
   cloneGroup: 'ruleGroup-cloneGroup',
-
   ungroup: 'ruleGroup-ungroup',
-
   removeGroup: 'ruleGroup-remove',
-
   notToggle: 'ruleGroup-notToggle',
-
   rule: 'rule',
-
   fields: 'rule-fields',
-
   matchMode: 'rule-matchMode',
-
   matchThreshold: 'rule-matchThreshold',
-
   operators: 'rule-operators',
-
   value: 'rule-value',
-
   removeRule: 'rule-remove',
-
   betweenRules: 'betweenRules',
-
   valid: 'queryBuilder-valid',
-
   invalid: 'queryBuilder-invalid',
-
   shiftActions: 'shiftActions',
-
   undoRedoActions: 'undoRedoActions',
-
   undoAction: 'undoRedoActions-undo',
-
   redoAction: 'undoRedoActions-redo',
-
   dndDragging: 'dndDragging',
-
   dndOver: 'dndOver',
-
   dndCopy: 'dndCopy',
-
   dndGroup: 'dndGroup',
-
   dndDropNotAllowed: 'dndDropNotAllowed',
-
   dndPreviewPosition: 'dndPreviewPosition',
-
   dndHidden: 'dndHidden',
-
   dragHandle: 'queryBuilder-dragHandle',
-
   disabled: 'queryBuilder-disabled',
-
   muted: 'queryBuilder-muted',
-
   lockRule: 'rule-lock',
-
   lockGroup: 'ruleGroup-lock',
-
   muteRule: 'rule-mute',
-
   muteGroup: 'ruleGroup-mute',
-
   valueSource: 'rule-valueSource',
-
   valueListItem: 'rule-value-list-item',
-
   branches: 'queryBuilder-branches',
-
   justified: 'queryBuilder-justified',
-
   responsive: 'queryBuilder-responsive',
-
   hasSubQuery: 'rule-hasSubQuery',
-
   loading: 'queryBuilder-loading',
-
   valueDateTimeRelative: 'rule-value-dateTimeRelative',
-
 } as const;
 ```
 

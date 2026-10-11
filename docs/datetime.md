@@ -4,7 +4,7 @@ By default, React Query Builder components and utilities handle dates and times 
 
 The `@react-querybuilder/datetime` package augments React Query Builder with enhanced date/time functionality.
 
-## Initialization[​](#initialization "Direct link to Initialization")
+## Initialization
 
 A date/time processor library with parsing and formatting capabilities must be used with `@react-querybuilder/datetime`. Ready-to-use plugins are provided for [Day.js](https://day.js.org/), [date-fns](https://date-fns.org/), and [Luxon](https://moment.github.io/luxon/). Other third-party or custom date/time libraries can be used (see [below](#custom-plugins)).
 
@@ -12,21 +12,18 @@ A date/time processor library with parsing and formatting capabilities must be u
 
 The documentation below assumes the use of the Day.js plugin. To use one of the others, replace `@react-querybuilder/datetime/dayjs` with `@react-querybuilder/datetime/date-fns` or `@react-querybuilder/datetime/luxon`.
 
-## Export[​](#export "Direct link to Export")
+## Export
 
-```
+```ts
 import { datetimeRuleProcessorSQL } from '@react-querybuilder/datetime/dayjs';
-
 // Other options:
-
 // import { datetimeRuleProcessorSQL } from '@react-querybuilder/datetime/date-fns';
-
 // import { datetimeRuleProcessorSQL } from '@react-querybuilder/datetime/luxon';
 ```
 
 The date/time package provides `formatQuery` rule processors that handle date/time fields appropriately for the target platform.
 
-### Conditional use[​](#conditional-use "Direct link to Conditional use")
+### Conditional use
 
 By default, the date/time rule processors only treat a rule value as a date (or series of dates) if the `field` configuration has a `datatype` property starting with "date", "datetime", "datetimeoffset", or "timestamp" (using the `defaultIsDateField` function). Otherwise, rule processing is passed to the default rule processor for that export format.
 
@@ -39,177 +36,115 @@ You can customize this algorithm by passing a `context.isDateField` configuratio
 
 In the example below, the value in the "birthDate" rule matches the regular expression in the `isDateField` function, so the corresponding SQL output has the `date` keyword prepended to the value string (per the "postgresql" preset). The "mathNotDate" rule value does *not* match the pattern and is processed by the default SQL rule processor.
 
-```
+```ts
 // Returns true if the value appears to be an ISO date-only string (YYYY-MM-DD)
-
 const isDateField = (rule, opts) => /^\d\d\d\d-\d\d-\d\d$/.test(rule.value);
 
-
-
 const query: RuleGroupType = {
-
   combinator: 'and',
-
   rules: [
-
     { field: 'birthDate', operator: '<', value: '1950-01-01' },
-
     { field: 'mathNotDate', operator: '=', value: '1950-1-1' },
-
   ],
-
 };
 
-
-
 formatQuery(query, {
-
   preset: 'postgresql',
-
   ruleProcessor: datetimeRuleProcessorSQL,
-
   context: { isDateField },
-
 });
-
 // `(birthDate < date'1950-01-01' and mathNotDate = '1950-1-1')`
 ```
 
 In the next example, `isDateField` is an array of objects. If the field object (`options.fieldData`) matches all properties of any element in the array, the field is treated as a date. Note that this method depends on the `fields` array being passed in the `formatQuery` options.
 
-```
+```ts
 // Triggers date processing if the field has `datatype: "date"` _or_ `inputType: "datetime-local"`
-
 const isDateField = [{ datatype: 'date' }, { inputType: 'datetime-local' }];
 
-
-
 const fields: Field[] = [
-
   { name: 'birthDate', label: 'Birth Date', datatype: 'date' },
-
   { name: 'mathNotDate', label: 'Math, Not Date', datatype: 'number' },
-
 ];
 
-
-
 const query: RuleGroupType = {
-
   combinator: 'and',
-
   rules: [
-
     { field: 'birthDate', operator: '<', value: '1950-01-01' },
-
     { field: 'mathNotDate', operator: '=', value: '1950-1-1' },
-
   ],
-
 };
 
-
-
 formatQuery(query, {
-
   preset: 'postgresql',
-
   fields,
-
   ruleProcessor: datetimeRuleProcessorSQL,
-
   context: { isDateField },
-
 });
-
 // `(birthDate < date'1950-01-01' and mathNotDate = '1950-1-1')`
 ```
 
-### Non-value sources[​](#non-value-sources "Direct link to Non-value sources")
+### Non-value sources
 
 The date/time rule processors only materialize a rule's value as a date when the rule's `valueSource` is the default `"value"`. Rules using the `"field"` or `"parameter"` value source are delegated to the default rule processor for the target format, so a field or [named parameter](/docs/components/valueeditor.md#the-parameter-value-source) reference is serialized identically to core (never coerced through the date library). Likewise, `QueryBuilderDateTime`'s value editor renders the standard field/parameter selector for those sources instead of the date/time editor.
 
-### SQL[​](#sql "Direct link to SQL")
+### SQL
 
 The `datetimeRuleProcessorSQL` rule processor produces different output based on the `preset` option, which defaults to "ansi". For example, if `preset` is "postgresql", date values are prefixed with `date` (e.g., `date'2000-01-01'`), but for "mssql" they're wrapped in `cast([...] as date)` (e.g., `cast('2000-01-01' as date)`).
 
-### MongoDB[​](#mongodb "Direct link to MongoDB")
+### MongoDB
 
 Since the `datetimeRuleProcessorMongoDBQuery` rule processor handles real date/time values (as `Date` objects), it should be used with the "mongodb_query" format, not "mongodb".
 
-```
+```ts
 import { datetimeRuleProcessorMongoDBQuery } from '@react-querybuilder/datetime/dayjs';
 
-
-
 const mongodbQuery = formatQuery(query, {
-
   format: 'mongodb_query',
-
   ruleProcessor: datetimeRuleProcessorMongoDBQuery,
-
 });
 ```
 
-### JsonLogic[​](#jsonlogic "Direct link to JsonLogic")
+### JsonLogic
 
 The `datetimeRuleProcessorJsonLogic` rule processor produces custom JsonLogic operations to indicate that rules should be handled as date/time values. Like [`jsonLogicAdditionalOperators`](/docs/utils/export.md#jsonlogic) from the `react-querybuilder` package, the date/time package provides an easy way to add support for its custom operations with the `jsonLogicDateTimeOperations` object.
 
-```
+```ts
 import { add_operation, apply } from 'json-logic-js';
-
 import { jsonLogicDateTimeOperations } from '@react-querybuilder/datetime/dayjs';
 
-
-
 for (const [op, func] of Object.entries(jsonLogicDateTimeOperations)) {
-
   add_operation(op, func);
-
 }
 
-
-
 const jsonLogic = formatQuery(query, {
-
   format: 'jsonlogic',
-
   ruleProcessor: datetimeRuleProcessorJsonLogic,
-
 });
-
-
 
 const results = data.filter(d => apply(jsonLogic, d));
 ```
 
-### Common Expression Language (CEL)[​](#common-expression-language-cel "Direct link to Common Expression Language (CEL)")
+### Common Expression Language (CEL)
 
-```
+```ts
 import { datetimeRuleProcessorCEL } from '@react-querybuilder/datetime/dayjs';
-
-
 
 const cel = formatQuery(query, { format: 'cel', ruleProcessor: datetimeRuleProcessorCEL });
 ```
 
-### JSONata[​](#jsonata "Direct link to JSONata")
+### JSONata
 
-```
+```ts
 import { datetimeRuleProcessorJSONata } from '@react-querybuilder/datetime/dayjs';
 
-
-
 const jsonata = formatQuery(query, {
-
   format: 'jsonata',
-
   ruleProcessor: datetimeRuleProcessorJSONata,
-
 });
 ```
 
-### Cypher / GQL[​](#cypher--gql "Direct link to Cypher / GQL")
+### Cypher / GQL
 
 The `datetimeRuleProcessorCypher` rule processor handles the "cypher" (and equivalent "gql") export format. Date values are wrapped in Cypher temporal constructors: `date('...')` for date-only values and `datetime('...')` for full timestamps.
 
@@ -218,31 +153,21 @@ Two custom operators provide duration math support:
 * `olderThanDuration` — checks if the elapsed time since a field value exceeds an [ISO 8601 duration](https://en.wikipedia.org/wiki/ISO_8601#Durations): `datetime() - field > duration('P30D')`
 * `withinDuration` — checks if the elapsed time is within a duration: `datetime() - field <= duration('P7D')`
 
-```
+```ts
 import { datetimeRuleProcessorCypher } from '@react-querybuilder/datetime/dayjs';
-
 // Other options:
-
 // import { datetimeRuleProcessorCypher } from '@react-querybuilder/datetime/date-fns';
-
 // import { datetimeRuleProcessorCypher } from '@react-querybuilder/datetime/luxon';
 
-
-
 const cypher = formatQuery(query, {
-
   format: 'cypher',
-
   ruleProcessor: datetimeRuleProcessorCypher,
-
 });
-
 // e.g. `n.birthDate < date('1950-01-01')`
-
 // or:  `datetime() - n.lastLogin > duration('P30D')`
 ```
 
-### SPARQL[​](#sparql "Direct link to SPARQL")
+### SPARQL
 
 The `datetimeRuleProcessorSPARQL` rule processor handles the "sparql" export format. Date values are emitted as [XSD typed literals](https://www.w3.org/TR/xmlschema-2/): `"..."^^xsd:date` for date-only values and `"..."^^xsd:dateTime` for full timestamps.
 
@@ -251,153 +176,99 @@ Duration math operators work similarly to the Cypher variant, using `NOW()` and 
 * `olderThanDuration` → `NOW() - ?field > "P30D"^^xsd:duration`
 * `withinDuration` → `NOW() - ?field <= "P7D"^^xsd:duration`
 
-```
+```ts
 import { datetimeRuleProcessorSPARQL } from '@react-querybuilder/datetime/dayjs';
-
 // Other options:
-
 // import { datetimeRuleProcessorSPARQL } from '@react-querybuilder/datetime/date-fns';
-
 // import { datetimeRuleProcessorSPARQL } from '@react-querybuilder/datetime/luxon';
 
-
-
 const sparql = formatQuery(query, {
-
   format: 'sparql',
-
   ruleProcessor: datetimeRuleProcessorSPARQL,
-
 });
-
 // e.g. `?birthDate < "1950-01-01"^^xsd:date`
-
 // or:  `NOW() - ?lastLogin > "P30D"^^xsd:duration`
 ```
 
-### Natural language[​](#natural-language "Direct link to Natural language")
+### Natural language
 
 The `datetimeRuleProcessorNL` formats date/time values using `Intl.DateTimeFormat`. By default, the formatter is instantiated as follows:
 
-```
+```ts
 // For date-only values, e.g. "1969-01-01":
-
 new Intl.DateTimeFormat(undefined, { dateStyle: 'full' });
 
-
-
 // For date+time values, e.g. "1969-01-01T12:14:26.052Z":
-
 new Intl.DateTimeFormat(undefined, { dateStyle: 'full', timeStyle: 'long' });
 ```
 
 To customize the output, use the `context` option. The `locales` property is passed as the first argument to the `Intl.DateTimeFormat` constructor, and either `dateFormat` or `dateTimeFormat`—depending on the rule—is passed as the second argument.
 
-```
+```ts
 import { datetimeRuleProcessorNL } from '@react-querybuilder/datetime/dayjs';
 
-
-
 const nl = formatQuery(query, {
-
   format: 'natural_language',
-
   ruleProcessor: datetimeRuleProcessorNL,
-
   context: {
-
     locales: 'en-GB',
-
     dateFormat: { dateStyle: 'full' },
-
     dateTimeFormat: { dateStyle: 'full', timeStyle: 'long' },
-
   },
-
 });
 ```
 
-## Components[​](#components "Direct link to Components")
+## Components
 
 The `QueryBuilderDateTime` [context provider](/docs/components/querybuilder.md#context) augments [`ValueEditor`](/docs/components/valueeditor.md) with date/time functionality. Wrap your `QueryBuilder` with it to enable enhanced date/time editing for any field whose `inputType` is `"date"`/`"datetime-local"` or whose `datatype` begins with "date", "datetime", or "timestamp". Non-date fields delegate to the value editor inherited from a surrounding compat/theme provider (e.g. `QueryBuilderMantine`), falling back to the standard value editor when none is present. The themed editor is likewise used for the absolute date input and the relative offset input, so the whole control stays consistent with your theme.
 
-info
+> **Info:** All React-related exports must be imported from `@react-querybuilder/datetime/ui` (note the **`/ui`**), not the root entry point. The root entry point exports only non-React utilities and types.
 
-All React-related exports must be imported from `@react-querybuilder/datetime/ui` (note the **`/ui`**), not the root entry point. The root entry point exports only non-React utilities and types.
-
-```
+```tsx
 import { QueryBuilderDateTime } from '@react-querybuilder/datetime/ui';
 
-
-
 const App = () => (
-
   <QueryBuilderDateTime>
-
     <QueryBuilder fields={fields} query={query} onQueryChange={setQuery} />
-
   </QueryBuilderDateTime>
-
 );
 ```
 
 `QueryBuilderDateTime` composes with other context providers (compat/theme packages and [`@react-querybuilder/dnd`](/docs/dnd.md)). Nest it inside the theme provider so themed sub-controls (selectors, inputs) are used:
 
-```
+```tsx
 <QueryBuilderMantine>
-
   <QueryBuilderDateTime>
-
     <QueryBuilderDnD dnd={dnd}>
-
       <QueryBuilder /* ... */ />
-
     </QueryBuilderDnD>
-
   </QueryBuilderDateTime>
-
 </QueryBuilderMantine>
 ```
 
-### Relative date/time values[​](#relative-datetime-values "Direct link to Relative date/time values")
+### Relative date/time values
 
 Date/time fields support *relative* values such as "three months ago" or "the beginning of this year" in addition to absolute (ISO 8601 string) values. By default the value editor renders a compact absolute/relative toggle button; in relative mode it shows an anchor selector, a signed offset, and a unit selector (the unit is hidden when the offset is `0`). How the user switches modes is pluggable — see [Mode controllers](#mode-controllers) below.
 
 A relative value is stored as a structured object (absolute values remain plain strings, preserving backward compatibility):
 
-```
+```ts
 interface RelativeDateTimeValue {
-
   mode: 'relative';
-
   // Zero-offset reference point:
-
   anchor:
-
     | 'now'
-
     | 'startOfDay'
-
     | 'endOfDay'
-
     | 'startOfWeek'
-
     | 'endOfWeek'
-
     | 'startOfMonth'
-
     | 'endOfMonth'
-
     | 'startOfYear'
-
     | 'endOfYear';
-
   // Signed offset from the anchor (negative = past, positive = future, 0 = exact anchor):
-
   offset: number;
-
   unit: 'minute' | 'hour' | 'day' | 'week' | 'month' | 'year';
-
 }
 ```
 
@@ -405,151 +276,108 @@ The final date/time is computed as: apply the `anchor` to the current date/time,
 
 The recommended way to enable the relative-capable editor is to wrap your `QueryBuilder` in `QueryBuilderDateTime`. With no props it provides the zero-config toggle experience:
 
-```
+```tsx
 import { QueryBuilderDateTime } from '@react-querybuilder/datetime/ui';
 
-
-
 <QueryBuilderDateTime>
-
   <QueryBuilder fields={fields} />
-
 </QueryBuilderDateTime>;
 ```
 
 To use the relative-capable editor on its own (e.g. when providing custom `controlElements`), import `RelativeDateTimeValueEditor` directly. Without a surrounding `QueryBuilderDateTime` it falls back to the default config (toggle controller, default anchors/units/labels):
 
-```
+```tsx
 import { RelativeDateTimeValueEditor } from '@react-querybuilder/datetime/ui';
-
-
 
 <QueryBuilder fields={fields} controlElements={{ valueEditor: RelativeDateTimeValueEditor }} />;
 ```
 
-### Mode controllers[​](#mode-controllers "Direct link to Mode controllers")
+### Mode controllers
 
 The strategy for switching a rule between absolute and relative entry is delegated to a pluggable `RelativeDateTimeModeController`. A controller decides the current mode and optionally renders an affordance to change it — the **stored value shape is never affected** (absolute = ISO string, relative = `RelativeDateTimeValue` object), so all processors behave identically regardless of how the mode was chosen.
 
-```
+```ts
 interface RelativeDateTimeModeController {
-
   // Derive the current mode from the rule (its operator and/or value):
-
   isRelative: (props: ValueEditorProps) => boolean;
-
   // Optional affordance rendered inside the editor to switch modes. Omit when
-
   // the mode is selected elsewhere (e.g. via the operator selector):
-
   ModeControl?: ComponentType<RelativeDateTimeModeControlProps>;
-
 }
 ```
 
 Two controllers ship with the package:
 
-#### Toggle controller (default)[​](#toggle-controller-default "Direct link to Toggle controller (default)")
+#### Toggle controller (default)
 
 `toggleModeController` derives the mode from the value shape and renders a compact `role="switch"` toggle button. Its glyphs are supplied by CSS pseudo-elements (calendar/clock) keyed on `aria-checked`, and can be overridden via [`toggleLabels`](#configuration). This is the default — no configuration needed.
 
-#### Operator-driven controller[​](#operator-driven-controller "Direct link to Operator-driven controller")
+#### Operator-driven controller
 
 An operator-driven controller derives the mode from the rule's **operator** instead of rendering a toggle button — the operator selector *is* the mode affordance. Build one with `createOperatorModeController`, passing the operator name(s) (or a predicate) that should put the editor in relative mode:
 
-```
+```tsx
 import { createOperatorModeController } from '@react-querybuilder/datetime/ui';
 
-
-
 // From an operator list:
-
 const controller = createOperatorModeController(['relativeEq', 'relativeBefore']);
 
-
-
 // Or a predicate:
-
 const controller = createOperatorModeController(op => op.startsWith('relative'));
 ```
 
 Register those operators on your date fields with `withRelativeOperators(fields, operators)`, then pass the controller to `QueryBuilderDateTime`:
 
-```
+```tsx
 import {
-
   QueryBuilderDateTime,
-
   createOperatorModeController,
-
   withRelativeOperators,
-
 } from '@react-querybuilder/datetime/ui';
 
-
-
 const relativeOperators = [
-
   { name: 'relativeEq', value: 'relativeEq', label: 'is (relative)' },
-
   { name: 'relativeBefore', value: 'relativeBefore', label: 'is before (relative)' },
-
 ];
 
-
-
 const controller = createOperatorModeController(relativeOperators.map(o => o.name));
-
 const fieldsWithRelative = withRelativeOperators(fields, relativeOperators);
 
-
-
 <QueryBuilderDateTime modeController={controller}>
-
   <QueryBuilder fields={fieldsWithRelative} />
-
 </QueryBuilderDateTime>;
 ```
 
 `withRelativeOperators` appends the given `operators` to each field's `operators` list (falling back to the core `defaultOperators` for fields without an explicit list). Selecting one of those operators puts the editor in relative mode; the stored value remains a `RelativeDateTimeValue`.
 
-##### Exporting operator-driven values[​](#exporting-operator-driven-values "Direct link to Exporting operator-driven values")
+##### Exporting operator-driven values
 
 The operator names registered above signal **mode only** — they aren't real comparison operators, so processors don't know how to export them on their own. Map each one to a real operator at format time via `context.relativeOperatorMap`:
 
-```
+```ts
 formatQuery(query, {
-
   format: 'sql',
-
   preset: 'postgresql',
-
   ruleProcessor: datetimeRuleProcessorSQL,
-
   context: {
-
     relativeOperatorMap: { relativeEq: '=', relativeBefore: '<' },
-
   },
-
 });
 ```
 
 Each date/time processor resolves a rule's operator through this map before exporting. Operators absent from the map pass through unchanged (no warning is emitted), so you only need to map the operators you introduced. To inspect how operators and values are being resolved, use the [`format: 'diagnostics'`](/docs/utils/export.md#diagnostics) output.
 
-#### Custom controllers[​](#custom-controllers "Direct link to Custom controllers")
+#### Custom controllers
 
 Supply your own object to fully control the UX — for example, a controller that derives the mode purely from the value shape and renders no affordance:
 
-```
+```tsx
 const valueShapeController = {
-
   isRelative: props => typeof props.value === 'object' && props.value?.mode === 'relative',
-
 };
 ```
 
-### Configuration[​](#configuration "Direct link to Configuration")
+### Configuration
 
 `QueryBuilderDateTime` accepts optional `RelativeDateTimeEditorConfig` props. Omitting all of them yields the zero-config toggle experience; any provided option merges over the defaults.
 
@@ -565,71 +393,46 @@ By default the absolute date editor parses and validates its input with a native
 
 `toggleLabels` lets you override the toggle's accessible label, tooltips, and rendered content (e.g. to use icon components or localized text instead of the default CSS glyphs):
 
-```
+```tsx
 <QueryBuilderDateTime
-
   toggleLabels={{
-
     label: 'Switch date entry mode',
-
     absoluteTitle: 'Absolute date (click for relative)',
-
     relativeTitle: 'Relative date (click for absolute)',
-
     absoluteContent: <CalendarIcon />,
-
     relativeContent: <ClockIcon />,
-
   }}
-
   anchors={[
-
     { name: 'now', value: 'now', label: 'right now' },
-
     { name: 'startOfDay', value: 'startOfDay', label: 'midnight' },
-
   ]}>
-
   <QueryBuilder fields={fields} />
-
 </QueryBuilderDateTime>
 ```
 
-### Between ranges[​](#between-ranges "Direct link to Between ranges")
+### Between ranges
 
 For the `between` and `notBetween` operators the editor renders **two independent value editors**, one per bound, each with its own mode affordance. This lets the "from" and "to" bounds be set independently — either can be absolute or relative, and they can be mixed (e.g. an absolute "from" and a relative "to"):
 
-```
+```ts
 const query: RuleGroupType = {
-
   combinator: 'and',
-
   rules: [
-
     {
-
       field: 'lastLogin',
-
       operator: 'between',
-
       value: [
-
         '2024-01-01', // absolute "from"
-
         { mode: 'relative', anchor: 'now', offset: 0, unit: 'day' }, // relative "to"
-
       ],
-
     },
-
   ],
-
 };
 ```
 
 The bounds are always stored as a **two-element array**, regardless of the `listsAsArrays` option. Relative bounds are objects, which can't survive the comma-joining used for ordinary `between` values, so the array is emitted directly. All processors already handle relative values in either (or both) array slots.
 
-### Materializing relative values[​](#materializing-relative-values "Direct link to Materializing relative values")
+### Materializing relative values
 
 When exporting a query, relative values are resolved according to the target format:
 
@@ -642,96 +445,58 @@ Two `context` options control this behavior:
 * `context.materializeRelativeDateTime` — when `true`, relative values are resolved to concrete literals for *all* formats, including SQL.
 * `context.relativeDateTimeBase` — a `Date` that pins "now" for deterministic output (useful for testing or reproducible exports).
 
-```
+```ts
 formatQuery(query, {
-
   format: 'sql',
-
   preset: 'postgresql',
-
   ruleProcessor: datetimeRuleProcessorSQL,
-
   context: {
-
     materializeRelativeDateTime: true,
-
     relativeDateTimeBase: new Date('2024-01-15T00:00:00Z'),
-
   },
-
 });
 ```
 
-## Custom plugins[​](#custom-plugins "Direct link to Custom plugins")
+## Custom plugins
 
 If the official date/time processor plugins do not meet your requirements, you can provide a custom plugin that conforms to the `RQBDateTimeLibraryAPI` interface:
 
-```
+```ts
 type DateOrString = string | Date;
 
-
-
 interface RQBDateTimeLibraryAPI {
-
   /** Format a `Date` or ISO 8601 string with format `fmt` */
-
   format: (d: DateOrString, fmt: string) => string;
-
   /** `a` is after `b`. */
-
   isAfter: (a: DateOrString, b: DateOrString) => boolean;
-
   /** `a` is before `b`. */
-
   isBefore: (a: DateOrString, b: DateOrString) => boolean;
-
   /**
-
    * `a` evaluates to the same timestamp as `b`. If either `a` or `b` is an
-
    * ISO date-only string, they are the same date (time component is ignored).
-
    */
-
   isSame: (a: DateOrString, b: DateOrString) => boolean;
-
   /** `d` is, or evaluates to, a valid `Date` object */
-
   isValid: (d: DateOrString) => boolean;
-
   /** Convert a string to a `Date` object (returns a `Date` unchanged) */
-
   toDate: (d: DateOrString) => Date;
-
   /** 'YYYY-MM-DDTHH:mm:ss.SSSZ' format */
-
   toISOString: (d: DateOrString) => string;
-
   /** Format `Date` or ISO 8601 string in ISO date-only format ('YYYY-MM-DD') */
-
   toISOStringDateOnly: (d: DateOrString) => string;
-
   /** Truncate `d` to the start of the given period (used for relative values) */
-
   startOf: (d: DateOrString, unit: 'day' | 'week' | 'month' | 'year') => Date;
-
   /** Advance `d` to the end of the given period (used for relative values) */
-
   endOf: (d: DateOrString, unit: 'day' | 'week' | 'month' | 'year') => Date;
-
   /** Offset `d` by `amount` units of `unit` (negative `amount` moves into the past) */
-
   add: (d: DateOrString, amount: number, unit: RelativeDateTimeUnit) => Date;
-
 }
 ```
 
 Most exports from the date/time library have a corresponding `get*` method that accepts a processor plugin and returns a method or component ready to use in the typical fashion within React Query Builder. For example, to generate a rule processor for `formatQuery` that uses a custom date/time plugin `myDateTimeLibraryAPI`, pass it to the `getDatetimeRuleProcessorSQL` function like this:
 
-```
+```ts
 const mySQLRuleProcessor = getDatetimeRuleProcessorSQL(myDateTimeLibraryAPI);
-
-
 
 const sql = formatQuery(query, { format: 'sql', ruleProcessor: mySQLRuleProcessor });
 ```

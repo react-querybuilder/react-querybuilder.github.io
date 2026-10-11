@@ -4,23 +4,19 @@
 
 `ValueEditor` renders an `<input>` by default, or a `<select>` (via [`ValueSelector`](/docs/components/valueselector.md)) for list-based values. It uses the [`useValueEditor`](/docs/utils/hooks.md#usevalueeditor) hook to process values and manage list functionality.
 
-note
+> **Note:** React Query Builder doesn't restrict rule `value` properties to JavaScript primitives but maintains query object serializability. Editors that generate non-serializable values (like date pickers) store them as strings, then parse them back to the required types during rendering. Multiple-value editors (for "between" or "in" operators) typically use comma-separated strings.
 
-React Query Builder doesn't restrict rule `value` properties to JavaScript primitives but maintains query object serializability. Editors that generate non-serializable values (like date pickers) store them as strings, then parse them back to the required types during rendering. Multiple-value editors (for "between" or "in" operators) typically use comma-separated strings.
-
-## Showcase[​](#showcase "Direct link to Showcase")
+## Showcase
 
 `ValueEditor` is the most commonly [customized component](/docs/components/querybuilder-controlelements.md#valueeditor) ([more information here](/docs/tips/custom-with-fallback.md)), yet it handles many scenarios out of the box. The query builder below demonstrates all supported [`Field#valueEditorType` and `Field#inputType` properties](/docs/typescript.md#fields).
 
 Rules 10 and 11 demonstrate the behavior when the `operator` is "between". Rule 12 demonstrates the behavior when a field's `valueSources` property is set to `["field", "value"]`.
 
-note
-
-This query builder has been specially configured:
-
-1. The rule index (plus one) in the `rules` array is displayed to the left of the field selector.
-2. The value stored in the rule object is displayed to the right of each value editor.
-3. To focus attention on value editor components, all other components have been disabled or hidden.
+> **Note:** This query builder has been specially configured:
+>
+> 1. The rule index (plus one) in the `rules` array is displayed to the left of the field selector.
+> 2. The value stored in the rule object is displayed to the right of each value editor.
+> 3. To focus attention on value editor components, all other components have been disabled or hidden.
 
 <!-- -->
 
@@ -76,19 +72,15 @@ Option 2 (option2)Option 4 (option4) (stored value: "option2,option4")
 
 text (stored value: "text")
 
-tip
+> **Tip:** The [compatibility packages](/docs/compat.md) also implement these options using appropriate components from their respective style libraries ([see the demo](/demo)).
 
-The [compatibility packages](/docs/compat.md) also implement these options using appropriate components from their respective style libraries ([see the demo](/demo)).
-
-## Value sources[​](#value-sources "Direct link to Value sources")
+## Value sources
 
 By default, React Query Builder facilitates comparing fields (typically database column names) to *values* (strings, numbers, etc.). However, some situations require comparisons between two fields. Consider this SQL statement:
 
-```
+```sql
 SELECT *
-
   FROM users
-
  WHERE lastName LIKE firstName || '%';
 ```
 
@@ -96,57 +88,43 @@ This returns records where the user's last name begins with the same letters as 
 
 To represent that `WHERE` clause in React Query Builder, use the [`getValueSources` prop](/docs/components/querybuilder.md#getvaluesources) or the `valueSources` property of the `lastName` field in the `fields` prop. When either evaluates to an array containing "field" and the rule's `valueSource` property is "field", the `<ValueEditor />` component displays a dropdown list of fields instead of values.
 
-### Example[​](#example "Direct link to Example")
+### Example
 
 In the query builder above, the definition for the field used in the last rule is:
 
-```
+```json
 {
-
   "name": "field",
-
   "label": "field",
-
   "valueSources": ["field", "value"]
-
 }
 ```
 
 The `defaultQuery` prop looks like this:
 
-```
+```json
 {
-
   "combinator": "and",
-
   "rules": [
-
     // ...other rules...
-
     { "field": "field", "operator": "=", "value": "text", "valueSource": "field" }
-
   ]
-
 }
 ```
 
 Since the field's `valueSources` property is an array with more than one element, a ["value source selector" component](/docs/components/querybuilder-controlelements.md#valuesourceselector) appears to the left of the `<ValueEditor />`.
 
-tip
+> **Tip:** To reorder rule components (e.g., move the value source selector to the right of the value editor), use the CSS Flexbox `order` property.
 
-To reorder rule components (e.g., move the value source selector to the right of the value editor), use the CSS Flexbox `order` property.
+> **Note:** The `Field#valueSources` property can also be a function that takes an operator name as its parameter and returns the required array.
 
-note
-
-The `Field#valueSources` property can also be a function that takes an operator name as its parameter and returns the required array.
-
-### The `"parameter"` value source[​](#the-parameter-value-source "Direct link to the-parameter-value-source")
+### The `"parameter"` value source
 
 In addition to `"value"` and `"field"`, the `valueSource` property accepts `"parameter"`. This lets a rule compare a field against a named query parameter (a placeholder resolved at execution time) rather than a literal value or another field.
 
 To enable it, include `"parameter"` in a field's `valueSources` (or the `getValueSources` prop):
 
-```
+```tsx
 const fields: Field[] = [{ name: 'f1', label: 'f1', valueSources: ['value', 'parameter'] }];
 ```
 
@@ -155,33 +133,25 @@ When the rule's `valueSource` is `"parameter"`, the value editor's behavior depe
 * If `getParameters` resolves to a non-empty option list, the editor renders a `<select>` of the available parameter names (a multiselect when the operator is `in`/`notIn`).
 * If `getParameters` resolves to nullish or empty, the editor renders a free-form text `<input>` for entering a parameter name.
 
-```
+```tsx
 <QueryBuilder
-
   fields={fields}
-
   getParameters={() => [
-
     { name: 'p1', label: 'Param 1' },
-
     { name: 'p2', label: 'Param 2' },
-
   ]}
-
 />
 ```
 
-tip
-
-Specify parameter names **without** the parameter prefix (e.g. `p1`, not `:p1`). [`formatQuery`](/docs/utils/export.md) adds the appropriate prefix (`:`, `@`, `$`, etc.) for the target dialect. If a stored value already includes the prefix, it is left as-is.
+> **Tip:** Specify parameter names **without** the parameter prefix (e.g. `p1`, not `:p1`). [`formatQuery`](/docs/utils/export.md) adds the appropriate prefix (`:`, `@`, `$`, etc.) for the target dialect. If a stored value already includes the prefix, it is left as-is.
 
 The selected parameter name is stored directly in the rule's `value`:
 
-```
+```json
 { "field": "f1", "operator": "=", "value": "p1", "valueSource": "parameter" }
 ```
 
-#### Formatting parameter rules[​](#formatting-parameter-rules "Direct link to Formatting parameter rules")
+#### Formatting parameter rules
 
 [`formatQuery`](/docs/utils/export.md) understands the `"parameter"` value source across output formats:
 
@@ -193,76 +163,49 @@ The selected parameter name is stored directly in the rule's `value`:
 
 Passing a `getParameters` function to `formatQuery` also enables validation: rules referencing a name not in the list are treated as invalid and dropped (or fall back per your options).
 
-```
+```ts
 formatQuery(query, {
-
   format: 'sql',
-
   getParameters: () => [{ name: 'p1', label: 'Param 1' }],
-
 });
 ```
 
-tip
+> **Tip:** The [external parameter manager](/docs/tips/parameter-manager.md) example shows how to manage a list of named parameters outside the query builder and merge their values into a `"parameterized_named"` export.
 
-The [external parameter manager](/docs/tips/parameter-manager.md) example shows how to manage a list of named parameters outside the query builder and merge their values into a `"parameterized_named"` export.
-
-### Filtering the field list[​](#filtering-the-field-list "Direct link to Filtering the field list")
+### Filtering the field list
 
 Not all fields are compatible with each other, so each field may provide a `comparator` property specifying which fields appear in the value editor list. When `comparator` is a string, only fields with the same value as the current field in the property matching the `comparator` string are listed.
 
 Here's an example. In the following field list, fields `f1`, `f2`, and `f3` share a common property `datatype: "number"`. `f1` identifies the `datatype` property as its `comparator`. When a rule specifies field `f1`, only `f2` and `f3` appear in the dropdown list because their `datatype` property matches `f1`'s. `f4` and `f5` are excluded because their `datatype` property doesn't match `f1`'s, and `f1` is excluded because a rule's selected field cannot be compared with itself.
 
-```
+```tsx
 const fields: Field[] = {
-
   {
-
     name: 'f1',
-
     label: 'f1',
-
     valueSources: ["field"],
-
     comparator: 'datatype',
-
     datatype: 'number'
-
   },
-
   { name: 'f2', label: 'f2', datatype: 'number' },
-
   { name: 'f3', label: 'f3', datatype: 'number' },
-
   { name: 'f4', label: 'f4', datatype: 'string' },
-
   { name: 'f5', label: 'f5', datatype: 'string' },
-
 }
 ```
 
 The `comparator` property can also be a function that takes a `Field` object as its parameter. Each field in the `fields` prop is evaluated by this function, which should return `true` to include the field in the list or `false` to exclude it. The equivalent configuration using a function for `comparator`:
 
-```
+```tsx
 const fields: Field[] = {
-
   { name: 'f1',
-
     label: 'f1',
-
     valueSources: ["field"],
-
     comparator: f => f.datatype === 'number'
-
   },
-
   { name: 'f2', label: 'f2', datatype: 'number' },
-
   { name: 'f3', label: 'f3', datatype: 'number' },
-
   { name: 'f4', label: 'f4', datatype: 'string' },
-
   { name: 'f5', label: 'f5', datatype: 'string' },
-
 }
 ```

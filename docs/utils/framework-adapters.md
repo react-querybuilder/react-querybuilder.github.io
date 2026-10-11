@@ -6,17 +6,15 @@
 
 Official ports built this way already exist for [Solid, Svelte, and Vue](/docs/compat.md#other-frameworks).
 
-info
+> **Info:** The exports listed on this page are **public API covered by semantic versioning**. They will not be removed or have their signatures changed outside a major release.
+>
+> The full *runtime* export surface of `@react-querybuilder/core` (type-only exports are not covered) is locked by a test (`packages/core/src/__tests__/publicApi.test.ts`) that fails on both accidental removal *and* accidental addition, so every change to the surface requires a deliberate changelog entry.
 
-The exports listed on this page are **public API covered by semantic versioning**. They will not be removed or have their signatures changed outside a major release.
-
-The full *runtime* export surface of `@react-querybuilder/core` (type-only exports are not covered) is locked by a test (`packages/core/src/__tests__/publicApi.test.ts`) that fails on both accidental removal *and* accidental addition, so every change to the surface requires a deliberate changelog entry.
-
-## The `/derivations` subpath[​](#the-derivations-subpath "Direct link to the-derivations-subpath")
+## The `/derivations` subpath
 
 Everything on this page is available from the package root, and—except for `QueryManager`, `formatQuery`, and the parsers—also from `@react-querybuilder/core/derivations`:
 
-```
+```ts
 import { deriveRuleContext, shouldCoalesce } from '@react-querybuilder/core/derivations';
 ```
 
@@ -26,7 +24,7 @@ The subpath contains the same bindings as the root, minus `QueryManager` and the
 
 The parsers (`parseSQL`, `parseCEL`, and the rest) have subpaths of their own and are not exported from the root, so they are excluded from `/derivations` as well.
 
-## Option list preparation[​](#option-list-preparation "Direct link to Option list preparation")
+## Option list preparation
 
 | Function                 | Purpose                                                                            |
 | ------------------------ | ---------------------------------------------------------------------------------- |
@@ -42,7 +40,7 @@ The parsers (`parseSQL`, `parseCEL`, and the rest) have subpaths of their own an
 | `getRuleDefaultValue`    | The default `value` for a rule.                                                    |
 | `getFieldData`           | Looks a field up in a flattened field map, with a minimal fallback.                |
 
-## Rule and group derivations[​](#rule-and-group-derivations "Direct link to Rule and group derivations")
+## Rule and group derivations
 
 | Function                        | Purpose                                                                      |
 | ------------------------------- | ---------------------------------------------------------------------------- |
@@ -52,7 +50,7 @@ The parsers (`parseSQL`, `parseCEL`, and the rest) have subpaths of their own an
 | `generateAccessibleDescription` | The accessible description for a group.                                      |
 | `resolveCandidateQuery`         | Resolves a controlled/uncontrolled query prop against the current state.     |
 
-## Query manipulation[​](#query-manipulation "Direct link to Query manipulation")
+## Query manipulation
 
 `createRule`, `createRuleGroup`, `createQueryActions`, and the query tools `add`, `remove`, `update`, `move`, `insert`, and `group`. See [Query management](/docs/utils/query-management.md) for full signatures.
 
@@ -60,7 +58,7 @@ Path helpers: `findPath`, `findID`, `getPathOfID`, `pathIsDisabled`, `pathIsDisa
 
 Every query tool accepts `freeze: false`, which skips the deep freeze applied to the returned query. Frameworks that wrap state in proxies (Vue `reactive`, Solid stores) need that; see [Freezing](/docs/utils/query-management.md#freezing-tools). `QueryManager` accepts an option of the same name, and `setAutoFreeze` is re-exported from immer as a process-wide switch.
 
-## History[​](#history "Direct link to History")
+## History
 
 | Export                                       | Purpose                                                             |
 | -------------------------------------------- | ------------------------------------------------------------------- |
@@ -71,47 +69,29 @@ Every query tool accepts `freeze: false`, which skips the deep freeze applied to
 
 `shouldCoalesce` is the same predicate `QueryManager` applies internally, so a port that owns its own `past`/`future` stacks records history identically without duplicating the rule:
 
-```
+```ts
 import { shouldCoalesce, signatureOf, unchangedSignature } from '@react-querybuilder/core';
-
 import type { RuleGroupTypeAny } from '@react-querybuilder/core';
 
-
-
 let past: RuleGroupTypeAny[] = [];
-
 let future: RuleGroupTypeAny[] = [];
-
 let lastSig = '';
-
 let lastAt = 0;
 
-
-
 const record = (prev: RuleGroupTypeAny, next: RuleGroupTypeAny) => {
-
   const sig = signatureOf(prev, next);
-
   // A change with no observable difference is never recorded at all.
-
   if (sig === unchangedSignature) return;
-
   if (!shouldCoalesce(lastSig, sig, lastAt, Date.now())) {
-
     past.push(prev);
-
     future = [];
-
   }
-
   lastSig = sig;
-
   lastAt = Date.now();
-
 };
 ```
 
-## Configuration[​](#configuration "Direct link to Configuration")
+## Configuration
 
 | Export               | Purpose                                                                    |
 | -------------------- | -------------------------------------------------------------------------- |
@@ -123,17 +103,14 @@ Both comparisons treat arrays and plain objects as values—descending into nest
 
 [`QueryManager#reconfigure`](/docs/utils/query-management.md#reconfiguration) applies this gate itself, so an adapter can call it unconditionally. `optionsEqual` is exported for adapters that want to skip building the merged options object in the first place.
 
-```
+```ts
 import { optionsEqual } from '@react-querybuilder/core';
 
-
-
 // Only builds the merged object when something actually changed.
-
 if (!optionsEqual(manager.getOptions(), nextOptions)) manager.reconfigure(nextOptions);
 ```
 
-## Controls[​](#controls "Direct link to Controls")
+## Controls
 
 | Export            | Purpose                                                                                  |
 | ----------------- | ---------------------------------------------------------------------------------------- |
@@ -143,6 +120,6 @@ if (!optionsEqual(manager.getOptions(), nextOptions)) manager.reconfigure(nextOp
 
 `controlPropKeys` lets a port's default controls declare every prop they receive explicitly, instead of relying on framework-specific attribute fall-through. `controlKind` replaces name-suffix sniffing such as `key.endsWith('Action')`, which silently misclassifies controls whose names happen to end the same way.
 
-## Validation and export[​](#validation-and-export "Direct link to Validation and export")
+## Validation and export
 
 `defaultValidator` and `formatQuery` are also framework-agnostic. See [Validation](/docs/utils/validation.md) and [Export](/docs/utils/export.md). `defaultValidator` is in the `/derivations` subpath; `formatQuery` is not, since it is by far the largest thing in the package and most adapters never call it. Import it from the package root or from `@react-querybuilder/core/formatQuery`.

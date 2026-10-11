@@ -6,7 +6,7 @@ The primary export of `react-querybuilder` is the `<QueryBuilder />` React compo
 
 `QueryBuilder` uses the [`useQueryBuilder`](/docs/utils/hooks.md#usequerybuilder) hook to merge props with context values and default values, generate update methods, and prepare the query schema.
 
-## Subcomponents[​](#subcomponents "Direct link to Subcomponents")
+## Subcomponents
 
 `QueryBuilder` renders a [`RuleGroup`](/docs/components/rulegroup.md) representing the root of the query.
 
@@ -14,33 +14,29 @@ The root `RuleGroup` is wrapped in a `<div>` with the [standard `queryBuilder` c
 
 Everything is wrapped in `<QueryBuilderStateProvider>` and `<QueryBuilderContext.Provider>`, which inherit ancestor context values and propagate them to subcomponents. Props take precedence over context values.
 
-## Props[​](#props "Direct link to Props")
+## Props
 
 All `QueryBuilder` props are optional, but `fields` and `onQueryChange` are typically required for useful functionality (see [getting started guide](/docs/intro.md)).
 
-note
+> **Note:** `RuleGroupTypeAny` refers to either `RuleGroupType` or `RuleGroupTypeIC` types. See [independent combinators](#independent-combinators) for `RuleGroupTypeIC` details.
 
-`RuleGroupTypeAny` refers to either `RuleGroupType` or `RuleGroupTypeIC` types. See [independent combinators](#independent-combinators) for `RuleGroupTypeIC` details.
-
-### `fields`[​](#fields "Direct link to fields")
+### `fields`
 
 `OptionList<Field> | Record<string, Field>`
 
 Array of [fields](/docs/typescript.md#fields) or [option groups](/docs/typescript.md#miscellaneous) containing field arrays. Alternatively, pass an object where keys are field `name`s and values are field definitions. Object format sorts field options alphabetically by `label` in the [`fieldSelector` component](/docs/components/querybuilder-controlelements.md#fieldselector).
 
-tip
-
-Field objects can include custom properties. The complete field object is passed as `fieldData` to `OperatorSelector` and `ValueEditor` components (see [`controlElements`](#controlelements)).
+> **Tip:** Field objects can include custom properties. The complete field object is passed as `fieldData` to `OperatorSelector` and `ValueEditor` components (see [`controlElements`](#controlelements)).
 
 For more information about option list props like `fields`, see [Working with option lists](/docs/tips/option-lists.md).
 
-### `onQueryChange`[​](#onquerychange "Direct link to onquerychange")
+### `onQueryChange`
 
 `(query: RuleGroupTypeAny) => void`
 
 Called with the updated query whenever changes are made within the component.
 
-### `query`[​](#query "Direct link to query")
+### `query`
 
 `RuleGroupTypeAny`
 
@@ -48,25 +44,23 @@ Query object of type `RuleGroupType` or `RuleGroupTypeIC`. When provided, makes 
 
 Use with [`onQueryChange`](#onquerychange) for controlled component behavior. See [examples here](https://github.com/react-querybuilder/react-querybuilder/blob/main/examples).
 
-### `defaultQuery`[​](#defaultquery "Direct link to defaultquery")
+### `defaultQuery`
 
 `RuleGroupTypeAny`
 
 The initial query when `<QueryBuilder />` is uncontrolled.
 
-caution
+> **Caution:** Don't provide both `query` and `defaultQuery` props. Use `query` + `onQueryChange` for controlled components, or `defaultQuery` (or neither) for uncontrolled components. `onQueryChange` fires on every update regardless.
+>
+> Providing both props logs errors in development mode. Switching between defined/undefined `query` across renders also logs errors.
 
-Don't provide both `query` and `defaultQuery` props. Use `query` + `onQueryChange` for controlled components, or `defaultQuery` (or neither) for uncontrolled components. `onQueryChange` fires on every update regardless.
-
-Providing both props logs errors in development mode. Switching between defined/undefined `query` across renders also logs errors.
-
-### `context`[​](#context "Direct link to context")
+### `context`
 
 `any`
 
 Container for passing arbitrary props to custom components. Default components ignore this prop, but it's passed to all components throughout the `QueryBuilder` tree.
 
-### `operators`[​](#operators "Direct link to operators")
+### `operators`
 
 `OptionList<Operator>`
 
@@ -76,45 +70,26 @@ Use [`getOperators`](#getoperators) to build operator lists dynamically per fiel
 
 The default operator list is below.
 
-```
+```ts
 export const defaultOperators: DefaultOperators = [
-
   { name: '=', value: '=', label: '=' },
-
   { name: '!=', value: '!=', label: '!=' },
-
   { name: '<', value: '<', label: '<' },
-
   { name: '>', value: '>', label: '>' },
-
   { name: '<=', value: '<=', label: '<=' },
-
   { name: '>=', value: '>=', label: '>=' },
-
   { name: 'contains', value: 'contains', label: 'contains' },
-
   { name: 'beginsWith', value: 'beginsWith', label: 'begins with' },
-
   { name: 'endsWith', value: 'endsWith', label: 'ends with' },
-
   { name: 'doesNotContain', value: 'doesNotContain', label: 'does not contain' },
-
   { name: 'doesNotBeginWith', value: 'doesNotBeginWith', label: 'does not begin with' },
-
   { name: 'doesNotEndWith', value: 'doesNotEndWith', label: 'does not end with' },
-
   { name: 'null', value: 'null', label: 'is null' },
-
   { name: 'notNull', value: 'notNull', label: 'is not null' },
-
   { name: 'in', value: 'in', label: 'in' },
-
   { name: 'notIn', value: 'notIn', label: 'not in' },
-
   { name: 'between', value: 'between', label: 'between' },
-
   { name: 'notBetween', value: 'notBetween', label: 'not between' },
-
 ];
 ```
 
@@ -122,19 +97,16 @@ export const defaultOperators: DefaultOperators = [
 
 For more information about option list props like `operators`, see [Working with option lists](/docs/tips/option-lists.md).
 
-### `combinators`[​](#combinators "Direct link to combinators")
+### `combinators`
 
 `OptionList`
 
 Array of combinators for RuleGroups. Default combinator list:
 
-```
+```ts
 export const defaultCombinators: DefaultCombinators = [
-
   { name: 'and', value: 'and', label: 'AND' } as const,
-
   { name: 'or', value: 'or', label: 'OR' } as const,
-
 ];
 ```
 
@@ -142,43 +114,39 @@ export const defaultCombinators: DefaultCombinators = [
 
 For more information about option list props like `combinators`, see [Working with option lists](/docs/tips/option-lists.md).
 
-### `baseField`[​](#basefield "Direct link to basefield")
+### `baseField`
 
 `Record<string, unknown>`
 
 Properties applied to all field objects. Individual field properties override base properties.
 
-### `baseOperator`[​](#baseoperator "Direct link to baseoperator")
+### `baseOperator`
 
 `Record<string, unknown>`
 
 Properties applied to all operator objects from `operators` prop or [`getOperators`](#getoperators). Individual operator properties override base properties.
 
-### `baseCombinator`[​](#basecombinator "Direct link to basecombinator")
+### `baseCombinator`
 
 `Record<string, unknown>`
 
 Properties applied to all combinator objects. Individual combinator properties override base properties.
 
-### `controlClassnames`[​](#controlclassnames "Direct link to controlclassnames")
+### `controlClassnames`
 
 `Partial<Classnames>`
 
 Assign custom CSS classes to QueryBuilder controls. Each property accepts `Classname` types: `string`, `string[]`, or `Record<string, any>` (see [`clsx` docs](https://www.npmjs.com/package/clsx)):
 
-#### Usage example[​](#usage-example "Direct link to Usage example")
+#### Usage example
 
 Example: Adding "bold" class to "+ Rule" buttons (with CSS rule `.bold { font-weight: bold; }`):
 
-```
+```tsx
 function App() {
-
   return (
-
     <QueryBuilder controlClassnames={{ addRule: 'bold' }}>
-
   )
-
 }
 ```
 
@@ -223,13 +191,13 @@ function App() {
 | `hasSubQuery`    | rules that render a subquery                                                      |
 | `loading`        | [async value selectors](/docs/tips/async-option-lists.md) during "loading" state  |
 
-### `controlElements`[​](#controlelements "Direct link to controlelements")
+### `controlElements`
 
 `Partial<Controls>`
 
 See [`controlElements`](/docs/components/querybuilder-controlelements.md) for a list of all control elements and their props.
 
-### `getOperators`[​](#getoperators "Direct link to getoperators")
+### `getOperators`
 
 `(field: string, misc: { fieldData: Field }) => OptionList<Operator> | null`
 
@@ -239,7 +207,7 @@ Returns allowed operators for the given `field`. Returning `null` uses the [oper
 
 For more information about option list props like `operators`, see [Working with option lists](/docs/tips/option-lists.md).
 
-### `getValueEditorType`[​](#getvalueeditortype "Direct link to getvalueeditortype")
+### `getValueEditorType`
 
 `(field: string, operator: string, misc: { fieldData: Field }) => ValueEditorType`
 
@@ -247,7 +215,7 @@ Returns the [`ValueEditor`](/docs/components/valueeditor.md) type for the given 
 
 `fieldData` provides the complete `Field` object for accessing custom properties.
 
-### `getValueSources`[​](#getvaluesources "Direct link to getvaluesources")
+### `getValueSources`
 
 `(field: string, operator: string, misc: { fieldData: Field }) => ValueSources | ValueSourceFullOptions`;
 
@@ -257,7 +225,7 @@ Defaults to `() => ["value"]`. First array element becomes the initial selection
 
 `fieldData` provides the complete `Field` object for accessing custom properties.
 
-### `getParameters`[​](#getparameters "Direct link to getparameters")
+### `getParameters`
 
 `(field: string, operator: string, misc: { fieldData: Field }) => OptionList | null`
 
@@ -267,11 +235,9 @@ Specify names **without** the parameter prefix (e.g. `() => [{ name: 'p1', label
 
 `fieldData` provides the complete `Field` object for accessing custom properties.
 
-tip
+> **Tip:** See the [external parameter manager](/docs/tips/parameter-manager.md) example for a working demonstration of feeding an external component's state into `getParameters`.
 
-See the [external parameter manager](/docs/tips/parameter-manager.md) example for a working demonstration of feeding an external component's state into `getParameters`.
-
-### `getValueEditorSeparator`[​](#getvalueeditorseparator "Direct link to getvalueeditorseparator")
+### `getValueEditorSeparator`
 
 `(field: string, operator: string, misc: { fieldData: Field }) => ReactNode`;
 
@@ -279,7 +245,7 @@ Returns separator element between multiple value editors (e.g., for "between" op
 
 `fieldData` provides the complete `Field` object for accessing custom properties.
 
-### `getInputType`[​](#getinputtype "Direct link to getinputtype")
+### `getInputType`
 
 `(field: string, operator: string, misc: { fieldData: Field }) => string`
 
@@ -287,7 +253,7 @@ Returns the `type` attribute for `<input />` elements. Only applies when [`getVa
 
 `fieldData` provides the complete `Field` object for accessing custom properties.
 
-### `getValues`[​](#getvalues "Direct link to getvalues")
+### `getValues`
 
 `(field: string, operator: string, misc: { fieldData: Field }) => OptionList`
 
@@ -297,7 +263,7 @@ Returns allowed values for the given `field` and `operator`. Only applies when [
 
 For more information about option list props, see [Working with option lists](/docs/tips/option-lists.md).
 
-### `getMatchModes`[​](#getmatchmodes "Direct link to getmatchmodes")
+### `getMatchModes`
 
 `(field: string, misc: { fieldData: Field }) => boolean | MatchMode[] | FlexibleOption<MatchMode>[]`
 
@@ -305,7 +271,7 @@ Returns valid `MatchMode`s for a field. Must return `MatchMode[]`, `Option<Match
 
 `fieldData` provides the complete `Field` object for accessing custom properties.
 
-### `getSubQueryBuilderProps`[​](#getsubquerybuilderprops "Direct link to getsubquerybuilderprops")
+### `getSubQueryBuilderProps`
 
 `(field: string, misc: { fieldData: Field }) => QueryBuilderProps`
 
@@ -313,13 +279,13 @@ Returns props for subqueries (see [Subqueries](/docs/tips/subqueries.md)) to ove
 
 `fieldData` provides the complete `Field` object for accessing custom properties.
 
-### `getDefaultField`[​](#getdefaultfield "Direct link to getdefaultfield")
+### `getDefaultField`
 
 `string | ((fieldsData: OptionList<Field>) => string)`
 
 Default `field` for new rules. Accepts field `name` string or function returning field `name` based on `fields` prop.
 
-### `getDefaultOperator`[​](#getdefaultoperator "Direct link to getdefaultoperator")
+### `getDefaultOperator`
 
 `string | ((field: string, misc: { fieldData: Field }) => string)`
 
@@ -327,7 +293,7 @@ Default `operator` for new rules. Accepts operator `name` string or function ret
 
 `fieldData` provides the complete `Field` object for accessing custom properties.
 
-### `getDefaultValue`[​](#getdefaultvalue "Direct link to getdefaultvalue")
+### `getDefaultValue`
 
 `(rule: RuleType, misc: { fieldData: Field }) => any`
 
@@ -335,7 +301,7 @@ Returns default `value` for new rules based on existing rule properties.
 
 `fieldData` provides the complete `Field` object for accessing custom properties.
 
-### `getRuleClassname`[​](#getruleclassname "Direct link to getruleclassname")
+### `getRuleClassname`
 
 `(rule: RuleType, misc: { fieldData: Field }) => Classname`
 
@@ -343,13 +309,13 @@ Generates custom classes for rule outer `div` based on rule properties.
 
 `fieldData` provides the complete `Field` object for accessing custom properties.
 
-### `getRuleGroupClassname`[​](#getrulegroupclassname "Direct link to getrulegroupclassname")
+### `getRuleGroupClassname`
 
 `(ruleGroup: RuleGroupTypeAny) => Classname`
 
 Generates custom classes for group outer `div` based on group properties.
 
-### `onAddRule`[​](#onaddrule "Direct link to onaddrule")
+### `onAddRule`
 
 `(rule: RuleType, parentPath: Path, query: RuleGroupTypeAny, context?: any) => RuleType | false`
 
@@ -357,11 +323,9 @@ Called before adding a new rule. Return modified `RuleType` object to proceed, o
 
 For [independent combinators](#independent-combinators), add `combinatorPreceding` property to specify the combinator before the new rule. Otherwise uses the last rule's combinator or first default combinator.
 
-tip
+> **Tip:** To [prevent adding new rules](/docs/tips/limit-groups.md), use `controlElements={{ addRuleAction: null }}` to hide the "+ Rule" button.
 
-To [prevent adding new rules](/docs/tips/limit-groups.md), use `controlElements={{ addRuleAction: null }}` to hide the "+ Rule" button.
-
-### `onAddGroup`[​](#onaddgroup "Direct link to onaddgroup")
+### `onAddGroup`
 
 `<RG extends RuleGroupTypeAny>(ruleGroup: RG, parentPath: Path, query: RG, context?: any) => RG | false`
 
@@ -369,29 +333,19 @@ Called before adding a new group. Return modified group object (same type: `Rule
 
 For [independent combinators](#independent-combinators), add `combinatorPreceding` property to specify the combinator before the new group. Otherwise uses the last rule's combinator or first default combinator.
 
-tip
+> **Tip:** To [prevent adding new groups](/docs/tips/limit-groups.md), use `controlElements={{ addGroupAction: null }}` to hide the "+ Group" button.
 
-To [prevent adding new groups](/docs/tips/limit-groups.md), use `controlElements={{ addGroupAction: null }}` to hide the "+ Group" button.
+### `onMoveRule`
 
-### `onMoveRule`[​](#onmoverule "Direct link to onmoverule")
-
-```
+```text
 <RG extends RuleGroupTypeAny>(
-
   rule: RuleType,
-
   fromPath: Path,
-
   toPath: Path | 'up' | 'down',
-
   query: RG,
-
   nextQuery: RG,
-
   options: MoveOptions,
-
   context?: any
-
 ) => RG | boolean;
 ```
 
@@ -401,25 +355,17 @@ Called before a rule is moved or shifted. Return:
 2. `false` - Cancel the move/shift
 3. New query object (based on `query` or `nextQuery` parameters)
 
-### `onMoveGroup`[​](#onmovegroup "Direct link to onmovegroup")
+### `onMoveGroup`
 
-```
+```text
 <RG extends RuleGroupTypeAny>(
-
   ruleGroup: RG,
-
   fromPath: Path,
-
   toPath: Path | 'up' | 'down',
-
   query: RG,
-
   nextQuery: RG,
-
   options: MoveOptions,
-
   context?: any
-
 ) => RG | boolean;
 ```
 
@@ -429,21 +375,15 @@ Called before a group is moved or shifted. Return:
 2. `false` - Cancel the move/shift
 3. New query object (based on `query` or `nextQuery` parameters)
 
-### `onUngroup`[​](#onungroup "Direct link to onungroup")
+### `onUngroup`
 
-```
+```text
 <RG extends RuleGroupTypeAny>(
-
   ruleGroup: RG,
-
   path: Path,
-
   query: RG,
-
   nextQuery: RG,
-
   context?: any
-
 ) => RG | boolean;
 ```
 
@@ -455,17 +395,17 @@ Called before a group is replaced by its own rules in the parent group (see [`sh
 
 Since ungrouping discards the group's `not` property, this is the place to intercept negated groups:
 
-```
+```ts
 onUngroup={ruleGroup => !ruleGroup.not}
 ```
 
-### `onRemove`[​](#onremove "Direct link to onremove")
+### `onRemove`
 
 `<RG extends RuleGroupTypeAny>(ruleOrGroup: RG | RuleType, path: Path, query: RG, context?: any) => boolean`
 
 Called before removing a rule or group. Return `true` to proceed or `false` to abort removal.
 
-### `translations`[​](#translations "Direct link to translations")
+### `translations`
 
 `Partial<Translations>`
 
@@ -473,103 +413,58 @@ Provides internationalization (i18n) support by overriding translatable texts fo
 
 All object keys and properties are optional. The `translations` object deep-merges with defaults below. Default placeholder names are `"~"` and labels are `"------"`.
 
-```
+```ts
 export const defaultTranslations: BaseTranslationsFull = {
-
   fields: {
-
     title: 'Field',
-
     placeholderName: defaultPlaceholderFieldName,
-
     placeholderLabel: defaultPlaceholderFieldLabel,
-
     placeholderGroupLabel: defaultPlaceholderFieldGroupLabel,
-
   } as const,
-
   operators: {
-
     title: 'Operator',
-
     placeholderName: defaultPlaceholderOperatorName,
-
     placeholderLabel: defaultPlaceholderOperatorLabel,
-
     placeholderGroupLabel: defaultPlaceholderOperatorGroupLabel,
-
   } as const,
-
   values: {
-
     title: 'Values',
-
     placeholderName: defaultPlaceholderValueName,
-
     placeholderLabel: defaultPlaceholderValueLabel,
-
     placeholderGroupLabel: defaultPlaceholderValueGroupLabel,
-
   } as const,
-
   matchMode: { title: 'Match mode' } as const,
-
   matchThreshold: { title: 'Match threshold', placeholderName: '#' } as const,
-
   value: { title: 'Value' } as const,
-
   removeRule: { label: '⨯', title: 'Remove rule' } as const,
-
   removeGroup: { label: '⨯', title: 'Remove group' } as const,
-
   addRule: { label: '+ Rule', title: 'Add rule' } as const,
-
   addGroup: { label: '+ Group', title: 'Add group' } as const,
-
   combinators: { title: 'Combinator' } as const,
-
   notToggle: { label: 'Not', title: 'Invert this group' } as const,
-
   cloneRule: { label: '⧉', title: 'Clone rule' } as const,
-
   cloneRuleGroup: { label: '⧉', title: 'Clone group' } as const,
-
   ungroupRuleGroup: { label: '⊟', title: 'Ungroup' } as const,
-
   shiftActionUp: { label: '˄', title: 'Shift up' } as const,
-
   shiftActionDown: { label: '˅', title: 'Shift down' } as const,
-
   undo: { label: '↶', title: 'Undo' } as const,
-
   redo: { label: '↷', title: 'Redo' } as const,
-
   dragHandle: { label: '⁞⁞', title: 'Drag handle' } as const,
-
   lockRule: { label: '🔓', title: 'Lock rule' } as const,
-
   lockGroup: { label: '🔓', title: 'Lock group' } as const,
-
   lockRuleDisabled: { label: '🔒', title: 'Unlock rule' } as const,
-
   lockGroupDisabled: { label: '🔒', title: 'Unlock group' } as const,
-
   muteRule: { label: '🔊', title: 'Mute rule' } as const,
-
   muteGroup: { label: '🔊', title: 'Mute group' } as const,
-
   unmuteRule: { label: '🔇', title: 'Unmute rule' } as const,
-
   unmuteGroup: { label: '🔇', title: 'Unmute group' } as const,
-
   valueSourceSelector: { title: 'Value source' } as const,
-
 } satisfies BaseTranslationsFull;
 ```
 
 > *Source: [/packages/core/src/defaults.ts#L89-L134](https://github.com/react-querybuilder/react-querybuilder/blob/main/packages/core/src/defaults.ts#L89-L134)*
 
-### `showCombinatorsBetweenRules`[​](#showcombinatorsbetweenrules "Direct link to showcombinatorsbetweenrules")
+### `showCombinatorsBetweenRules`
 
 `boolean` (default `false`) *[Click here for demo](/demo#showCombinatorsBetweenRules=true)*
 
@@ -577,43 +472,43 @@ Renders combinator selectors between child rules/groups instead of in the group 
 
 The `combinator` property remains group-level—inline selectors update all combinators within the same group. For independently managed inline combinators, use [independent combinators](#independent-combinators).
 
-### `showNotToggle`[​](#shownottoggle "Direct link to shownottoggle")
+### `showNotToggle`
 
 `boolean` (default `false`) *[Click here for demo](/demo#showNotToggle=true)*
 
 Displays "Not" (inversion) toggle switch for each rule group.
 
-### `showCloneButtons`[​](#showclonebuttons "Direct link to showclonebuttons")
+### `showCloneButtons`
 
 `boolean` (default `false`) *[Click here for demo](/demo#showCloneButtons=true)*
 
 Displays "clone" button on each group header and rule. Clicking creates an exact duplicate (with new `id`) positioned immediately after the original.
 
-### `showUngroupButtons`[​](#showungroupbuttons "Direct link to showungroupbuttons")
+### `showUngroupButtons`
 
 `boolean` (default `false`) *[Click here for demo](/demo#showUngroupButtons=true)*
 
 Displays an "Ungroup" button on each group header except the root. Clicking it replaces the group with its own rules in the parent group, discarding the group's `combinator`, `not`, `id`, `muted`, and `disabled` properties. An empty group is simply removed. Intercept or cancel the operation with [`onUngroup`](#onungroup).
 
-### `showLockButtons`[​](#showlockbuttons "Direct link to showlockbuttons")
+### `showLockButtons`
 
 `boolean` (default `false`) *[Click here for demo](/demo#showLockButtons=true)*
 
 Displays "Lock rule" and "Lock group" buttons. Locked rules disable all elements except the lock button. Locked groups disable header elements (except lock button) and all child elements (including child lock buttons).
 
-### `showMuteButtons`[​](#showmutebuttons "Direct link to showmutebuttons")
+### `showMuteButtons`
 
 `boolean` (default `false`) *[Click here for demo](/demo#showMuteButtons=true)*
 
 Displays "Mute rule" and "Mute group" buttons. By default, the `muted` property only affects `formatQuery`, which will ignore muted rules and groups (similar to "invalid" rules/groups).
 
-### `showShiftActions`[​](#showshiftactions "Direct link to showshiftactions")
+### `showShiftActions`
 
 `boolean` (default `false`) *[Click here for demo](/demo#showShiftActions=true)*
 
 Displays "shift up"/"shift down" buttons at the front of each rule and group (except root), stacked vertically by default. Upper button shifts up one position, lower button shifts down. Configure button labels via `translations.shiftActionUp` and `translations.shiftActionDown`.
 
-### `showUndoRedo`[​](#showundoredo "Direct link to showundoredo")
+### `showUndoRedo`
 
 `boolean` (default `false`) *[Click here for demo](/demo#showUndoRedo=true)*
 
@@ -621,60 +516,58 @@ Displays "undo"/"redo" buttons at the end of the outermost group's header.
 
 Defaults to `true` for any query builder descending from [`QueryBuilderHistory`](/docs/tips/undo-redo.md) (pass `showUndoRedo={false}` on either component to opt out), mirroring how [`enableDragAndDrop`](#enabledraganddrop) defaults to `true` under `QueryBuilderDnD`.
 
-caution
-
-This prop has no effect on its own, because the buttons it displays come from the [`undoRedoActions`](/docs/components/querybuilder-controlelements.md#undoredoactions) control element, which defaults to `null`. Provide one of the following:
-
-* `QueryBuilderHistory` from [`react-querybuilder/history`](/docs/tips/undo-redo.md) higher in the component tree, which supplies the default [`UndoRedoActions`](/docs/components/undoredoactions.md) and records the history it navigates. This is the recommended approach.
-* Your own `controlElements.undoRedoActions` component, which is then responsible for calling `useQueryBuilderHistory(props.schema.qbId)` itself.
-
-With neither in place, `showUndoRedo` logs an error and renders nothing.
+> **Caution:** This prop has no effect on its own, because the buttons it displays come from the [`undoRedoActions`](/docs/components/querybuilder-controlelements.md#undoredoactions) control element, which defaults to `null`. Provide one of the following:
+>
+> * `QueryBuilderHistory` from [`react-querybuilder/history`](/docs/tips/undo-redo.md) higher in the component tree, which supplies the default [`UndoRedoActions`](/docs/components/undoredoactions.md) and records the history it navigates. This is the recommended approach.
+> * Your own `controlElements.undoRedoActions` component, which is then responsible for calling `useQueryBuilderHistory(props.schema.qbId)` itself.
+>
+> With neither in place, `showUndoRedo` logs an error and renders nothing.
 
 Configure button labels via `translations.undo` and `translations.redo`. See [Undo/redo](/docs/tips/undo-redo.md) for the full guide.
 
-### `resetOnFieldChange`[​](#resetonfieldchange "Direct link to resetonfieldchange")
+### `resetOnFieldChange`
 
 `boolean` (default `true`) *[Click here for demo with this feature disabled](/demo#resetOnFieldChange=false)*
 
 Pass `false` to preserve `operator` and `value` when `field` changes.
 
-### `resetOnOperatorChange`[​](#resetonoperatorchange "Direct link to resetonoperatorchange")
+### `resetOnOperatorChange`
 
 `boolean` (default `false`) *[Click here for demo](/demo#resetOnOperatorChange=true)*
 
 Resets `value` when `operator` changes.
 
-### `enableMountQueryChange`[​](#enablemountquerychange "Direct link to enablemountquerychange")
+### `enableMountQueryChange`
 
 `boolean` (default `true`)
 
 Pass `false` to disable `onQueryChange` on initial mount. Enabled by default because `query`/`defaultQuery` props are processed during first render and may differ from input (e.g., generated `id`s).
 
-### `autoSelectField`[​](#autoselectfield "Direct link to autoselectfield")
+### `autoSelectField`
 
 `boolean` (default `true`) *[Click here for demo with this feature disabled](/demo#autoSelectField=false)*
 
 Pass `false` to add an "empty" option (value `"~"`, label `"------"`) as first element in `fields` array. This becomes the initial selection for new rules. Empty field selection hides operator selector and value components. Customize via [`translations.fields.placeholder*`](#translations).
 
-### `autoSelectOperator`[​](#autoselectoperator "Direct link to autoselectoperator")
+### `autoSelectOperator`
 
 `boolean` (default `true`) *[Click here for demo with this feature disabled](/demo#autoSelectOperator=false)*
 
 Pass `false` to add an "empty" option (value `"~"`, label `"------"`) as first element in `operators` array. This becomes the initial selection for new rules. Empty operator selection hides value components. Customize via [`translations.operators.placeholder*`](#translations).
 
-### `autoSelectValue`[​](#autoselectvalue "Direct link to autoselectvalue")
+### `autoSelectValue`
 
 `boolean` (default `true`) *[Click here for demo with this feature disabled](/demo#autoSelectValue=false)*
 
 Pass `false` to add an "empty" option (value `"~"`, label `"------"`) as first element in `values` array. This becomes the initial selection for rules with select list value editors. Customize via [`translations.values.placeholder*`](#translations).
 
-### `addRuleToNewGroups`[​](#addruletonewgroups "Direct link to addruletonewgroups")
+### `addRuleToNewGroups`
 
 `boolean` (default `false`) *[Click here for demo](/demo#addRuleToNewGroups=true)*
 
 Automatically adds a rule to new groups. When no `query`/`defaultQuery` prop is provided, adds a rule to the root group on mount. Groups with empty `rules` arrays don't receive automatic rules.
 
-### `listsAsArrays`[​](#listsasarrays "Direct link to listsasarrays")
+### `listsAsArrays`
 
 `boolean` (default `false`) *[Click here for demo](/demo#listsAsArrays=true)*
 
@@ -682,120 +575,94 @@ Updates rule values representing lists with proper arrays instead of comma-separ
 
 For example, the default behavior for the "between" operator might produce this rule:
 
-```
+```json
 {
-
   "field": "f1",
-
   "operator": "between",
-
   "value": "f2,f3",
-
   "valueSource": "field"
-
 }
 ```
 
 When `listsAsArrays` is true, the rule's `value` will be an array:
 
-```
+```json
 {
-
   "field": "f1",
-
   "operator": "between",
-
   "value": ["f2", "f3"],
-
   "valueSource": "field"
-
 }
 ```
 
-### `parseNumbers`[​](#parsenumbers "Direct link to parsenumbers")
+### `parseNumbers`
 
 `boolean | "enhanced" | "enhanced-limited" | "native" | "native-limited" | "strict" | "strict-limited"` (default `false`) *[Click here for demo](/demo#parseNumbers=true)*
 
 Sets `value` type as `number` instead of `string` when possible. See [Number parsing](/docs/utils/misc.md#number-parsing) and [formatQuery option](/docs/utils/export.md#parse-numbers).
 
-info
+> **Info:** Implemented in [`ValueEditor`](/docs/components/valueeditor.md), not `QueryBuilder`. Custom value editors receive this prop but must implement the behavior themselves.
 
-Implemented in [`ValueEditor`](/docs/components/valueeditor.md), not `QueryBuilder`. Custom value editors receive this prop but must implement the behavior themselves.
-
-### `enableDragAndDrop`[​](#enabledraganddrop "Direct link to enabledraganddrop")
+### `enableDragAndDrop`
 
 `boolean` (default `false`) *[Click here for demo](/demo#enableDragAndDrop=true)*
 
-caution
-
-No need to set this prop directly—it only works when:
-
-1. `QueryBuilderDnD` context provider from [`@react-querybuilder/dnd`](https://www.npmjs.com/package/@react-querybuilder/dnd) exists higher in the component tree
-2. [`react-dnd`](https://www.npmjs.com/package/react-dnd) and [`react-dnd-html5-backend`](https://www.npmjs.com/package/react-dnd-html5-backend) are installed
-
-When conditions are met and `enableDragAndDrop` isn't explicitly `false`, it becomes implicitly `true`.
+> **Caution:** No need to set this prop directly—it only works when:
+>
+> 1. `QueryBuilderDnD` context provider from [`@react-querybuilder/dnd`](https://www.npmjs.com/package/@react-querybuilder/dnd) exists higher in the component tree
+> 2. [`react-dnd`](https://www.npmjs.com/package/react-dnd) and [`react-dnd-html5-backend`](https://www.npmjs.com/package/react-dnd-html5-backend) are installed
+>
+> When conditions are met and `enableDragAndDrop` isn't explicitly `false`, it becomes implicitly `true`.
 
 When `true`, displays a [drag handle](/docs/components/draghandle.md) on the left side of each group header and rule for visual reordering.
 
-#### Recommended usage[​](#recommended-usage "Direct link to Recommended usage")
+#### Recommended usage
 
-```
+```bash
 npm i react-querybuilder @react-querybuilder/dnd react-dnd react-dnd-html5-backend
-
 # OR yarn add / pnpm add / bun add
 ```
 
-```
+```tsx
 import { QueryBuilderDnD } from '@react-querybuilder/dnd';
-
 import * as ReactDnD from 'react-dnd';
-
 import * as ReactDndHtml5Backend from 'react-dnd-html5-backend';
-
 import { QueryBuilder } from 'react-querybuilder';
 
-
-
 const App = () => (
-
   <QueryBuilderDnD dnd={{ ...ReactDnD, ...ReactDndHtml5Backend }}>
-
     <QueryBuilder />
-
   </QueryBuilderDnD>
-
 );
 ```
 
-tip
+> **Tip:** If your app already uses [`react-dnd`](https://react-dnd.github.io/react-dnd/), use `QueryBuilderDndWithoutProvider` instead of `QueryBuilderDnD`. Both are functionally equivalent, but the former assumes an existing `<DndProvider />` higher in the tree. The latter renders its own `DndProvider`, causing conflicts with pre-existing ones (error: "Cannot have two HTML5 backends at the same time").
 
-If your app already uses [`react-dnd`](https://react-dnd.github.io/react-dnd/), use `QueryBuilderDndWithoutProvider` instead of `QueryBuilderDnD`. Both are functionally equivalent, but the former assumes an existing `<DndProvider />` higher in the tree. The latter renders its own `DndProvider`, causing conflicts with pre-existing ones (error: "Cannot have two HTML5 backends at the same time").
-
-### `disabled`[​](#disabled "Direct link to disabled")
+### `disabled`
 
 `boolean | Path[]` (default `false`) *[Click here for demo](/demo#disabled=true)*
 
 Pass `true` to disable all subcomponents and prevent query changes. Pass path array to disable specific rules/groups. Example: `disabled={[[0]]}` disables the top-most rule/group and its subcomponents only.
 
-### `suppressStandardClassnames`[​](#suppressstandardclassnames "Direct link to suppressstandardclassnames")
+### `suppressStandardClassnames`
 
 `boolean` (default `false`) *[Click here for demo](/demo#suppressStandardClassnames=true)*
 
 Disables standard classnames, including conditional and event-based classes for validation, drag-and-drop, etc.
 
-### `debugMode`[​](#debugmode "Direct link to debugmode")
+### `debugMode`
 
 `boolean` (default `false`) *[Click here for demo](/demo#debugMode=true)*
 
 Enables debug logging with the [`onLog` function](#onlog).
 
-### `onLog`[​](#onlog "Direct link to onlog")
+### `onLog`
 
 `(message: any) => void` (default `console.log`)
 
 Receives logging messages when [`debugMode`](#debugmode) is enabled.
 
-### `qbId`[​](#qbid "Direct link to qbid")
+### `qbId`
 
 `string`
 
@@ -805,7 +672,7 @@ If not provided, an identifier is generated automatically. Only evaluated when t
 
 If another *mounted* query builder is already using the same `qbId`, this query builder falls back to a generated identifier and logs an error in non-production modes. Reusing a `qbId` *after* the previous query builder has unmounted is supported (see [`preserveQueryStateOnUnmount`](#preservequerystateonunmount)).
 
-### `preserveQueryStateOnUnmount`[​](#preservequerystateonunmount "Direct link to preservequerystateonunmount")
+### `preserveQueryStateOnUnmount`
 
 `boolean` (default `false`)
 
@@ -813,31 +680,31 @@ By default, when the last query builder using a given [`qbId`](#qbid) unmounts, 
 
 Only meaningful in conjunction with an explicit `qbId`, since automatically generated identifiers are never reused.
 
-### `idGenerator`[​](#idgenerator "Direct link to idgenerator")
+### `idGenerator`
 
 `() => string` (default `generateID`)
 
 Generates `id`s for rules and groups without them, or clones needing new `id`s. Default generates valid v4 UUIDs per [RFC 4122](https://www.rfc-editor.org/rfc/rfc4122) using `crypto` package or `Math.random()` fallback.
 
-### `accessibleDescriptionGenerator`[​](#accessibledescriptiongenerator "Direct link to accessibledescriptiongenerator")
+### `accessibleDescriptionGenerator`
 
 `(props: { path: Path; qbId: string; }) => string` (default `generateAccessibleDescription`)
 
 Generates `title` attribute for each rule group's outermost `<div>`. For accessibility, output should be meaningful, descriptive, and unique within the page.
 
-### `maxLevels`[​](#maxlevels "Direct link to maxlevels")
+### `maxLevels`
 
 `number` (default `Infinity`)
 
 Limits query nesting levels. Adding groups beyond this limit gets ignored. Useful for preventing overly complex queries.
 
-### `validator`[​](#validator "Direct link to validator")
+### `validator`
 
 `QueryValidator` *[Click here for demo](/demo#validateQuery=true)*
 
 Executed on each render. Return boolean (`true` = valid, `false` = invalid) or object with rule/group `id`s as keys. Object values can be boolean or `{ valid: boolean, reasons?: array }`. The validation object gets passed to rule/group components. See [validation documentation](/docs/utils/validation.md).
 
-## Independent combinators[​](#independent-combinators "Direct link to Independent combinators")
+## Independent combinators
 
 Props specifying `RuleGroupTypeAny` are inferred as [`RuleGroupType` or `RuleGroupTypeIC`](/docs/typescript.md#rules-and-groups). `RuleGroupTypeIC` queries use "independent combinators."
 
@@ -845,37 +712,25 @@ This places combinator values between each neighboring rule/group pair (every od
 
 A standard query (`RuleGroupType`) might look like this:
 
-```
+```ts
 const query: RuleGroupType = {
-
   combinator: 'and',
-
   rules: [
-
     { field: 'f1', operator: '=', value: 'v1' },
-
     { field: 'f2', operator: '=', value: 'v2' },
-
   ],
-
 };
 ```
 
 The same query using independent combinators would look like this:
 
-```
+```ts
 const query: RuleGroupTypeIC = {
-
   rules: [
-
     { field: 'f1', operator: '=', value: 'v1' },
-
     'and',
-
     { field: 'f2', operator: '=', value: 'v2' },
-
   ],
-
 };
 ```
 

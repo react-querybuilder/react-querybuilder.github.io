@@ -4,13 +4,10 @@
 
 Use the `formatQuery` function to export queries in various formats. The function has this signature:
 
-```
+```ts
 function formatQuery(
-
   query: RuleGroupTypeAny,
-
   options?: ExportFormat | FormatQueryOptions
-
 ): string | ParameterizedSQL | ParameterizedNamedSQL | RQBJsonLogic | Record<string, any>;
 ```
 
@@ -47,299 +44,218 @@ function formatQuery(
 
 The following sections use this example `query`:
 
-```
+```ts
 const query: RuleGroupType = {
-
   id: 'root',
-
   combinator: 'and',
-
   not: false,
-
   rules: [
-
     {
-
       id: 'rule1',
-
       field: 'firstName',
-
       operator: '=',
-
       value: 'Steve',
-
     },
-
     {
-
       id: 'rule2',
-
       field: 'lastName',
-
       operator: '=',
-
       value: 'Vai',
-
     },
-
   ],
-
 };
 ```
 
-tip
+> **Tip:** For best results, use [default combinators and operators](/docs/utils/misc.md#defaults) or map custom ones to defaults with [`transformQuery`](/docs/utils/misc.md#transformquery).
+>
+> More information...
+>
+> `formatQuery` accepts `RuleGroupTypeAny` queries but only guarantees correct processing of `DefaultRuleGroupTypeAny` queries.
+>
+> All query `combinator` and `operator` properties must match [`defaultCombinators` or `defaultOperators`](/docs/utils/misc.md#defaults) names (case-insensitive). Use [`transformQuery`](/docs/utils/misc.md#transformquery) to map custom names to defaults before calling `formatQuery`.
+>
+> For example, replacing the default "between" operator with `{ name: "b/w", label: "b/w" }` creates rules with `operator: "b/w"`. For this query:
+>
+> ```json
+> {
+>   "combinator": "and",
+>   "rules": [{ "field": "someNumber", "operator": "b/w", "value": "12,14" }]
+> }
+> ```
+>
+> Transform it using `transformQuery` with `operatorMap`:
+>
+> ```ts
+> const newQuery = transformQuery(query, { operatorMap: { 'b/w': 'between' } });
+> /*
+> {
+>   "combinator": "and",
+>   "rules": [{ "field": "someNumber", "operator": "between", "value": "12,14" }]
+> }
+> */
+> ```
+>
+> The `newQuery` is ready for `formatQuery`, including special "between" operator handling.
 
-For best results, use [default combinators and operators](/docs/utils/misc.md#defaults) or map custom ones to defaults with [`transformQuery`](/docs/utils/misc.md#transformquery).
+## Basic usage
 
-More information...
-
-`formatQuery` accepts `RuleGroupTypeAny` queries but only guarantees correct processing of `DefaultRuleGroupTypeAny` queries.
-
-All query `combinator` and `operator` properties must match [`defaultCombinators` or `defaultOperators`](/docs/utils/misc.md#defaults) names (case-insensitive). Use [`transformQuery`](/docs/utils/misc.md#transformquery) to map custom names to defaults before calling `formatQuery`.
-
-For example, replacing the default "between" operator with `{ name: "b/w", label: "b/w" }` creates rules with `operator: "b/w"`. For this query:
-
-```
-{
-
-  "combinator": "and",
-
-  "rules": [{ "field": "someNumber", "operator": "b/w", "value": "12,14" }]
-
-}
-```
-
-Transform it using `transformQuery` with `operatorMap`:
-
-```
-const newQuery = transformQuery(query, { operatorMap: { 'b/w': 'between' } });
-
-/*
-
-{
-
-  "combinator": "and",
-
-  "rules": [{ "field": "someNumber", "operator": "between", "value": "12,14" }]
-
-}
-
-*/
-```
-
-The `newQuery` is ready for `formatQuery`, including special "between" operator handling.
-
-## Basic usage[​](#basic-usage "Direct link to Basic usage")
-
-### JSON[​](#json "Direct link to JSON")
+### JSON
 
 Export the internal query representation (from `onQueryChange` callback) as formatted JSON:
 
-```
+```ts
 formatQuery(query);
-
 // or
-
 formatQuery(query, 'json');
 ```
 
 Output is multi-line JSON with 2-space indentation:
 
-```
+```ts
 `{
-
   "id": "root",
-
   "combinator": "and",
-
   "not": false,
-
   "rules": [
-
     {
-
       "id": "rule1",
-
       "field": "firstName",
-
       "value": "Steve",
-
       "operator": "="
-
     },
-
     {
-
       "id": "rule2",
-
       "field": "lastName",
-
       "value": "Vai",
-
       "operator": "="
-
     }
-
   ]
-
 }`;
 ```
 
-### JSON without IDs[​](#json-without-ids "Direct link to JSON without IDs")
+### JSON without IDs
 
 Export unformatted (single-line) JSON without `id` or `path` attributes using "json_without_ids". This format is useful for persistent storage:
 
-```
+```ts
 formatQuery(query, 'json_without_ids');
 ```
 
 Output (string):
 
-```
+```text
 {"combinator":"and","not":false,"rules":[{"field":"firstName","value":"Steve","operator":"="},{"field":"lastName","value":"Vai","operator":"="}]}
 ```
 
-### SQL[​](#sql "Direct link to SQL")
+### SQL
 
 Export SQL `WHERE` clauses using the "sql" format. This format is compatible with major RDBMS engines, though some cases require [configuration](#configuration). See [presets](#presets) for compatibility details.
 
-```
+```ts
 formatQuery(query, 'sql');
 ```
 
 Output (string):
 
-```
+```text
 (firstName = 'Steve' and lastName = 'Vai')
 ```
 
-#### Parameterized SQL[​](#parameterized-sql "Direct link to Parameterized SQL")
+#### Parameterized SQL
 
 Export SQL with bind variables instead of inline values using the "parameterized" format. This returns an object with `sql` and `params` properties:
 
-```
+```ts
 formatQuery(query, 'parameterized');
 ```
 
 Output (JSON object):
 
-```
+```json
 {
-
   "sql": "(firstName = ? and lastName = ?)",
-
   "params": ["Steve", "Vai"]
-
 }
 ```
 
-#### Named parameters[​](#named-parameters "Direct link to Named parameters")
+#### Named parameters
 
 When anonymous parameters aren't suitable, use "parameterized_named" to name parameters based on field names. This is similar to "parameterized" but `params` is an object instead of an array:
 
-```
+```ts
 formatQuery(query, 'parameterized_named');
 ```
 
 Output (JSON object):
 
-```
+```json
 {
-
   "sql": "(firstName = :firstName_1 and lastName = :lastName_1)",
-
   "params": {
-
     "firstName_1": "Steve",
-
     "lastName_1": "Vai"
-
   }
-
 }
 ```
 
 See also: [`paramPrefix`](#parameter-prefix) and [generating parameter names](#generating-parameter-names).
 
-### ORMs[​](#orms "Direct link to ORMs")
+### ORMs
 
-#### Prisma ORM[​](#prisma-orm "Direct link to Prisma ORM")
+#### Prisma ORM
 
 Generate objects for Prisma ORM `where` properties using the "prisma" format:
 
 > *Note: Prisma does not support field-to-field comparisons, so rules with `valueSource: "field"` will always be invalid.*
 
-```
+```ts
 const where = formatQuery(query, 'prisma');
 
-
-
 console.log(where);
-
 // { AND: [{ firstName: 'Steve' }, { lastName: 'Vai' }] }
-
-
 
 const users = await prisma.users.findMany({ where });
 ```
 
-#### Drizzle ORM[​](#drizzle-orm "Direct link to Drizzle ORM")
+#### Drizzle ORM
 
-##### Relational Queries API[​](#relational-queries-api "Direct link to Relational Queries API")
+##### Relational Queries API
 
 Generate functions for Drizzle's [relational queries API](https://orm.drizzle.team/docs/rqb) `where` property:
 
-```
+```ts
 const where = formatQuery(query, 'drizzle');
-
 // typeof where === 'function'
-
 // where.length === 2
-
 const results = db.query.users.findMany({ where });
 ```
 
-##### Query Builder API[​](#query-builder-api "Direct link to Query Builder API")
+##### Query Builder API
 
 For Drizzle's [query builder API](https://orm.drizzle.team/docs/select), pass table definition and operators to the `formatQuery`-generated function:
 
-```
+```ts
 import { getOperators } from 'drizzle-orm';
 
-
-
 const whereFn = formatQuery(query, 'drizzle');
-
 const whereObj = whereFn(table, getOperators());
-
-
 
 const query = db.select().from(table).where(whereObj);
 ```
 
-tip
-
-Query builder API objects work with other Drizzle operators, letting you add conditions not in the original query:
-
-```
-import { and, ne, getOperators } from 'drizzle-orm';
-
-
-
-// Conditions from the React Query Builder query object:
-
-const whereFn = formatQuery(query, 'drizzle');
-
-const whereObj = whereFn(table, getOperators());
-
-
-
-// All conditions from the original query object _and_ `id != 123`:
-
-const augmentedWhere = and(whereObj, ne(table.id, 123));
-
-const query = db.select().from(table).where(augmentedWhere);
-```
+> **Tip:** Query builder API objects work with other Drizzle operators, letting you add conditions not in the original query:
+>
+> ```ts
+> import { and, ne, getOperators } from 'drizzle-orm';
+>
+> // Conditions from the React Query Builder query object:
+> const whereFn = formatQuery(query, 'drizzle');
+> const whereObj = whereFn(table, getOperators());
+>
+> // All conditions from the original query object _and_ `id != 123`:
+> const augmentedWhere = and(whereObj, ne(table.id, 123));
+> const query = db.select().from(table).where(augmentedWhere);
+> ```
 
 `@react-querybuilder/drizzle` *(deprecated)*
 
@@ -347,103 +263,60 @@ The [`@react-querybuilder/drizzle`](https://npmjs.com/package/@react-querybuilde
 
 To achieve the same result, inline the following functions in your project:
 
-```
+```ts
 import type { RuleGroupProcessor, RuleProcessor } from '@react-querybuilder/core';
-
 import {
-
   defaultRuleGroupProcessorDrizzle,
-
   defaultRuleProcessorDrizzle,
-
 } from '@react-querybuilder/core';
-
 import type { Column, SQL, Table } from 'drizzle-orm';
-
 import * as drizzleOperators from 'drizzle-orm';
-
 import { getOperators } from 'drizzle-orm';
 
-
-
 export const generateDrizzleRuleGroupProcessor =
-
   (columns: Record<string, Column> | Table): RuleGroupProcessor<SQL | undefined> =>
-
   (ruleGroup, options) =>
-
     defaultRuleGroupProcessorDrizzle(ruleGroup, options)(
-
       columns as Record<string, Column>,
-
       getOperators()
-
     );
 
-
-
 export const generateDrizzleRuleProcessor =
-
   (table: Table | Record<string, Column>): RuleProcessor =>
-
   (rule, options) =>
-
     defaultRuleProcessorDrizzle(rule, { ...options, context: { table, drizzleOperators } });
 ```
 
 Usage:
 
-```
+```ts
 import { sqliteTable, text } from 'drizzle-orm/sqlite-core';
-
 import { formatQuery } from 'react-querybuilder';
-
-
 
 const db = drizzle(process.env.DB_FILE_NAME!);
 
-
-
 const table = sqliteTable('musicians', {
-
   firstName: text(),
-
   lastName: text(),
-
 });
-
-
 
 const ruleGroupProcessor = generateDrizzleRuleGroupProcessor(table);
 
-
-
 // Tip: `format` is not required when `ruleGroupProcessor` is provided
-
 const where = formatQuery(query, { ruleGroupProcessor });
 
-
-
 const query = db.select().from(table).where(where);
-
 console.log(query.toSQL());
-
 // {
-
 //   sql: 'select "firstName", "lastName" from "musicians" where ("musicians"."firstName" = ? and "musicians"."lastName" = ?)',
-
 //   params: ['Steve', 'Vai']
-
 // }
 
-
-
 console.log(query.all());
-
 // [{ firstName: 'Steve', lastName: 'Vai' }]
 ```
 
-#### Sequelize[​](#sequelize "Direct link to Sequelize")
+#### Sequelize
 
 Generate objects for Sequelize `findAll` `where` properties using the "sequelize" format. Requirements:
 
@@ -451,462 +324,339 @@ Generate objects for Sequelize `findAll` `where` properties using the "sequelize
 * If any rules have `valueSource: "field"`, then the Sequelize `col` function must be provided as `sequelizeCol`.
 * If any rules have `valueSource: "field"` and use one of the `doesNot*` operators, then the Sequelize `fn` function must be provided as `sequelizeFn`.
 
-```
+```ts
 import { col, fn, Op } from 'sequelize';
-
 const where = formatQuery(query, {
-
   format: 'sequelize',
-
   context: { sequelizeOperators: Op, sequelizeCol: col, sequelizeFn: fn },
-
 });
-
-
 
 const users = await Users.findAll({ where });
 ```
 
-#### TanStack DB[​](#tanstack-db "Direct link to TanStack DB")
+#### TanStack DB
 
 Generate a `WhereCallback` for [TanStack DB](https://tanstack.com/db)'s `.where()` method using the "tanstack_db" format. The processor does not import any executable code from `@tanstack/db` — operators are passed in through the `context` option.
 
 Pass the full `@tanstack/db` module or individual operators as `tanStackDbOperators`:
 
-```
+```ts
 import * as tsdb from '@tanstack/db';
 
-
-
 const where = formatQuery(query, {
-
   format: 'tanstack_db',
-
   context: { tanStackDbOperators: tsdb },
-
 });
-
-
 
 const results = useLiveQuery(q => q.from({ users: usersCollection }).where(where));
 ```
 
 Or with cherry-picked operators:
 
-```
+```ts
 import { eq, gt, gte, lt, lte, like, inArray, isNull, not, and, or } from '@tanstack/db';
 
-
-
 const where = formatQuery(query, {
-
   format: 'tanstack_db',
-
   context: {
-
     tanStackDbOperators: { eq, gt, gte, lt, lte, like, inArray, isNull, not, and, or },
-
   },
-
 });
 ```
 
-tip
+> **Tip:** TanStack DB does not expose `ne`, `between`, `notBetween`, `notInArray`, `notLike`, or `isNotNull` — these are composed automatically using `not(...)`. For example, `!=` becomes `not(eq(...))` and `between` becomes `and(gte(...), lte(...))`.
 
-TanStack DB does not expose `ne`, `between`, `notBetween`, `notInArray`, `notLike`, or `isNotNull` — these are composed automatically using `not(...)`. For example, `!=` becomes `not(eq(...))` and `between` becomes `and(gte(...), lte(...))`.
-
-##### Joins (multi-collection queries)[​](#joins-multi-collection-queries "Direct link to Joins (multi-collection queries)")
+##### Joins (multi-collection queries)
 
 When querying across joined collections, fields from non-primary collections must use dotted notation (`"alias.fieldName"`) to target the correct ref. Bare (unprefixed) fields always resolve to the primary collection (the first key in the `refs` object).
 
-```
+```ts
 import * as tsdb from '@tanstack/db';
 
-
-
 const query = {
-
   combinator: 'and',
-
   rules: [
-
     // Bare field → resolves to the primary collection (su)
-
     { field: 'firstName', operator: '=', value: 'Bruce' },
-
     // Dotted field → resolves to the nicknames collection (nn)
-
     { field: 'nn.nickname', operator: 'contains', value: 'Dark' },
-
   ],
-
 };
 
-
-
 const where = formatQuery(query, {
-
   format: 'tanstack_db',
-
   context: { tanStackDbOperators: tsdb },
-
 });
 
-
-
 const results = useLiveQuery(q =>
-
   q
-
     .from({ su: superUsersCollection })
-
     .leftJoin({ nn: nicknamesCollection }, refs => eq(refs.su.id, refs.nn.userId))
-
     .where(where)
-
 );
 ```
 
-caution
+> **Caution:** Bare fields cannot be disambiguated across collections at export time because TanStack DB refs are proxies that accept any property name. Always use dotted notation for fields on joined (non-primary) collections.
 
-Bare fields cannot be disambiguated across collections at export time because TanStack DB refs are proxies that accept any property name. Always use dotted notation for fields on joined (non-primary) collections.
-
-### MongoDB[​](#mongodb "Direct link to MongoDB")
+### MongoDB
 
 Generate MongoDB queries as JSON objects or strings. Use the "mongodb_query" format (recommended) for JSON objects. The "mongodb" format is the stringified version.
 
-info
+> **Info:** The "mongodb" format was deprecated when the "mongodb_query" export format was introduced in version 8.1.0.
 
-The "mongodb" format was deprecated when the "mongodb_query" export format was introduced in version 8.1.0.
-
-```
+```ts
 formatQuery(query, 'mongodb_query');
 ```
 
 Output (JSON object):
 
-```
+```json
 { "$and": [{ "firstName": "Steve" }, { "lastName": "Vai" }] }
 ```
 
-### Common Expression Language[​](#common-expression-language "Direct link to Common Expression Language")
+### Common Expression Language
 
 For [Common Expression Language (CEL)](https://cel.dev) output, use the "cel" format.
 
-```
+```ts
 formatQuery(query, 'cel');
 ```
 
 Output (string):
 
-```
+```text
 firstName = "Steve" && lastName = "Vai"
 ```
 
-### Spring Expression Language[​](#spring-expression-language "Direct link to Spring Expression Language")
+### Spring Expression Language
 
 For [Spring Expression Language (SpEL)](https://docs.spring.io/spring-framework/reference/core/expressions.html) output, use the "spel" format.
 
-```
+```ts
 formatQuery(query, 'spel');
 ```
 
 Output (string):
 
-```
+```text
 firstName == 'Steve' and lastName == 'Vai'
 ```
 
-### JsonLogic[​](#jsonlogic "Direct link to JsonLogic")
+### JsonLogic
 
 Generate objects for JsonLogic `apply` function (see <https://jsonlogic.com/>):
 
-```
+```ts
 formatQuery(query, 'jsonlogic');
 ```
 
 Output (JSON object):
 
-```
+```json
 { "and": [{ "==": [{ "var": "firstName" }, "Steve"] }, { "==": [{ "var": "lastName" }, "Vai"] }] }
 ```
 
-tip
+> **Tip:** Register additional `startsWith` and `endsWith` operators from `react-querybuilder` before using JsonLogic's `apply()`. These aren't [standard JsonLogic operations](https://jsonlogic.com/operations.html) but correspond to "beginsWith" and "endsWith" operators.
+>
+> Loop through `jsonLogicAdditionalOperators` entries for future-proof registration of any new custom operators:
+>
+> ```ts
+> import { add_operation, apply } from 'json-logic-js';
+> import { jsonLogicAdditionalOperators } from 'react-querybuilder';
+>
+> for (const [op, func] of Object.entries(jsonLogicAdditionalOperators)) {
+>   add_operation(op, func);
+> }
+>
+> apply({ startsWith: [{ var: 'firstName' }, 'Stev'] }, data);
+> ```
 
-Register additional `startsWith` and `endsWith` operators from `react-querybuilder` before using JsonLogic's `apply()`. These aren't [standard JsonLogic operations](https://jsonlogic.com/operations.html) but correspond to "beginsWith" and "endsWith" operators.
-
-Loop through `jsonLogicAdditionalOperators` entries for future-proof registration of any new custom operators:
-
-```
-import { add_operation, apply } from 'json-logic-js';
-
-import { jsonLogicAdditionalOperators } from 'react-querybuilder';
-
-
-
-for (const [op, func] of Object.entries(jsonLogicAdditionalOperators)) {
-
-  add_operation(op, func);
-
-}
-
-
-
-apply({ startsWith: [{ var: 'firstName' }, 'Stev'] }, data);
-```
-
-### ElasticSearch[​](#elasticsearch "Direct link to ElasticSearch")
+### ElasticSearch
 
 Generate objects for [ElasticSearch](https://www.elastic.co/) processing:
 
-```
+```ts
 formatQuery(query, 'elasticsearch');
 ```
 
 Output (JSON object):
 
-```
+```json
 { "bool": { "must": [{ "term": { "firstName": "Steve" } }, { "term": { "lastName": "Vai" } }] } }
 ```
 
-### JSONata[​](#jsonata "Direct link to JSONata")
+### JSONata
 
 Generate [JSONata](https://jsonata.org/) filters using "jsonata" format. Use [`parseNumbers` option](#parse-numbers) for numeric values since JSONata doesn't auto-cast strings to numbers:
 
-```
+```ts
 formatQuery(query, { format: 'jsonata', parseNumbers: true });
 ```
 
 Output (string):
 
-```
+```text
 firstName = "Steve" and lastName = "Vai"
 ```
 
-Handling date values in JSONata
+> **Handling date values in JSONata:** React Query Builder lacks standard date detection, so use `datetimeRuleProcessorJSONata` from [`@react-querybuilder/datetime`](/docs/datetime.md#jsonata).
+>
+> For more control, implement a custom rule processor (example below lacks error checking but provides a starting point):
+>
+> ```ts
+> const customRuleProcessor: RuleProcessor = (rule, options) => {
+>   // `datatype` is a non-standard property of the field, used for this example only.
+>   // Replace this condition with your own logic to determine if the value is a date.
+>   if (options?.fieldData?.datatype === 'date') {
+>     return `$toMillis(${rule.field}) ${rule.operator} $toMillis("${rule.value}")`;
+>   }
+>   return defaultRuleProcessorJSONata(rule, options);
+> };
+> ```
 
-React Query Builder lacks standard date detection, so use `datetimeRuleProcessorJSONata` from [`@react-querybuilder/datetime`](/docs/datetime.md#jsonata).
-
-For more control, implement a custom rule processor (example below lacks error checking but provides a starting point):
-
-```
-const customRuleProcessor: RuleProcessor = (rule, options) => {
-
-  // `datatype` is a non-standard property of the field, used for this example only.
-
-  // Replace this condition with your own logic to determine if the value is a date.
-
-  if (options?.fieldData?.datatype === 'date') {
-
-    return `$toMillis(${rule.field}) ${rule.operator} $toMillis("${rule.value}")`;
-
-  }
-
-  return defaultRuleProcessorJSONata(rule, options);
-
-};
-```
-
-### LDAP[​](#ldap "Direct link to LDAP")
+### LDAP
 
 Generate [LDAP](https://en.wikipedia.org/wiki/Lightweight_Directory_Access_Protocol) filters:
 
 > *Note: LDAP filters do not support direct comparison between the values of two attributes within the same entry, so rules with `valueSource: "field"` will always be invalid.*
 
-```
+```ts
 formatQuery(query, 'ldap');
 ```
 
 Output (string):
 
-```
+```text
 (&(givenName=Steve)(sn=Vai))
 ```
 
-### Natural language[​](#natural-language "Direct link to Natural language")
+### Natural language
 
 Generate natural language queries using "natural_language" format. Use `getOperators` and `fields` options to render labels instead of values. See [i18n options](#internationalization):
 
-```
+```ts
 formatQuery(query, {
-
   format: 'natural_language',
-
   parseNumbers: true,
-
   getOperators: () => defaultOperators,
-
   fields: [
-
     { value: 'firstName', label: 'First Name' },
-
     { value: 'lastName', label: 'Last Name' },
-
     { value: 'age', label: 'Age' },
-
   ],
-
 });
 ```
 
 Output (string):
 
-```
+```text
 First Name is 'Steve', and Last Name is "Vai", and Age is between 26 and 52
 ```
 
-### Cypher[​](#cypher "Direct link to Cypher")
+### Cypher
 
 Generate [Cypher](https://neo4j.com/docs/cypher-manual/) `WHERE` clause conditions using the "cypher" format. This format is also available as "gql" since [GQL](https://www.iso.org/standard/76120.html) uses the same expression syntax.
 
-```
+```ts
 formatQuery(query, 'cypher');
-
 // or
-
 formatQuery(query, 'gql');
 ```
 
 Output (string):
 
-```
+```text
 n.firstName = 'Steve' AND n.lastName = 'Vai'
 ```
 
-### SPARQL[​](#sparql "Direct link to SPARQL")
+### SPARQL
 
 Generate [SPARQL](https://www.w3.org/TR/sparql11-query/) `FILTER` expressions using the "sparql" format:
 
-```
+```ts
 formatQuery(query, 'sparql');
 ```
 
 Output (string):
 
-```
+```text
 ?firstName = "Steve" && ?lastName = "Vai"
 ```
 
-### Gremlin[​](#gremlin "Direct link to Gremlin")
+### Gremlin
 
 Generate [Apache TinkerPop Gremlin](https://tinkerpop.apache.org/) `.has()` steps using the "gremlin" format:
 
-```
+```ts
 formatQuery(query, 'gremlin');
 ```
 
 Output (string):
 
-```
+```text
 .has('firstName', 'Steve').has('lastName', 'Vai')
 ```
 
-### react-awesome-query-builder[​](#react-awesome-query-builder "Direct link to react-awesome-query-builder")
+### react-awesome-query-builder
 
 Generate a [react-awesome-query-builder](https://github.com/ukrbublik/react-awesome-query-builder) (RAQB) query tree in its plain-JSON form, suitable for RAQB's `Utils.loadTree()`.
 
 This is *not* a built-in export format. Since most projects need it exactly once, it lives in the separate [`@react-querybuilder/migrate-raqb`](https://github.com/react-querybuilder/migrate-raqb) package, which exports a `formatRAQB` function.
 
-* npm
-* Bun
-* Yarn
-* pnpm
-
-```
+```bash
 npm i @react-querybuilder/migrate-raqb
 ```
 
-```
-bun add @react-querybuilder/migrate-raqb
-```
-
-```
-yarn add @react-querybuilder/migrate-raqb
-```
-
-```
-pnpm add @react-querybuilder/migrate-raqb
-```
-
-```
+```ts
 import { Utils } from '@react-awesome-query-builder/core';
-
 import { formatRAQB } from '@react-querybuilder/migrate-raqb';
 
-
-
 const jsonTree = formatRAQB(query, { fields });
-
 const immutableTree = Utils.checkTree(Utils.loadTree(jsonTree), config);
 ```
 
-This is the inverse of `parseRAQB`. See [Migrating from react-awesome-query-builder](/docs/tips/migrate-from-raqb.md) for the full concept mapping.
+This is the inverse of [`parseRAQB`](/docs/utils/import.md#react-awesome-query-builder). See [Migrating from react-awesome-query-builder](/docs/tips/migrate-from-raqb.md) for the full concept mapping.
 
 Output (object):
 
-```
+```json
 {
-
   "type": "group",
-
   "properties": { "conjunction": "AND", "not": false },
-
   "children1": [
-
     {
-
       "type": "rule",
-
       "properties": {
-
         "field": "firstName",
-
         "operator": "equal",
-
         "value": ["Steve"],
-
         "valueSrc": ["value"]
-
       }
-
     },
-
     {
-
       "type": "rule",
-
       "properties": {
-
         "field": "lastName",
-
         "operator": "equal",
-
         "value": ["Vai"],
-
         "valueSrc": ["value"]
-
       }
-
     }
-
   ]
-
 }
 ```
 
 A companion function, `formatRAQBFields`, converts an RQB `fields` array to the `fields` section of an RAQB `Config`:
 
-```
+```ts
 import { formatRAQBFields } from '@react-querybuilder/migrate-raqb';
-
-
 
 const config = { ...BasicConfig, fields: formatRAQBFields(fields) };
 ```
 
 `formatRAQB` accepts all `formatQuery` options except `format`, `ruleGroupProcessor`, and `fallbackExpression`, plus the RAQB-specific options below and `fallbackTree` (the tree returned when the query is empty or fails validation).
 
-```
+```ts
 const jsonTree = formatRAQB(query, { fields, raqbFieldSeparator: '.', raqbValueTypes: true });
 ```
 
@@ -921,159 +671,93 @@ const jsonTree = formatRAQB(query, { fields, raqbFieldSeparator: '.', raqbValueT
 
 To combine RAQB output with other `formatQuery` behavior, or to supply a custom `ruleProcessor`, use the underlying `defaultRuleGroupProcessorRAQB` with the [`ruleGroupProcessor`](#rule-group-processor) option, which takes precedence over `format`. RAQB options then move into `context`, and `raqbFallback` should be passed as `fallbackExpression` if a `validator` can invalidate the whole query.
 
-```
+```ts
 import { defaultRuleGroupProcessorRAQB, raqbFallback } from '@react-querybuilder/migrate-raqb';
 
-
-
 const jsonTree = formatQuery(query, {
-
   ruleGroupProcessor: defaultRuleGroupProcessorRAQB,
-
   fields,
-
   context: { raqbValueTypes: true },
-
   fallbackExpression: raqbFallback as unknown as string,
-
 });
 ```
 
-note
+> **Note:** RAQB's default configuration has no equivalent for RQB's `doesNotBeginWith`/`doesNotEndWith` operators, the `"parameter"` value source, or `endOf*` relative date/time anchors. Rules using them are omitted (or, for `endOf*` anchors, emitted as plain values). Use `raqbOperatorMap` to map them onto custom RAQB operators.
+>
+> RAQB also restricts some constructs that RQB permits—notably `in`/`notIn` on non-`select` fields and most field-to-field comparisons. See [Migrating from react-awesome-query-builder](/docs/tips/migrate-from-raqb.md#converting-back-to-raqb) for the full list.
 
-RAQB's default configuration has no equivalent for RQB's `doesNotBeginWith`/`doesNotEndWith` operators, the `"parameter"` value source, or `endOf*` relative date/time anchors. Rules using them are omitted (or, for `endOf*` anchors, emitted as plain values). Use `raqbOperatorMap` to map them onto custom RAQB operators.
-
-RAQB also restricts some constructs that RQB permits—notably `in`/`notIn` on non-`select` fields and most field-to-field comparisons. See [Migrating from react-awesome-query-builder](/docs/tips/migrate-from-raqb.md#converting-back-to-raqb) for the full list.
-
-### Diagnostics[​](#diagnostics "Direct link to Diagnostics")
+### Diagnostics
 
 Generate a diagnostics result object using the "diagnostics" format. The output includes an annotated copy of the query tree, a flat diagnostics array, aggregate statistics, and a per-field summary.
 
-```
+```ts
 const result = formatQuery(query, {
-
   format: 'diagnostics',
-
   fields: [
-
     {
-
       name: 'firstName',
-
       label: 'First Name',
-
       validator: r => (r.value ? true : { valid: false, reasons: ['Value is required'] }),
-
     },
-
     { name: 'age', label: 'Age', inputType: 'number' },
-
   ],
-
 });
 ```
 
 Output (object):
 
-```
+```json
 {
-
   "query": {
-
     "combinator": "and",
-
     "valid": false,
-
     "path": [],
-
     "level": 0,
-
     "rules": [
-
       {
-
         "field": "firstName",
-
         "operator": "=",
-
         "value": "",
-
         "valid": false,
-
         "reasons": ["Value is required"],
-
         "path": [0],
-
         "level": 1
-
       },
-
       {
-
         "field": "age",
-
         "operator": ">",
-
         "value": 26,
-
         "valid": true,
-
         "path": [1],
-
         "level": 1
-
       }
-
     ]
-
   },
-
   "diagnostics": [
-
     {
-
       "id": "r-1",
-
       "path": [0],
-
       "code": "CUSTOM_VALIDATOR",
-
       "message": "Invalid: Value is required",
-
       "source": "field-validator"
-
     }
-
   ],
-
   "stats": {
-
     "totalRules": 2,
-
     "totalGroups": 1,
-
     "validRules": 1,
-
     "invalidRules": 1,
-
     "validGroups": 0,
-
     "invalidGroups": 1
-
   },
-
   "fieldSummary": {
-
     "firstName": { "ruleCount": 1, "invalidCount": 1 },
-
     "age": { "ruleCount": 1, "invalidCount": 0 }
-
   }
-
 }
 ```
 
-#### Annotated query tree[​](#annotated-query-tree "Direct link to Annotated query tree")
+#### Annotated query tree
 
 Every rule and group in `result.query` includes:
 
@@ -1090,7 +774,7 @@ A rule is considered invalid if any of the following are true:
 
 The root-level `valid` property is `true` only when the group itself is valid *and* all descendant rules and groups are valid, making it suitable for gating API calls.
 
-#### Flat diagnostics array[​](#flat-diagnostics-array "Direct link to Flat diagnostics array")
+#### Flat diagnostics array
 
 `result.diagnostics` is a flat array of `DiagnosticEntry` objects, each with an `id`, `path`, `code`, `message`, and `source`. Diagnostic codes include:
 
@@ -1107,63 +791,49 @@ The root-level `valid` property is `true` only when the group itself is valid *a
 
 The `UNDEFINED_FIELD`, `UNREFERENCED_FIELD`, and `VALUE_TYPE_MISMATCH` diagnostics are only produced when a `fields` config is provided.
 
-#### Stats and field summary[​](#stats-and-field-summary "Direct link to Stats and field summary")
+#### Stats and field summary
 
 `result.stats` provides aggregate counts: `totalRules`, `totalGroups`, `validRules`, `invalidRules`, `validGroups`, `invalidGroups`.
 
 `result.fieldSummary` is a record keyed by field name, where each value has `ruleCount` (total rules for that field) and `invalidCount` (invalid rules for that field).
 
-## Configuration[​](#configuration "Direct link to Configuration")
+## Configuration
 
 Pass an object as the second argument for fine-grained output control:
 
-### Parse numbers[​](#parse-numbers "Direct link to Parse numbers")
+### Parse numbers
 
 Render values as numbers instead of quoted strings using `parseNumbers: true`. See [Number parsing](/docs/utils/misc.md#number-parsing) for details.
 
-#### Preserve value order[​](#preserve-value-order "Direct link to Preserve value order")
+#### Preserve value order
 
 `formatQuery` sorts "between"/"notBetween" values in ascending order when `parseNumbers` renders them as numbers. Disable with `preserveValueOrder`:
 
-```
+```ts
 const query = {
-
   rules: [{ field: 'age', operator: 'between', value: [30, 20] }],
-
 };
 
-
-
 formatQuery(query, { format: 'sql', parseNumbers: true });
-
 /*
-
 "(age between 20 and 30)"
-
 */
 
-
-
 formatQuery(query, { format: 'sql', parseNumbers: true, preserveValueOrder: true });
-
 /*
-
 "(age between 30 and 20)"
-
 */
 ```
 
-caution
+> **Caution:** This can create conditions that always evaluate to false. SQL's `X BETWEEN Y AND Z` equals `X >= Y AND X <= Z`—if Y > Z, no X value satisfies both conditions.
+>
+> `formatQuery` assumes users mean "X is between points Y and Z" regardless of direction.
 
-This can create conditions that always evaluate to false. SQL's `X BETWEEN Y AND Z` equals `X >= Y AND X <= Z`—if Y > Z, no X value satisfies both conditions.
-
-`formatQuery` assumes users mean "X is between points Y and Z" regardless of direction.
-
-### Rule processor[​](#rule-processor "Direct link to Rule processor")
+### Rule processor
 
 Customize individual rule output using `ruleProcessor`. Only validated rules reach this function:
 
-```
+```ts
 ruleProcessor(rule, { escapeQuotes, fieldData, ...otherOptions });
 ```
 
@@ -1187,205 +857,121 @@ Refer to the source code to determine the appropriate return type for custom rul
 
 Use the appropriate default rule processor as a fallback so your custom processor doesn't cover all cases:
 
-```
+```ts
 const query: RuleGroupType = {
-
   combinator: 'and',
-
   not: false,
-
   rules: [
-
     { field: 'firstName', operator: 'has', value: 'S' },
-
     //        non-standard operator ^^^^^
-
     { field: 'lastName', operator: '=', value: 'Vai' },
-
   ],
-
 };
-
-
 
 const customRuleProcessor: RuleProcessor = (rule, options) => {
-
   // The "has" operator is not handled by the default processor
-
   if (rule.operator === 'has') {
-
     return { in: [rule.value, { var: rule.field }] };
-
   }
 
-
-
   // Defer to the default processor for all other operators
-
   return defaultRuleProcessorJsonLogic(rule, options);
-
 };
 
-
-
 formatQuery(query, { format: 'jsonlogic', ruleProcessor: customRuleProcessor });
-
 /*
-
 {
-
   and: [
-
     { in: ["S", { var: "firstName" }] },
-
     { "==": [{ var: "lastName" }, "Vai"] }
-
   ]
-
 }
-
 */
 ```
 
 This SQL example (using Oracle syntax) demonstrates the generation of a case-insensitive condition:
 
-```
+```ts
 // `query` is the same as in the previous example
 
-
-
 const customRuleProcessor: RuleProcessor = (rule, options) => {
-
   if (rule.operator === 'has') {
-
     return `UPPER(${rule.field}) LIKE UPPER('%${rule.value}%')`;
-
   }
 
-
-
   return defaultRuleProcessorSQL(rule, options);
-
 };
 
-
-
 formatQuery(query, { format: 'sql', ruleProcessor: customRuleProcessor });
-
 /*
-
 "(UPPER(firstName) LIKE UPPER('%S%') and lastName = 'Vai')"
-
  ^------------custom--------------^ ^------default-----^
-
 */
 ```
 
-#### Generating parameter names[​](#generating-parameter-names "Direct link to Generating parameter names")
+#### Generating parameter names
 
 The "parameterized" and "parameterized_named" formats require rule processors to return an object resembling `formatQuery`'s return type for these formats. The `getNextNamedParam` utility helps generate unique parameter names. The example below matches the Oracle SQL example above, but uses "parameterized_named" format.
 
-```
+```ts
 const customRuleProcessor: RuleProcessor = (rule, options) => {
-
   if (rule.operator === 'has') {
-
     // TIP: `getNextNamedParam` can be called multiple times in case your SQL
-
     // requires multiple unique parameters (e.g., in a "between" condition).
-
     // Each call will generate a new name.
-
     const paramName = options.getNextNamedParam!(rule.field);
-
     return {
-
       sql: `UPPER(${rule.field}) LIKE UPPER('%' || ${options.paramPrefix}${paramName} || '%')`,
-
       params: { [paramName]: rule.value },
-
     };
-
   }
-
-
 
   return defaultRuleProcessorSQLParameterized(rule, options);
-
 };
 
-
-
 formatQuery(query, { format: 'parameterized_named', ruleProcessor: customRuleProcessor });
-
 /*
-
 {
-
   sql: "(UPPER(firstName) LIKE UPPER('%' || :firstName_1 || '%') and lastName = :lastName_1)",
-
   params: {
-
     firstName_1: "S",
-
     lastName_1: "Vai"
-
   }
-
 }
-
 */
 ```
 
-### Value processor[​](#value-processor "Direct link to Value processor")
+### Value processor
 
 `valueProcessor` accepts the same arguments as `ruleProcessor`, but only affects the "value" portion (to the right of the operator) for "sql" format. If both are provided, `ruleProcessor` takes precedence.
 
-tip
+> **Tip:** For all formats except "sql", `valueProcessor` is a synonym for `ruleProcessor`. Use `ruleProcessor` unless exporting SQL and only customizing the value portion.
 
-For all formats except "sql", `valueProcessor` is a synonym for `ruleProcessor`. Use `ruleProcessor` unless exporting SQL and only customizing the value portion.
-
-```
+```ts
 // `query` is the same as in the previous example
 
-
-
 const customValueProcessor: ValueProcessorByRule = (rule, options) => {
-
   if (rule.operator === 'has') {
-
     return `'%${rule.value}%'`;
-
   }
 
-
-
   return defaultValueProcessorByRule(rule, options);
-
 };
 
-
-
 formatQuery(query, { format: 'sql', valueProcessor: customValueProcessor });
-
 /*
-
 "(firstName like '%S%' and lastName = 'Vai')"
-
  ^---default---^ ^---^-custom  ^--default--^
-
 */
 ```
 
-#### Legacy `valueProcessor` behavior[​](#legacy-valueprocessor-behavior "Direct link to legacy-valueprocessor-behavior")
+#### Legacy `valueProcessor` behavior
 
-caution
-
-The legacy `valueProcessor` signature exists for backwards compatibility, but avoid it. Options aren't passed in, making it difficult to correctly fall back to default processors.
+> **Caution:** The legacy `valueProcessor` signature exists for backwards compatibility, but avoid it. Options aren't passed in, making it difficult to correctly fall back to default processors.
 
 If the `valueProcessor` function accepts three or more arguments (excluding those with default values), it's called like this:
 
-```
+```ts
 valueProcessor(field, operator, value, valueSource);
 ```
 
@@ -1393,49 +979,28 @@ No options or additional rule properties are passed as arguments. This prevents 
 
 This legacy behavior is documented for completeness but not recommended.
 
-```
+```ts
 const query: RuleGroupType = {
-
   combinator: 'and',
-
   not: false,
-
   rules: [
-
     { field: 'instrument', operator: 'in', value: ['Guitar', 'Vocals'] },
-
     { field: 'lastName', operator: '=', value: 'Vai' },
-
   ],
-
 };
-
-
 
 const customValueProcessor = (field, operator, value) => {
-
   if (operator === 'in') {
-
     // Assuming `value` is an array, such as from a multi-select
-
     return `(${value.map(v => `'${v.trim()}'`).join(',')})`;
-
   }
 
-
-
   return defaultValueProcessor(field, operator, value);
-
 };
 
-
-
 formatQuery(query, { format: 'sql', valueProcessor: customValueProcessor });
-
 /*
-
 "(instrument in ('Guitar','Vocals') and lastName = 'Vai')"
-
 */
 ```
 
@@ -1450,151 +1015,126 @@ Default value processors using the legacy signature are available for some query
 | "mongodb"             | `defaultValueProcessorMongoDBByRule` | `defaultMongoDBValueProcessor`     |
 | "spel"                | `defaultValueProcessorSpELByRule`    | `defaultSpELValueProcessor`        |
 
-### Operator processor[​](#operator-processor "Direct link to Operator processor")
+### Operator processor
 
 `operatorProcessor` accepts the same arguments as `ruleProcessor`, but only affects the "operator" portion for "sql", "parameterized", "parameterized_named", and "natural_language" formats.
 
-```
+```ts
 formatQuery(query, {
-
   format: 'sql',
-
   // Convert all operators to uppercase
-
   operatorProcessor: (rule, options) => defaultOperatorProcessorSQL(rule, options).toUpperCase(),
-
 });
-
 /*
-
 "(firstName LIKE 'Stev%' and lastName IN ('Vai', 'Vaughan'))"
-
 */
 ```
 
-### Quote field names[​](#quote-field-names "Direct link to Quote field names")
+### Quote field names
 
 Some database engines wrap field names in backticks (`` ` ``) or square brackets (`[]`). Configure this with the `quoteFieldNamesWith` option (string or array of two strings).
 
-```
+```ts
 formatQuery(query, { format: 'sql', quoteFieldNamesWith: '`' });
-
 /*
-
 "(`firstName` = 'Steve' and `lastName` = 'Vai')"
-
 */
-
-
 
 formatQuery(query, { format: 'sql', quoteFieldNamesWith: ['[', ']'] });
-
 /*
-
 "([firstName] = 'Steve' and [lastName] = 'Vai')"
-
 */
 ```
 
-#### Field identifier chains[​](#field-identifier-chains "Direct link to Field identifier chains")
+The closing quote character is escaped within field names by doubling it (`a"b` → `"a""b"`, `a]b` → `[a]]b]`). This applies to the SQL-based formats ("sql", "parameterized", "parameterized_named"), but not "jsonata" or "natural_language".
+
+:::caution Untrusted queries
+
+Unquoted field names (the default) can't be escaped, and operators and combinators are always emitted verbatim. When formatting queries from untrusted sources, quote field names *and* validate fields, operators, and combinators against a whitelist on the server before calling `formatQuery`.
+
+Other formats escape field names where the target language has an escape mechanism:
+
+* "cypher"/"gql": `.`-delimited segments that aren't plain identifiers are backtick-quoted (`n.first name` → ``n.`first name` ``).
+* "gremlin": property keys are escaped within the `'…'` string literal.
+* "elasticsearch": field names inside Painless scripts (`doc['…']`) are escaped.
+* "mongodb_query"/"mongodb": field names inside `$where` JavaScript use bracket notation when they aren't plain identifiers (`this["first name"]`). Object keys and `$field` references are emitted as-is (a leading `$` or embedded `.` keeps its MongoDB meaning).
+
+"cel", "spel", "sparql", "ldap", and "jsonata" have no identifier escape syntax, so field names are emitted verbatim. Validate them against a whitelist.
+
+:::
+
+#### Field identifier chains
 
 To quote members of field identifier chains independently, use `fieldIdentifierSeparator`. A common value is `"."`.
 
 In this example, assume the field names are `musicians.firstName` and `musicians.lastName`.
 
-```
+```ts
 formatQuery(query, {
-
   format: 'sql',
-
   quoteFieldNamesWith: ['[', ']'],
-
   fieldIdentifierSeparator: '.',
-
 });
-
 /*
-
 "([musicians].[firstName] = 'Steve' and [musicians].[lastName] = 'Vai')"
-
 */
 ```
 
-### Quote values[​](#quote-values "Direct link to Quote values")
+### Quote values
 
 Some database engines can accept string literals in double quotes (`"`). This can be configured with the `quoteValuesWith` option which should be assigned a one-character string.
 
-```
+```ts
 formatQuery(query, { format: 'sql', quoteValuesWith: '"' });
-
 /*
-
 "(firstName = "Steve" and lastName = "Vai")"
-
 */
 ```
 
-### Parameter prefix[​](#parameter-prefix "Direct link to Parameter prefix")
+### Parameter prefix
 
 If the "parameterized_named" format is used, configure the parameter prefix used in the `sql` string with the `paramPrefix` option, should the default `":"` be inappropriate.
 
-```
+```ts
 const p = formatQuery(query, {
-
   format: 'parameterized_named',
-
   paramPrefix: '$',
-
 });
-
 /*
-
 p.sql === "(firstName = $firstName_1 and lastName = $lastName_1)"
-
 //                     ^^^                         ^^^
-
 */
 ```
 
-### Retain parameter prefixes[​](#retain-parameter-prefixes "Direct link to Retain parameter prefixes")
+### Retain parameter prefixes
 
 `paramsKeepPrefix` simplifies compatibility with [SQLite](https://sqlite.org/). With "parameterized_named" format, `params` object keys maintain the `paramPrefix` string as it appears in the `sql` string (e.g. `{ ":param_1": "val" }` instead of `{ "param_1": "val" }`).
 
-### Numbered parameters[​](#numbered-parameters "Direct link to Numbered parameters")
+### Numbered parameters
 
 For "parameterized" format, parameter placeholders in generated SQL are "?" by default. When `numberedParams` is `true`, placeholders become numbered indices starting with `1`, incrementing left to right. Each placeholder number is prefixed with the configured `paramPrefix` string (default `":"`).
 
-```
+```ts
 const p = formatQuery(query, {
-
   format: 'parameterized',
-
   paramPrefix: '$',
-
   numberedParams: true,
-
 });
-
 /*
-
 p.sql === "(firstName = $1 and lastName = $2)"
-
 */
 ```
 
 Previously, [manual post-processing](/docs/tips/custom-bind-variables.md) was necessary for this effect.
 
-### Named parameters (value source)[​](#named-parameters-value-source "Direct link to Named parameters (value source)")
+### Named parameters (value source)
 
 The `getParameters` option supports rules whose `valueSource` is [`"parameter"`](/docs/components/valueeditor.md#the-parameter-value-source). Provide the same function passed to the [`getParameters` prop](/docs/components/querybuilder.md#getparameters) (names without a prefix):
 
-```
+```ts
 formatQuery(query, {
-
   format: 'sql',
-
   getParameters: () => [{ name: 'p1', label: 'Param 1' }],
-
 });
 ```
 
@@ -1608,11 +1148,9 @@ Behavior by format:
 
 When `getParameters` is supplied, rules referencing a name not in the list are treated as invalid (dropped or handled per your validation options).
 
-tip
+> **Tip:** The [external parameter manager](/docs/tips/parameter-manager.md) example demonstrates merging user-supplied values over the `null` placeholders produced by the `"parameterized_named"` format.
 
-The [external parameter manager](/docs/tips/parameter-manager.md) example demonstrates merging user-supplied values over the `null` placeholders produced by the `"parameterized_named"` format.
-
-### Concatenation operator[​](#concatenation-operator "Direct link to Concatenation operator")
+### Concatenation operator
 
 Most SQL database dialects use the `||` operator to concatenate strings. SQL Server uses `+`, and MySQL uses the `CONCAT` function instead.
 
@@ -1620,110 +1158,76 @@ Configure the concatenation operator (used for "contains", "beginswith", and "en
 
 If the value is `"CONCAT"` (case-insensitive), the `CONCAT` function is used. (Note: Oracle SQL doesn't support more than two values in `CONCAT`, so avoid this option with Oracle. The default `||` operator is Oracle-compatible.)
 
-```
+```ts
 const query = {
-
   combinator: 'and',
-
   rules: [
-
     { field: 'firstName', operator: '=', value: 'Kris' },
-
     { field: 'lastName', operator: 'beginswith', value: 'firstName', valueSource: 'field' },
-
   ],
-
 };
 
-
-
 formatQuery(query, { format: 'sql', concatOperator: '+' });
-
 /*
-
 "(firstName = 'Kris' and lastName like firstName + '%')"
-
 */
 
-
-
 formatQuery(query, { format: 'sql', concatOperator: 'CONCAT' });
-
 /*
-
 "(firstName = 'Kris' and lastName like CONCAT(firstName, '%'))"
-
 */
 ```
 
-### Presets[​](#presets "Direct link to Presets")
+### Presets
 
 The `preset` option configures options known to enable or improve compatibility with particular query language dialects. Individual options override their respective preset values. Available presets:
 
-info
+> **Info:** If `preset` is from `sqlDialectPresets`, it only applies if `format` is undefined or one of the SQL-based formats.
 
-If `preset` is from `sqlDialectPresets`, it only applies if `format` is undefined or one of the SQL-based formats.
-
-| Dialect        | Preset options                                                                                                             |
-| -------------- | -------------------------------------------------------------------------------------------------------------------------- |
-| `'ansi'`       | ```
+| Dialect        | Preset options                                                                                                                 |
+| -------------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| `'ansi'`       | ```json
 {}
 ```                                                                                                                   |
-| `'sqlite'`     | ```
+| `'sqlite'`     | ```json
 { "paramsKeepPrefix": true }
 ```                                                                                         |
-| `'oracle'`     | ```
+| `'oracle'`     | ```json
 {}
 ```                                                                                                                   |
-| `'mssql'`      | ```
+| `'mssql'`      | ```json
 {
-
   "quoteFieldNamesWith": ["[", "]"],
-
   "concatOperator": "+",
-
   "fieldIdentifierSeparator": ".",
-
   "paramPrefix": "@"
-
 }
 ``` |
-| `'mysql'`      | ```
+| `'mysql'`      | ```json
 { "concatOperator": "CONCAT" }
 ```                                                                                       |
-| `'postgresql'` | ```
+| `'postgresql'` | ```json
 { "quoteFieldNamesWith": "\"", "numberedParams": true, "paramPrefix": "$" }
 ```                                          |
 
 Examples:
 
-```
+```ts
 formatQuery(query, { format: 'parameterized', preset: 'postgresql' });
-
 /*
-
 {
-
   sql: `("firstName" like $1 and "lastName" in ($2, $3))`,
-
   params: ['Stev%', 'Vai', 'Vaughan']
-
 }
-
 */
-
-
 
 formatQuery(query, { format: 'sql', preset: 'mssql' });
-
 /*
-
 "([musicians].[firstName] = 'Kris' and [musicians].[lastName] like [musicians].[firstName] + '%')"
-
 */
 ```
 
-### Fallback expression[​](#fallback-expression "Direct link to Fallback expression")
+### Fallback expression
 
 `fallbackExpression` is a string included in output when `formatQuery` can't determine what to do for a particular rule or group. The intent is to maintain valid syntax while not affecting query criteria. If not provided, the default fallback expression for the format is used:
 
@@ -1749,69 +1253,53 @@ formatQuery(query, { format: 'sql', preset: 'mssql' });
 | `'sequelize'`           | `{}`                          |
 | `'tanstack_db'`         | `eq(1, 1)`                    |
 
-### Value sources[​](#value-sources "Direct link to Value sources")
+### Value sources
 
 When a rule's `valueSource` property is "field", no parameters are generated.
 
-```
+```ts
 const pf = formatQuery(
-
   {
-
     combinator: 'and',
-
     rules: [
-
       { field: 'firstName', operator: '=', value: 'lastName', valueSource: 'field' },
-
       { field: 'firstName', operator: 'beginsWith', value: 'middleName', valueSource: 'field' },
-
     ],
-
   },
-
   'parameterized_named'
-
 );
 ```
 
 Output (JSON object):
 
-```
+```json
 {
-
   "sql": "(firstName = lastName and firstName like middleName || '%')",
-
   "params": {}
-
 }
 ```
 
-### Placeholder values[​](#placeholder-values "Direct link to Placeholder values")
+### Placeholder values
 
 Rules where `field`, `operator`, or `value` matches the placeholder value (default `"~"`) are excluded from output for most export formats (see [Automatic validation](#automatic-validation)). To use a different placeholder string, set the `placeholderFieldName`, `placeholderOperatorName`, or `placeholderValueName` options. These correspond to `fields.placeholderName`, `operators.placeholderName`, and `values.placeholderName` properties on the main component's [`translations` prop](/docs/components/querybuilder.md#translations) object. This behavior for the `value` property only applies if `placeholderValueName` is explicitly set. The others use their defaults if undefined.
 
-### Internationalization[​](#internationalization "Direct link to Internationalization")
+### Internationalization
 
 These i18n options are specific to ["natural_language"](#natural-language) format.
 
-#### Word order[​](#word-order "Direct link to Word order")
+#### Word order
 
 Based on [constituent word order](https://en.wikipedia.org/wiki/Word_order#Constituent_word_orders), the `wordOrder` option accepts all permutations of "SVO" ("SOV", "VSO", etc.) and outputs field, operator, and value in corresponding order (S = field, V = operator, O = value).
 
-```
+```ts
 formatQuery(query, {
-
   format: 'natural_language',
-
   wordOrder: 'SOV',
-
 });
-
 // `First Name 'Steve' is`
 ```
 
-#### Translations[​](#translations "Direct link to Translations")
+#### Translations
 
 Map "and", "or", "true", and "false" to their translated equivalents, plus prefix and suffix options for rule groups.
 
@@ -1819,305 +1307,197 @@ The base prefix/suffix options are "groupPrefix" and "groupSuffix". The applicab
 
 For example, when a group has a `not: true` property, but the `combinator` is something other than `"xor"`, `formatQuery` will look for the `groupSuffix_not` key.
 
-```
+```ts
 formatQuery(query, {
-
   format: 'natural_language',
-
   translations: {
-
     groupSuffix: 'is def the truth',
-
     groupSuffix_not: 'is so not true',
-
   },
-
 });
-
 // Given the following query:
-
 // const query = {
-
 //   rules: [
-
 //     { rules: [{ field: 'firstName', operator: '=', value: 'Steve' }] },
-
 //     'and',
-
 //     { not: true, rules: [{ field: 'firstName', operator: '=', value: 'Vai' }] },
-
 //   ]
-
 // };
-
 // ...potential output could be:
-
 // `(First Name is 'Steve') is def the truth, and (Last Name is 'Vai') is so not true`
 ```
 
 When `not` is falsy but the `combinator` is `"xor"`, `groupSuffix_xor` will be used if it exists. Otherwise it will fall back to the default. If both conditions are true, the order of the suffixes doesn't matter: both "groupSuffix_not_xor" and "groupSuffix_xor_not" would be valid (although there is no guarantee which one will be used if both are present).
 
-##### Rule separator[​](#rule-separator "Direct link to Rule separator")
+##### Rule separator
 
 By default, rules within a group are separated by a comma followed by a space (`, `). Use the `ruleSeparator` translation key to change this. The value should include any trailing space if desired — for example, `'; '` for a semicolon separator, or `'、'` (ideographic comma, no space) for Japanese.
 
-```
+```ts
 formatQuery(query, {
-
   format: 'natural_language',
-
   translations: { ruleSeparator: '、', and: 'かつ' },
-
 });
-
 // `First Name is 'Steve'、かつ Last Name is 'Vai'`
 ```
 
-##### Between conjunction[​](#between-conjunction "Direct link to Between conjunction")
+##### Between conjunction
 
 The conjunction between the two values in a "between" expression defaults to the `and` translation (or `"and"` if not set). Use the `betweenAnd` translation key to override it independently. This is useful for languages where the logical conjunction (used between rules) and the range conjunction (used in "between X and Y") are different words.
 
-```
+```ts
 formatQuery(query, {
-
   format: 'natural_language',
-
   translations: { and: 'かつ', betweenAnd: 'と' },
-
 });
-
 // `Age is between '12' と '14'`
-
 // Rules are still joined with 'かつ'
 ```
 
-##### Constituent particles[​](#constituent-particles "Direct link to Constituent particles")
+##### Constituent particles
 
 By default, the word order constituents (Subject, Verb, Object) are separated by a single space. Use `afterSubject`, `afterVerb`, and `afterObject` to insert particles or custom separators after each constituent. Each defaults to `' '` (space) when not set.
 
 This is essential for languages that use grammatical particles between constituents — for example, Japanese requires `が` (subject marker) after the subject:
 
-```
+```ts
 formatQuery(query, {
-
   format: 'natural_language',
-
   wordOrder: 'SOV',
-
   translations: { afterSubject: 'が' },
-
   operatorMap: { '=': 'である' },
-
 });
-
 // `First Nameが'Steve' である`
 ```
 
-##### List separator[​](#list-separator "Direct link to List separator")
+##### List separator
 
 The values in an "in" or "notin" list are separated by `', '` (comma + space) by default, with an Oxford comma before the final item when there are three or more values. Set the `listSeparator` translation key to change the separator. When a custom `listSeparator` is set, the Oxford comma is automatically disabled.
 
-```
+```ts
 formatQuery(query, {
-
   format: 'natural_language',
-
   translations: { listSeparator: '、', or: 'または' },
-
 });
-
 // `Color is one of the values ('Red'、'Green' または 'Blue')`
 ```
 
-#### Operator map[​](#operator-map "Direct link to Operator map")
+#### Operator map
 
 `operatorMap` is a map of operators to their natural language equivalents. If the result can differ based on the `valueSource`, the key should map to an array where the second element represents the string to be used when `valueSource` is "field"; the first element will be used in all other cases.
 
-```
+```ts
 formatQuery(query, {
-
   format: 'natural_language',
-
   operatorMap: {
-
     '=': 'is most assuredly',
-
     '!=': ['is not', 'differs from'],
-
   },
-
 });
-
 // `First Name is most assuredly 'Steve', and Last Name differs from First Name`
 ```
 
-#### Sample language configurations[​](#sample-language-configurations "Direct link to Sample language configurations")
+#### Sample language configurations
 
 These examples show how `wordOrder`, `operatorMap`, and `translations` combine to produce natural-sounding output in different languages. Each example targets a different [constituent word order](https://en.wikipedia.org/wiki/Word_order#Constituent_word_orders) family.
 
-##### Japanese (SOV with particles)[​](#japanese-sov-with-particles "Direct link to Japanese (SOV with particles)")
+##### Japanese (SOV with particles)
 
 Japanese uses Subject-Object-Verb order and requires the particle `が` after the subject. Ideographic punctuation (`、`) replaces commas, and the `から…の間` pattern is more natural than `と…の間` for ranges.
 
-```
+```ts
 formatQuery(query, {
-
   format: 'natural_language',
-
   wordOrder: 'SOV',
-
   operatorMap: {
-
     '=': ['である', 'と同じ値である'],
-
     '>': ['より大きい', 'の値より大きい'],
-
     beginswith: ['で始まる', 'の値で始まる'],
-
     in: ['のいずれかである', 'と同じ値のいずれかである'],
-
     between: ['の間である', 'の値の間である'],
-
     // ... other operators
-
   },
-
   translations: {
-
     and: 'かつ',
-
     or: 'または',
-
     true: '真',
-
     false: '偽',
-
     ruleSeparator: '、',
-
     betweenAnd: 'から',
-
     afterSubject: 'が',
-
     afterObject: '',
-
     listSeparator: '、',
-
     groupSuffix: '',
-
   },
-
 });
-
 // First Nameが'Stev'で始まる、かつ Ageが'28'より大きい
 ```
 
-##### Spanish (SVO with translations)[​](#spanish-svo-with-translations "Direct link to Spanish (SVO with translations)")
+##### Spanish (SVO with translations)
 
 Spanish uses the same SVO order as English, so only `operatorMap` and `translations` are needed — no `wordOrder` change.
 
-```
+```ts
 formatQuery(query, {
-
   format: 'natural_language',
-
   operatorMap: {
-
     '=': ['es', 'es igual al valor de'],
-
     '>': ['es mayor que', 'es mayor que el valor de'],
-
     beginswith: ['comienza con', 'comienza con el valor de'],
-
     in: ['es uno de los valores', 'es igual a un valor en'],
-
     between: ['está entre', 'está entre los valores de'],
-
     // ... other operators
-
   },
-
   translations: {
-
     and: 'y',
-
     or: 'o',
-
     true: 'verdadero',
-
     false: 'falso',
-
     groupSuffix: 'es verdadero',
-
     groupSuffix_not: 'no es verdadero',
-
   },
-
 });
-
 // First Name comienza con 'Stev', y Age es mayor que '28'
 ```
 
-##### Welsh (VSO)[​](#welsh-vso "Direct link to Welsh (VSO)")
+##### Welsh (VSO)
 
 Welsh uses Verb-Subject-Object order, placing the operator first.
 
-```
+```ts
 formatQuery(query, {
-
   format: 'natural_language',
-
   wordOrder: 'VSO',
-
   operatorMap: {
-
     '=': ['yw', "yr un fath â'r gwerth yn"],
-
     '>': ['yn fwy na', "yn fwy na'r gwerth yn"],
-
     beginswith: ['yn dechrau gyda', "yn dechrau gyda'r gwerth yn"],
-
     in: ["yn un o'r gwerthoedd", "yr un fath ag un o'r gwerthoedd yn"],
-
     between: ['rhwng', 'rhwng y gwerthoedd yn'],
-
     // ... other operators
-
   },
-
   translations: {
-
     and: 'a',
-
     or: 'neu',
-
     true: 'gwir',
-
     false: 'gau',
-
     betweenAnd: 'a',
-
     groupSuffix: 'yn wir',
-
     groupSuffix_not: 'ddim yn wir',
-
   },
-
 });
-
 // yn dechrau gyda First Name 'Stev', a yn fwy na Age '28'
 ```
 
-tip
+> **Tip:** Complete configurations for these languages (plus Korean) are available in the [demo](/demo) — use the language selector on the "Natural language" export tab to preview the output interactively.
 
-Complete configurations for these languages (plus Korean) are available in the [demo](/demo) — use the language selector on the "Natural language" export tab to preview the output interactively.
-
-### Rule group processor[​](#rule-group-processor "Direct link to Rule group processor")
+### Rule group processor
 
 `formatQuery` processes, validates, and augments configuration options before passing the query and "final" options object to the appropriate rule group processor for the requested format.
 
 To leverage this pre-processing but generate custom output, use the `ruleGroupProcessor` option. The function is called with the rule group and "final" prepared options object:
 
-```
+```ts
 ruleGroupProcessor(ruleGroup, finalOptions);
 ```
 
@@ -2139,211 +1519,123 @@ The default rule group processors for each format are available as exports from 
 
 Use the appropriate default rule group processor as a fallback so your custom processor doesn't need to cover all cases:
 
-```
+```ts
 const query: RuleGroupType = {
-
   combinator: 'and',
-
   not: false,
-
   rules: [
-
     { combinator: 'and', rules: [] },
-
     // empty rules array ^^^^^^^^^
-
     { field: 'firstName', operator: 'beginsWith', value: 'S' },
-
   ],
-
 };
-
-
 
 const customRuleGroupProcessor: RuleGroupProcessor<string> = (ruleGroup, options) => {
-
   if (ruleGroup.rules.length === 0) {
-
     // Normally, empty rule groups are ignored, but here they evaluate to false
-
     return '(1 = 0)';
-
   }
 
-
-
   // Defer to the default rule group processor for all other operators
-
   return defaultRuleGroupProcessorSQL(ruleGroup, options);
-
 };
 
-
-
 formatQuery(query, { ruleGroupProcessor: customRuleGroupProcessor });
-
 /*
-
 "((1 = 0) and firstName LIKE 'S%')"
-
 */
 ```
 
-## Validation[​](#validation "Direct link to Validation")
+## Validation
 
 Validation options (`validator` and `fields` – see [Validation](/docs/utils/validation.md)) only affect output when `format` is not "json" or "json_without_ids". If the `validator` function returns `false`, the `fallbackExpression` is returned. Otherwise, groups and rules marked as invalid (by the validation map from the `validator` function or field-based `validator` function) are ignored.
 
 Example:
 
-```
+```ts
 const query: RuleGroupType = {
-
   id: 'root',
-
   rules: [
-
     { id: 'r1', field: 'firstName', value: '', operator: '=' },
-
     { id: 'r2', field: 'lastName', value: 'Vai', operator: '=' },
-
   ],
-
   combinator: 'and',
-
   not: false,
-
 };
 
-
-
 // Example 1
-
 // Query is invalid based on the validator function
-
 formatQuery(query, {
-
   format: 'sql',
-
   validator: () => false,
-
 });
-
 /*
-
 "(1 = 1)" <-- see `fallbackExpression` option
-
 */
-
-
 
 // Example 2
-
 // Rule "r1" is invalid based on the validation map
-
 formatQuery(query, {
-
   format: 'sql',
-
   validator: () => ({ r1: false }),
-
 });
-
 /*
-
 "(lastName = 'Vai')" <-- skipped `firstName` rule with `id === 'r1'`
-
 */
 
-
-
 // Example 3
-
 // Rule "r1" is invalid based on the field validator for `firstName`
-
 formatQuery(query, {
-
   format: 'sql',
-
   fields: [{ name: 'firstName', validator: () => false }],
-
 });
-
 /*
-
 "(lastName = 'Vai')" <-- skipped `firstName` rule because field validator returned `false`
-
 */
 ```
 
-### Muted rules and groups[​](#muted-rules-and-groups "Direct link to Muted rules and groups")
+### Muted rules and groups
 
 Rules and groups with the `muted` property set to `true` are excluded from output for all formats except "json" and "json_without_ids", similar to invalid rules and groups. This allows temporary exclusion of conditions without removing them from the query structure.
 
-```
+```ts
 const query: RuleGroupType = {
-
   combinator: 'and',
-
   rules: [
-
     { field: 'firstName', operator: '=', value: 'Steve' },
-
     { field: 'lastName', operator: '=', value: 'Vai', muted: true },
-
   ],
-
 };
 
-
-
 formatQuery(query, 'sql');
-
 // "(firstName = 'Steve')" - lastName rule is excluded
 ```
 
 When a group is muted, it's replaced with the [fallback expression](#fallback-expression):
 
-```
+```ts
 const query: RuleGroupType = {
-
   combinator: 'and',
-
   rules: [
-
     { field: 'firstName', operator: '=', value: 'Steve' },
-
     {
-
       combinator: 'or',
-
       rules: [
-
         { field: 'lastName', operator: '=', value: 'Vai' },
-
         { field: 'instrument', operator: '=', value: 'Guitar' },
-
       ],
-
       muted: true,
-
     },
-
   ],
-
 };
 
-
-
 formatQuery(query, 'sql');
-
 // "(firstName = 'Steve' and (1 = 1))" - muted group becomes fallback
 ```
 
-tip
+> **Tip:** Enable mute functionality in the UI by setting [`showMuteButtons`](/docs/components/querybuilder.md#showmutebuttons) to `true` on the main `QueryBuilder` component.
 
-Enable mute functionality in the UI by setting [`showMuteButtons`](/docs/components/querybuilder.md#showmutebuttons) to `true` on the main `QueryBuilder` component.
-
-### Automatic validation[​](#automatic-validation "Direct link to Automatic validation")
+### Automatic validation
 
 To minimize invalid syntax, `formatQuery` performs basic validation for "in", "notIn", "between", and "notBetween" operators for all formats except "json" and "json_without_ids", even without specified validator functions or field validators.
 
@@ -2352,10 +1644,8 @@ To minimize invalid syntax, `formatQuery` performs basic validation for "in", "n
 * Rules with "in" or "notIn" operators are invalid if the `value` is neither an array with at least one element (`value.length > 0`) nor a non-empty string.
 * Rules with "between" or "notBetween" operators are invalid if the `value` is neither an array with at least two elements (`value.length >= 2`) nor a string with at least one comma not at the first or last position (`value.split(',').length >= 2`, and neither element is empty).
 * Rules where `field`, `operator`, or `value` match their respective placeholder are invalid:
-  ```
+  ```ts
   field === placeholderFieldName ||
-
     operator === placeholderOperatorName ||
-
     (placeholderValueName !== undefined && value === placeholderValueName)
   ```

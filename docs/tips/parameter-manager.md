@@ -4,6 +4,4 @@ This example wires an external "parameter manager" component to a query builder.
 
 The rendered SQL comes from the [`"parameterized_named"`](/docs/utils/export.md#named-parameters) `formatQuery` export, which registers each referenced parameter as a `params` key with a `null` placeholder. The example merges the manager's values over those placeholders, leaving `null` for parameters without a supplied value.
 
-tip
-
-Parameter names are stored **without** a prefix (e.g. `p1`, not `:p1`); `formatQuery` adds the dialect-appropriate prefix. The merge below strips any prefix from the `params` keys before matching them to the manager's entries.
+> **Tip:** Parameter names are stored **without** a prefix (e.g. `p1`, not `:p1`); `formatQuery` adds the dialect-appropriate prefix. The merge below strips any prefix from the `params` keys before matching them to the manager's entries.

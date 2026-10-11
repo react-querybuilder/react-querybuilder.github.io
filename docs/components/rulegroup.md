@@ -2,15 +2,13 @@
 
 The `RuleGroup` component renders the recursive, hierarchical query structure of React Query Builder. It calls the [`useRuleGroup`](/docs/utils/hooks.md#userulegroup) hook to prepare props for its subcomponents.
 
-## Subcomponents[​](#subcomponents "Direct link to Subcomponents")
+## Subcomponents
 
 `RuleGroup` renders an outer `<div>` containing two inner `<div>`s: the first with [header elements](#rulegroupheadercomponents) (based on group properties) and the second with [body elements](#rulegroupbodycomponents) (derived primarily from the group's `rules` array).
 
-tip
+> **Tip:** The header and body layout components are HTML-agnostic. This allows `@react-querybuilder/native` to render the same layout components within React Native `<View>` elements, and you can adapt them similarly for other frameworks.
 
-The header and body layout components are HTML-agnostic. This allows `@react-querybuilder/native` to render the same layout components within React Native `<View>` elements, and you can adapt them similarly for other frameworks.
-
-### `RuleGroupHeaderComponents`[​](#rulegroupheadercomponents "Direct link to rulegroupheadercomponents")
+### `RuleGroupHeaderComponents`
 
 This component renders the following elements in this order:
 
@@ -25,7 +23,7 @@ This component renders the following elements in this order:
 * Lock group button[7](#user-content-fn-6)
 * Remove group button[8](#user-content-fn-7)
 
-### `RuleGroupBodyComponents`[​](#rulegroupbodycomponents "Direct link to rulegroupbodycomponents")
+### `RuleGroupBodyComponents`
 
 This component iterates through a group's `rules` array, rendering a child `RuleGroup` element for each subgroup and a [`Rule`](/docs/components/rule.md) element for each rule.
 
@@ -33,13 +31,11 @@ When [`showCombinatorsBetweenRules`](/docs/components/querybuilder.md#showcombin
 
 With [independent combinators](/docs/components/querybuilder.md#independent-combinators), each odd-numbered index in the `rules` array contains a string representing a combinator value. These elements render as independent inline combinators.
 
-note
-
-The `showCombinatorsBetweenRules` prop is ignored if the query is using independent combinators.
+> **Note:** The `showCombinatorsBetweenRules` prop is ignored if the query is using independent combinators.
 
 <!-- -->
 
-## Footnotes[​](#footnote-label "Direct link to Footnotes")
+## Footnotes
 
 1. Only rendered if [`showShiftActions`](/docs/components/querybuilder.md#showshiftactions) is `true`. [↩](#user-content-fnref-1)
 

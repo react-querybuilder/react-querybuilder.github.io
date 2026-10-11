@@ -2,11 +2,11 @@
 
 The `Rule` component represents individual query conditions. It calls the [`useRule`](/docs/utils/hooks.md#userule) hook to prepare props for its subcomponents.
 
-## Subcomponents[​](#subcomponents "Direct link to Subcomponents")
+## Subcomponents
 
 By default, subcomponents are rendered by `RuleComponents`. When a rule's field has a `matchModes` property that evaluates to an array with one or more elements, `RuleComponentsWithSubQuery` is used instead.
 
-### `RuleComponents`[​](#rulecomponents "Direct link to rulecomponents")
+### `RuleComponents`
 
 Renders these components in order within a `React.Fragment`:
 
@@ -20,7 +20,7 @@ Renders these components in order within a `React.Fragment`:
 * Lock rule button[7](#user-content-fn-7)
 * Remove rule button
 
-### `RuleComponentsWithSubQuery`[​](#rulecomponentswithsubquery "Direct link to rulecomponentswithsubquery")
+### `RuleComponentsWithSubQuery`
 
 Renders these components in order within a `React.Fragment`:
 
@@ -36,7 +36,7 @@ Renders these components in order within a `React.Fragment`:
 
 <!-- -->
 
-## Footnotes[​](#footnote-label "Direct link to Footnotes")
+## Footnotes
 
 1. Only rendered if [`showShiftActions`](/docs/components/querybuilder.md#showshiftactions) is `true`. [↩](#user-content-fnref-1) [↩2](#user-content-fnref-1-2)
 

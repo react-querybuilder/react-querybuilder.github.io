@@ -4,21 +4,17 @@
 
 The `controlElements` prop allows you to override default components with custom implementations.
 
-## Usage example[​](#usage-example "Direct link to Usage example")
+## Usage example
 
-```
+```tsx
 function App() {
-
   return (
-
     <QueryBuilder controlElements={{ valueEditor: CustomValueEditor }}>
-
   )
-
 }
 ```
 
-## Properties[​](#properties "Direct link to Properties")
+## Properties
 
 The following control overrides are supported via the `Controls` interface. Setting any control to `null` hides the element by rendering it as `() => null`.
 
@@ -53,7 +49,7 @@ The following control overrides are supported via the `Controls` interface. Sett
 | [`valueSelector`](#valueselector)                     | `React.ComponentType<ValueSelectorProps>`                                                         |
 | [`valueSourceSelector`](#valuesourceselector)         | `React.ComponentType<ValueSourceSelectorProps> \| null`                                           |
 
-### `actionElement`[​](#actionelement "Direct link to actionelement")
+### `actionElement`
 
 The base component for all button-type controls. Defaults to [`ActionElement`](/docs/components/actionelement.md). Receives props per the `ActionProps` interface and can be any of the following controls:
 
@@ -71,45 +67,31 @@ The base component for all button-type controls. Defaults to [`ActionElement`](/
 
 For example, this:
 
-```
+```tsx
 <QueryBuilder controlElements={{ actionElement: MyAwesomeButton }} />
 ```
 
 ...is equivalent to this:
 
-```
+```tsx
 <QueryBuilder
-
   controlElements={{
-
     addGroupAction: MyAwesomeButton
-
     addRuleAction: MyAwesomeButton
-
     cloneGroupAction: MyAwesomeButton
-
     cloneRuleAction: MyAwesomeButton
-
     lockGroupAction: MyAwesomeButton
-
     lockRuleAction: MyAwesomeButton
-
     muteGroupAction: MyAwesomeButton
-
     muteRuleAction: MyAwesomeButton
-
     removeGroupAction: MyAwesomeButton
-
     removeRuleAction: MyAwesomeButton
-
     ungroupAction: MyAwesomeButton
-
   }}
-
 />
 ```
 
-### `addGroupAction`[​](#addgroupaction "Direct link to addgroupaction")
+### `addGroupAction`
 
 Adds a sub-group to the current group. Defaults to [`ActionElement`](/docs/components/actionelement.md).
 
@@ -132,7 +114,7 @@ Per the `ActionProps` interface:
 | `path`          | `Path`                                         | [Path](/docs/tips/path.md) of this group                     |
 | `schema`        | `Schema`                                       | Query [schema](/docs/typescript.md#miscellaneous)            |
 
-### `addRuleAction`[​](#addruleaction "Direct link to addruleaction")
+### `addRuleAction`
 
 Adds a rule to the current group. Defaults to [`ActionElement`](/docs/components/actionelement.md).
 
@@ -155,7 +137,7 @@ Per the `ActionProps` interface:
 | `path`          | `Path`                                         | [Path](/docs/tips/path.md) of this rule                      |
 | `schema`        | `Schema`                                       | Query [schema](/docs/typescript.md#miscellaneous)            |
 
-### `cloneGroupAction`[​](#clonegroupaction "Direct link to clonegroupaction")
+### `cloneGroupAction`
 
 Clones the current group. Defaults to [`ActionElement`](/docs/components/actionelement.md).
 
@@ -178,7 +160,7 @@ Per the `ActionProps` interface:
 | `path`          | `Path`                          | [Path](/docs/tips/path.md) of this group                     |
 | `schema`        | `Schema`                        | Query [schema](/docs/typescript.md#miscellaneous)            |
 
-### `cloneRuleAction`[​](#cloneruleaction "Direct link to cloneruleaction")
+### `cloneRuleAction`
 
 Clones the current rule. Defaults to [`ActionElement`](/docs/components/actionelement.md).
 
@@ -200,7 +182,7 @@ Per the `ActionProps` interface:
 | `path`          | `Path`                          | [Path](/docs/tips/path.md) of this rule                      |
 | `schema`        | `Schema`                        | Query [schema](/docs/typescript.md#miscellaneous)            |
 
-### `combinatorSelector`[​](#combinatorselector "Direct link to combinatorselector")
+### `combinatorSelector`
 
 Selects the `combinator` property for the current group or the current independent combinator value. Defaults to [`ValueSelector`](/docs/components/valueselector.md).
 
@@ -223,7 +205,7 @@ Per the `CombinatorSelectorProps` interface:
 | `path`           | `Path`                        | [Path](/docs/tips/path.md) of this group                             |
 | `schema`         | `Schema`                      | Query [schema](/docs/typescript.md#miscellaneous)                    |
 
-### `dragHandle`[​](#draghandle "Direct link to draghandle")
+### `dragHandle`
 
 Provides a draggable handle for reordering rules and groups. Defaults to [`DragHandle`](/docs/components/draghandle.md). Only rendered when [drag-and-drop is enabled](/docs/components/querybuilder.md#enabledraganddrop). This component must use `React.forwardRef`.
 
@@ -245,7 +227,7 @@ Receives the forwarded `ref` and the following props per the `DragHandleProps` i
 | `ruleOrGroup`          | `RuleGroupTypeAny \| RuleType` | This group or rule, depending on the parent component                                                                                                                               |
 | `dragHandleAttributes` | `HTMLAttributes<HTMLElement>`  | Props (e.g. ARIA attributes and drag event listeners) supplied by the active [drag-and-drop adapter](/docs/dnd.md); spread these onto the element that receives the forwarded `ref` |
 
-### `fieldSelector`[​](#fieldselector "Direct link to fieldselector")
+### `fieldSelector`
 
 Selects the `field` property for the current rule. Defaults to [`ValueSelector`](/docs/components/valueselector.md).
 
@@ -269,7 +251,7 @@ Per the `FieldSelectorProps` interface:
 | `schema`         | `Schema`                      | Query [schema](/docs/typescript.md#miscellaneous)                  |
 | `rule`           | `RuleType`                    | This rule                                                          |
 
-### `inlineCombinator`[​](#inlinecombinator "Direct link to inlinecombinator")
+### `inlineCombinator`
 
 Wraps the [`combinatorSelector`](#combinatorselector) component for inline display. Defaults to [`InlineCombinator`](/docs/components/inlinecombinator.md).
 
@@ -281,7 +263,7 @@ Per the `InlineCombinatorProps` interface, which extends `CombinatorSelectorProp
 | ----------- | ------------------------------------------ | ------------------------------------------ |
 | `component` | `Schema['controls']['combinatorSelector']` | Same as the `combinatorSelector` component |
 
-### `lockGroupAction`[​](#lockgroupaction "Direct link to lockgroupaction")
+### `lockGroupAction`
 
 Locks the current group (sets the `disabled` property to `true`). Defaults to [`ActionElement`](/docs/components/actionelement.md).
 
@@ -305,7 +287,7 @@ Per the `ActionProps` interface:
 | `path`                | `Path`                          | [Path](/docs/tips/path.md) of this group                                                                               |
 | `schema`              | `Schema`                        | Query [schema](/docs/typescript.md#miscellaneous)                                                                      |
 
-### `lockRuleAction`[​](#lockruleaction "Direct link to lockruleaction")
+### `lockRuleAction`
 
 Locks the current rule (sets the `disabled` property to `true`). Defaults to [`ActionElement`](/docs/components/actionelement.md).
 
@@ -328,7 +310,7 @@ Per the `ActionProps` interface:
 | `path`                | `Path`                          | [Path](/docs/tips/path.md) of this rule                                                                              |
 | `schema`              | `Schema`                        | Query [schema](/docs/typescript.md#miscellaneous)                                                                    |
 
-### `matchModeEditor`[​](#matchmodeeditor "Direct link to matchmodeeditor")
+### `matchModeEditor`
 
 Manages the `match` property for the current rule, including the `mode` and `threshold` (see [Subqueries](/docs/tips/subqueries.md)). Defaults to [`MatchModeEditor`](/docs/components/matchmodeeditor.md).
 
@@ -356,7 +338,7 @@ Per the `MatchModeEditorProps` interface:
 | `path`                   | `Path`                                          | [Path](/docs/tips/path.md) of this rule                      |
 | `schema`                 | `Schema`                                        | Query [schema](/docs/typescript.md#miscellaneous)            |
 
-### `muteGroupAction`[​](#mutegroupaction "Direct link to mutegroupaction")
+### `muteGroupAction`
 
 Mutes the current group (sets the `muted` property to `true`). Defaults to [`ActionElement`](/docs/components/actionelement.md).
 
@@ -379,7 +361,7 @@ Per the `ActionProps` interface:
 | `path`          | `Path`                          | [Path](/docs/tips/path.md) of this group                                                                       |
 | `schema`        | `Schema`                        | Query [schema](/docs/typescript.md#miscellaneous)                                                              |
 
-### `muteRuleAction`[​](#muteruleaction "Direct link to muteruleaction")
+### `muteRuleAction`
 
 Mutes the current rule (sets the `muted` property to `true`). Defaults to [`ActionElement`](/docs/components/actionelement.md).
 
@@ -401,7 +383,7 @@ Per the `ActionProps` interface:
 | `path`          | `Path`                          | [Path](/docs/tips/path.md) of this rule                                                                      |
 | `schema`        | `Schema`                        | Query [schema](/docs/typescript.md#miscellaneous)                                                            |
 
-### `notToggle`[​](#nottoggle "Direct link to nottoggle")
+### `notToggle`
 
 Toggles the `not` property of the current group between `true` and `false`. Defaults to [`NotToggle`](/docs/components/nottoggle.md).
 
@@ -424,7 +406,7 @@ Per the `NotToggleProps` interface:
 | `schema`         | `Schema`                      | Query [schema](/docs/typescript.md#miscellaneous)            |
 | `ruleGroup`      | `RuleGroupTypeAny`            | This group                                                   |
 
-### `operatorSelector`[​](#operatorselector "Direct link to operatorselector")
+### `operatorSelector`
 
 Selects the `operator` property for the current rule. Defaults to [`ValueSelector`](/docs/components/valueselector.md).
 
@@ -449,7 +431,7 @@ Per the `OperatorSelectorProps` interface:
 | `schema`         | `Schema`                      | Query [schema](/docs/typescript.md#miscellaneous)                |
 | `rule`           | `RuleType`                    | This rule                                                        |
 
-### `removeGroupAction`[​](#removegroupaction "Direct link to removegroupaction")
+### `removeGroupAction`
 
 Removes the current group from its parent group's `rules` array. Defaults to [`ActionElement`](/docs/components/actionelement.md).
 
@@ -472,7 +454,7 @@ Per the `ActionProps` interface:
 | `path`          | `Path`                          | [Path](/docs/tips/path.md) of this group                     |
 | `schema`        | `Schema`                        | Query [schema](/docs/typescript.md#miscellaneous)            |
 
-### `removeRuleAction`[​](#removeruleaction "Direct link to removeruleaction")
+### `removeRuleAction`
 
 Removes the current rule from its parent group's `rules` array. Defaults to [`ActionElement`](/docs/components/actionelement.md).
 
@@ -494,7 +476,7 @@ Per the `ActionProps` interface:
 | `path`          | `Path`                          | [Path](/docs/tips/path.md) of this rule                      |
 | `schema`        | `Schema`                        | Query [schema](/docs/typescript.md#miscellaneous)            |
 
-### `rule`[​](#rule "Direct link to rule")
+### `rule`
 
 Rule layout component. Defaults to [`Rule`](/docs/components/rule.md).
 
@@ -516,11 +498,9 @@ Per the `RuleProps` interface:
 | `shiftDownDisabled` | `boolean`      | Whether shifting the rule down is disallowed                 |
 | `parentDisabled`    | `boolean`      | Whether the parent group of this rule is disabled            |
 
-tip
+> **Tip:** When using a custom `Rule` component with [drag-and-drop enabled](/docs/components/querybuilder.md#enabledraganddrop), set the `controlElements` prop on the `QueryBuilderDnD` context provider instead of `QueryBuilder`.
 
-When using a custom `Rule` component with [drag-and-drop enabled](/docs/components/querybuilder.md#enabledraganddrop), set the `controlElements` prop on the `QueryBuilderDnD` context provider instead of `QueryBuilder`.
-
-### `ruleGroup`[​](#rulegroup "Direct link to rulegroup")
+### `ruleGroup`
 
 Rule group layout component. Defaults to [`RuleGroup`](/docs/components/rulegroup.md).
 
@@ -542,19 +522,17 @@ Per the `RuleGroupProps` interface:
 | `shiftDownDisabled` | `boolean`          | Whether shifting the group down is disallowed                |
 | `parentDisabled`    | `boolean`          | Whether the parent group of this group is disabled           |
 
-tip
+> **Tip:** When using a custom `RuleGroup` component with [drag-and-drop enabled](/docs/components/querybuilder.md#enabledraganddrop), set the `controlElements` prop on the `QueryBuilderDnD` context provider instead of `QueryBuilder`.
 
-When using a custom `RuleGroup` component with [drag-and-drop enabled](/docs/components/querybuilder.md#enabledraganddrop), set the `controlElements` prop on the `QueryBuilderDnD` context provider instead of `QueryBuilder`.
-
-### `ruleGroupBodyElements`[​](#rulegroupbodyelements "Direct link to rulegroupbodyelements")
+### `ruleGroupBodyElements`
 
 Rule group body elements. Defaults to [`RuleGroupBodyComponents`](/docs/components/rulegroup.md#rulegroupbodycomponents), which returns an array containing only the elements (no HTML or React Native wrapper). Receives the same props as [`ruleGroup`](#rulegroup) plus the return value of the [`useRuleGroup`](/docs/utils/hooks.md#userulegroup) hook.
 
-### `ruleGroupHeaderElements`[​](#rulegroupheaderelements "Direct link to rulegroupheaderelements")
+### `ruleGroupHeaderElements`
 
 Rule group header elements. Defaults to [`RuleGroupHeaderComponents`](/docs/components/rulegroup.md#rulegroupheadercomponents), which returns a React `Fragment` containing only the elements (no HTML or React Native wrapper). Receives the same props as [`ruleGroup`](#rulegroup) plus the return value of the [`useRuleGroup`](/docs/utils/hooks.md#userulegroup) hook.
 
-### `shiftActions`[​](#shiftactions "Direct link to shiftactions")
+### `shiftActions`
 
 Shifts the current rule/group up or down in the query hierarchy. Defaults to [`ShiftActions`](/docs/components/shiftactions.md).
 
@@ -579,7 +557,7 @@ Per the `ShiftActionsProps` interface:
 | `shiftUpDisabled`   | `boolean`                                       | Whether shifting the rule/group up is disallowed                                                              |
 | `shiftDownDisabled` | `boolean`                                       | Whether shifting the rule/group down is disallowed                                                            |
 
-### `undoRedoActions`[​](#undoredoactions "Direct link to undoredoactions")
+### `undoRedoActions`
 
 Undoes/redoes changes to the query. Rendered in the header of the outermost group when [`showUndoRedo`](/docs/components/querybuilder.md#showundoredo) is `true`.
 
@@ -605,7 +583,7 @@ Per the `UndoRedoActionsProps` interface:
 | `path`        | `Path`                                  | [Path](/docs/tips/path.md) of the group (always `[]`)                           |
 | `schema`      | `Schema`                                | Query [schema](/docs/typescript.md#miscellaneous)                               |
 
-### `ungroupAction`[​](#ungroupaction "Direct link to ungroupaction")
+### `ungroupAction`
 
 Replaces the current group with its own rules in the parent group. Only rendered on non-root groups when [`showUngroupButtons`](/docs/components/querybuilder.md#showungroupbuttons) is `true`. Defaults to [`ActionElement`](/docs/components/actionelement.md).
 
@@ -626,7 +604,7 @@ Per the `ActionProps` interface:
 | `validation`    | `boolean \| ValidationResult`   | Validation result of this group                              |
 | `disabled`      | `boolean`                       | Whether this group is disabled/locked                        |
 
-### `valueEditor`[​](#valueeditor "Direct link to valueeditor")
+### `valueEditor`
 
 Updates the `value` property for the current rule. Defaults to [`ValueEditor`](/docs/components/valueeditor.md).
 
@@ -658,7 +636,7 @@ Per the `ValueEditorProps` interface:
 | `schema`         | `Schema`                      | Query [schema](/docs/typescript.md#miscellaneous)                       |
 | `rule`           | `RuleType`                    | This rule                                                               |
 
-### `valueSelector`[​](#valueselector "Direct link to valueselector")
+### `valueSelector`
 
 The base component for all value selector controls. Defaults to [`ValueSelector`](/docs/components/valueselector.md). Receives props per various interfaces depending on the specific control type:
 
@@ -669,31 +647,24 @@ The base component for all value selector controls. Defaults to [`ValueSelector`
 
 For example, this:
 
-```
+```tsx
 <QueryBuilder controlElements={{ valueSelector: MyAwesomeSelector }} />
 ```
 
 ...is equivalent to this:
 
-```
+```tsx
 <QueryBuilder
-
   controlElements={{
-
     combinatorSelector: MyAwesomeSelector
-
     fieldSelector: MyAwesomeSelector
-
     operatorSelector: MyAwesomeSelector
-
     valueSourceSelector: MyAwesomeSelector
-
   }}
-
 />
 ```
 
-### `valueSourceSelector`[​](#valuesourceselector "Direct link to valuesourceselector")
+### `valueSourceSelector`
 
 Selects the `valueSource` property for the current rule. Defaults to [`ValueSelector`](/docs/components/valueselector.md).
 

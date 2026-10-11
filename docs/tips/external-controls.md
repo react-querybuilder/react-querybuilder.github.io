@@ -4,7 +4,7 @@ React Query Builder exports the same [query tools](/docs/utils/query-management.
 
 Both examples below hide the default add/remove buttons and implement external controls above the query builder. The query methods (`add`, `remove`, `update`, and `move`) are called from event handlers, each returning a new query that replaces the current one.
 
-## Uncontrolled component[​](#uncontrolled-component "Direct link to Uncontrolled component")
+## Uncontrolled component
 
 Give the query builder an explicit [`qbId`](/docs/components/querybuilder.md#qbid) and the external controls can address it by that identifier, reading and updating its query without your component owning the state.
 
@@ -13,10 +13,8 @@ Give the query builder an explicit [`qbId`](/docs/components/querybuilder.md#qbi
 
 Both need access to the internal store, which is why `QueryBuilderStateProvider` wraps the pair. The query builder renders its own provider internally, so this only extends that same store to components *outside* it.
 
-tip
+> **Tip:** `getDispatchQueryById` returns `undefined` when no query builder with the given `qbId` is mounted, hence the optional call. Calling it from event handlers (rather than capturing it during render) means the controls always dispatch to the currently mounted query builder.
 
-`getDispatchQueryById` returns `undefined` when no query builder with the given `qbId` is mounted, hence the optional call. Calling it from event handlers (rather than capturing it during render) means the controls always dispatch to the currently mounted query builder.
-
-## Controlled component[​](#controlled-component "Direct link to Controlled component")
+## Controlled component
 
 When your component already owns the query, the same query tools apply—call them from event handlers and assign the result to your state variable to keep everything synchronized.
