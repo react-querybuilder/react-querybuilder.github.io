@@ -65,6 +65,7 @@
 - [Framework adapter API](/docs/utils/framework-adapters.md): Headless derivations for non-React ports of React Query Builder
 - [Hooks](/docs/utils/hooks.md): Reuse React Query Builder's logic in your own components
 - [Import](/docs/utils/import.md): Convert SQL and other formats to query builder objects
+- [JSON Schema](/docs/utils/json-schema.md): Generate a JSON Schema for valid queries, for LLM structured output, tool inputs, and validators
 - [Miscellaneous](/docs/utils/misc.md): Assorted utilities and other exports
 - [Query management](/docs/utils/query-management.md): Programmatic query manipulation
 - [Validation](/docs/utils/validation.md): Query validation methods and configuration

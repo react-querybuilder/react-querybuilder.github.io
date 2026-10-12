@@ -65,6 +65,7 @@
 - [Framework adapter API](/docs/utils/framework-adapters.md): Headless derivations for non-React ports of React Query Builder
 - [Hooks](/docs/utils/hooks.md): Reuse React Query Builder's logic in your own components
 - [Import](/docs/utils/import.md): Convert SQL and other formats to query builder objects
+- [JSON Schema](/docs/utils/json-schema.md): Generate a JSON Schema for valid queries, for LLM structured output, tool inputs, and validators
 - [Miscellaneous](/docs/utils/misc.md): Assorted utilities and other exports
 - [Query management](/docs/utils/query-management.md): Programmatic query manipulation
 - [Validation](/docs/utils/validation.md): Query validation methods and configuration
@@ -8392,6 +8393,47 @@ Output
 }
 ```
 
+## JSON Schema (`getQueryJsonSchema`)
+
+JSON Schema for queries matching `fields`, for LLM structured output/tool inputs or Ajv. Loose mode shown for brevity; the default `full` mode also constrains operators and values per field. Check the result with the `diagnostics` format. See [JSON Schema](/docs/utils/json-schema.md).
+
+```ts
+import { getQueryJsonSchema } from '@react-querybuilder/core';
+
+getQueryJsonSchema(fields, { mode: 'loose', operators: ['=', 'in'] });
+```
+
+Output
+
+```json
+{
+  "$defs": {
+    "group": {
+      "type": "object",
+      "properties": {
+        "combinator": { "type": "string", "enum": ["and", "or"] },
+        "rules": {
+          "type": "array",
+          "items": { "anyOf": [{ "$ref": "#/$defs/rule" }, { "$ref": "#/$defs/group" }] }
+        },
+        "not": { "type": "boolean" }
+      },
+      "required": ["combinator", "rules"]
+    },
+    "rule": {
+      "type": "object",
+      "properties": {
+        "field": { "type": "string", "enum": ["firstName", "lastName", "age", "isMusician"] },
+        "operator": { "type": "string", "enum": ["=", "in"] },
+        "value": {}
+      },
+      "required": ["field", "operator", "value"]
+    }
+  },
+  "$ref": "#/$defs/group"
+}
+```
+
 
 ---
 
@@ -10065,24 +10107,30 @@ A rule is considered invalid if any of the following are true:
 * The rule fails validation via the `validator` option or a field-level `validator`
 * The `field`, `operator`, or `value` matches its respective placeholder name
 
-The root-level `valid` property is `true` only when the group itself is valid *and* all descendant rules and groups are valid, making it suitable for gating API calls.
+The root-level `valid` property is `true` only when the group itself is valid *and* all descendant rules and groups are valid. Some diagnostics (e.g. `INVALID_OPERATOR`) don't affect `valid`, so before executing a query, reject any `diagnostics` you consider actionable and enforce a server-side whitelist of fields and operators.
 
 #### Flat diagnostics array
 
 `result.diagnostics` is a flat array of `DiagnosticEntry` objects, each with an `id`, `path`, `code`, `message`, and `source`. Diagnostic codes include:
 
-| Code                   | Source                                | Description                                        |
-| ---------------------- | ------------------------------------- | -------------------------------------------------- |
-| `PLACEHOLDER_FIELD`    | `placeholder`                         | Rule has a placeholder field name                  |
-| `PLACEHOLDER_OPERATOR` | `placeholder`                         | Rule has a placeholder operator name               |
-| `PLACEHOLDER_VALUE`    | `placeholder`                         | Rule has a placeholder value                       |
-| `MUTED`                | `muted`                               | Rule or group is muted                             |
-| `CUSTOM_VALIDATOR`     | `query-validator` / `field-validator` | Failed a custom validator                          |
-| `UNDEFINED_FIELD`      | `field-check`                         | Rule references a field not in the `fields` config |
-| `UNREFERENCED_FIELD`   | `field-check`                         | A field in the config is not used by any rule      |
-| `VALUE_TYPE_MISMATCH`  | `type-check`                          | Value is incompatible with the field's `inputType` |
+| Code                   | Source                                | Description                                                                                                                                    |
+| ---------------------- | ------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
+| `PLACEHOLDER_FIELD`    | `placeholder`                         | Rule has a placeholder field name                                                                                                              |
+| `PLACEHOLDER_OPERATOR` | `placeholder`                         | Rule has a placeholder operator name                                                                                                           |
+| `PLACEHOLDER_VALUE`    | `placeholder`                         | Rule has a placeholder value                                                                                                                   |
+| `MUTED`                | `muted`                               | Rule or group is muted                                                                                                                         |
+| `CUSTOM_VALIDATOR`     | `query-validator` / `field-validator` | Failed a custom validator                                                                                                                      |
+| `UNDEFINED_FIELD`      | `field-check`                         | Rule references a field not in the `fields` config                                                                                             |
+| `UNREFERENCED_FIELD`   | `field-check`                         | A field in the config is not used by any rule                                                                                                  |
+| `VALUE_TYPE_MISMATCH`  | `type-check`                          | Value is incompatible with the field's `inputType`, or isn't a boolean for a `checkbox`/`switch` `valueEditorType`                             |
+| `INVALID_OPERATOR`     | `field-check`                         | Operator isn't in the field's `operators` (only checked when the field defines `operators`)                                                    |
+| `INVALID_VALUE_ARITY`  | `type-check`                          | `between`/`notBetween` value doesn't have exactly 2 items, or `in`/`notIn` value is empty                                                      |
+| `VALUE_NOT_IN_OPTIONS` | `type-check`                          | Value isn't in the field's `values` (unless `valueEditorType` is `text`/`textarea`)                                                            |
+| `INVALID_STRUCTURE`    | `structure-check`                     | An independent combinator group's `rules` don't alternate rule/group and combinator, or a standard group's `rules` contain a combinator string |
 
-The `UNDEFINED_FIELD`, `UNREFERENCED_FIELD`, and `VALUE_TYPE_MISMATCH` diagnostics are only produced when a `fields` config is provided.
+All diagnostics except `INVALID_STRUCTURE` and the placeholder, muted, and validator checks are only produced when a `fields` config is provided. The `INVALID_OPERATOR`, `INVALID_VALUE_ARITY`, `VALUE_NOT_IN_OPTIONS`, `VALUE_TYPE_MISMATCH`, and `INVALID_STRUCTURE` diagnostics don't affect `valid` or `stats`. Operator, arity, `values`, and boolean checks are skipped for muted rules. Arity, `values`, and boolean checks are also skipped for unary operators (`null`/`notNull`, or `arity: 'unary'` in `field.operators`) and placeholder values, and `values`/boolean checks are skipped for `valueSource: 'field'`.
+
+> **Tip:** `diagnostics` covers what a [JSON Schema from `getQueryJsonSchema`](/docs/utils/json-schema.md) can't express, so use it to check LLM-generated queries.
 
 #### Stats and field summary
 
@@ -12208,6 +12256,203 @@ When `generateIDs` is `true`, `parse*` functions generate a unique `id` property
 > // All items are scalar values
 > parseSQL(`SELECT * FROM tbl WHERE firstName IN ('Steve', 'Stevie')`);
 > ```
+
+
+---
+
+# JSON Schema
+
+> *Refer to the [TypeScript reference](/docs/typescript.md) page for information about the types and interfaces referenced below.*
+
+## `getQueryJsonSchema`
+
+```ts
+function getQueryJsonSchema(
+  fields: FlexibleOptionListProp<FullField> | BaseOptionMap<FullField>,
+  options?: GetQueryJsonSchemaOptions
+): JSONSchema;
+```
+
+`getQueryJsonSchema` generates a JSON Schema that describes valid queries for a `fields` config. You can use it for:
+
+* LLM structured output (OpenAI `response_format`, the AI SDK's `generateObject`, etc.)
+* LLM tool input schemas (Anthropic `input_schema`, MCP `inputSchema`)
+* Validating query objects with a generic JSON Schema validator like [Ajv](https://ajv.js.org/)
+
+It's available from `@react-querybuilder/core` and `react-querybuilder`, or from the `/getQueryJsonSchema` subpath of either package.
+
+```ts
+import type { Field } from '@react-querybuilder/core';
+import { getQueryJsonSchema } from '@react-querybuilder/core';
+// or: import { getQueryJsonSchema } from '@react-querybuilder/core/getQueryJsonSchema';
+
+const fields: Field[] = [
+  { name: 'firstName', label: 'First name', operators: ['=', 'beginsWith'] },
+  { name: 'age', label: 'Age', inputType: 'number' },
+  {
+    name: 'color',
+    label: 'Color',
+    valueEditorType: 'select',
+    values: [
+      { name: 'red', label: 'Red' },
+      { name: 'blue', label: 'Blue' },
+    ],
+  },
+];
+
+const schema = getQueryJsonSchema(fields, { strict: true });
+```
+
+### Schema shape
+
+By default, the schema describes a `RuleGroupType` (set `queryType: 'ic'` for `RuleGroupTypeIC`). Groups and rules are defined in `$defs` and reference each other recursively:
+
+```json
+{
+  "$defs": {
+    "group": {
+      "type": "object",
+      "properties": {
+        "combinator": { "type": "string", "enum": ["and", "or"] },
+        "rules": {
+          "type": "array",
+          "items": { "anyOf": [{ "$ref": "#/$defs/rule" }, { "$ref": "#/$defs/group" }] }
+        },
+        "not": { "type": "boolean" }
+      },
+      "required": ["combinator", "rules"]
+    },
+    "rule": { "anyOf": ["...one branch per field and operator class..."] }
+  },
+  "$ref": "#/$defs/group"
+}
+```
+
+In the default `'full'` mode, each field's rule schema is split into branches by operator class (unary, binary, `between`, `in`). Each branch restricts `field` to the field's name and `operator` to the matching operators (`field.operators`, falling back to the `operators` option). The `value` type comes from the field:
+
+| Field config                                      | `value` schema                                      |
+| ------------------------------------------------- | --------------------------------------------------- |
+| `values` (any editor except `text`/`textarea`)    | `enum` of value names (option groups flattened)     |
+| `valueEditorType: 'multiselect'`                  | Array of the above                                  |
+| `valueEditorType: 'checkbox'` or `'switch'`       | `boolean`                                           |
+| `inputType: 'number'`                             | `number`                                            |
+| `inputType: 'date'`, `'datetime-local'`, etc.     | `string`, with the expected format in `description` |
+| `between`/`notBetween` operators                  | Array of exactly 2 items (`minItems`/`maxItems`)    |
+| `in`/`notIn` operators                            | Array of items                                      |
+| `null`/`notNull` (and other unary operators)      | Ignored (optional)                                  |
+| `valueSource: 'field'` (when allowed for a field) | `enum` of comparable field names (see `comparator`) |
+| Anything else                                     | `string`                                            |
+
+Field `label`s are added as `description`s.
+
+### Options
+
+| Option                     | Type                 | Default              | Description                                                                                                                                            |
+| -------------------------- | -------------------- | -------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `queryType`                | `'standard' \| 'ic'` | `'standard'`         | `RuleGroupType` or `RuleGroupTypeIC`                                                                                                                   |
+| `mode`                     | `'full' \| 'loose'`  | `'full'`             | `'loose'` only restricts `field` and `operator` names. Use it when the full schema gets too big (roughly 50+ fields).                                  |
+| `strict`                   | `boolean`            | `false`              | Provider compatibility: `additionalProperties: false` everywhere, all properties required (optional ones become nullable), and the root is an object.  |
+| `maxDepth`                 | `'ref' \| number`    | `'ref'`              | `'ref'` uses recursive `$ref`s. A number inlines that many levels of nested groups with no `$ref`/`$defs`, for consumers that don't support recursion. |
+| `includeIds`               | `boolean`            | `false`              | Include `id` and `path` properties. Off by default so LLMs don't invent ids.                                                                           |
+| `allowFieldValueSource`    | `boolean`            | Derived from fields  | `true` allows `valueSource: 'field'` for every field, `false` for none. By default, each field's `valueSources` decide.                                |
+| `includeNot`               | `boolean`            | `true`               | Include `not` on groups                                                                                                                                |
+| `combinators`              | `OptionList`         | `defaultCombinators` | Allowed combinators                                                                                                                                    |
+| `operators`                | `OptionList`         | `defaultOperators`   | Operators for fields without their own `operators`                                                                                                     |
+| `descriptions`             | `boolean`            | `true`               | Add field `label`s as `description`s                                                                                                                   |
+| `listsAsArrays`            | `boolean`            | `true`               | List values (`between`, `in`, multiselect) as arrays. `false` expects comma-separated strings. Should match `formatQuery`'s `listsAsArrays`.           |
+| `includeSchemaDeclaration` | `boolean`            | `false`              | Add `"$schema"` (draft-07). Off by default because some providers reject it.                                                                           |
+
+### Compatibility
+
+The schema only uses keywords that mean the same thing in JSON Schema draft-07 and 2020-12: `type`, `properties`, `required`, `enum`, `anyOf`, `items` (single schema), `minItems`/`maxItems`, `additionalProperties`, `description`, `$ref`, and `$defs`. It never uses `oneOf`, `allOf`, `not`, `const`, `format`, `pattern`, or tuple keywords, since provider support for those is inconsistent.
+
+| Consumer                  | Notes                                                       |
+| ------------------------- | ----------------------------------------------------------- |
+| OpenAI structured outputs | Requires `strict: true`. Recursion via `$ref` is supported. |
+| Anthropic tools           | `$ref`/`$defs` supported. Root must be an object.           |
+| Gemini                    | Use a numeric `maxDepth` if `$ref` is rejected.             |
+| AI SDK `jsonSchema()`     | Passed through to the provider                              |
+| MCP `inputSchema`         | Root must be an object, so use `strict` or `maxDepth`.      |
+| Ajv (draft-07 and 2020)   | All modes                                                   |
+
+> **Tip:** When in doubt, use `strict: true`. It works with every consumer above.
+
+### Usage with LLMs
+
+These examples are illustrative. Check each provider's current docs for details.
+
+**AI SDK**
+
+```ts
+import { generateObject, jsonSchema } from 'ai';
+import { getQueryJsonSchema } from '@react-querybuilder/core';
+
+const { object: query } = await generateObject({
+  model,
+  schema: jsonSchema<RuleGroupType>(getQueryJsonSchema(fields, { strict: true })),
+  prompt: 'Musicians over 30 named Steve',
+});
+```
+
+**OpenAI (structured outputs)**
+
+```ts
+const response = await openai.chat.completions.create({
+  model,
+  messages,
+  response_format: {
+    type: 'json_schema',
+    json_schema: {
+      name: 'query',
+      strict: true,
+      schema: getQueryJsonSchema(fields, { strict: true }),
+    },
+  },
+});
+```
+
+**Anthropic (tool input)**
+
+```ts
+const message = await anthropic.messages.create({
+  model,
+  max_tokens: 1024,
+  messages,
+  tools: [
+    {
+      name: 'set_filter',
+      description: 'Set the query builder filter',
+      input_schema: getQueryJsonSchema(fields, { strict: true }),
+    },
+  ],
+});
+```
+
+In strict mode, optional properties like `not` and `valueSource` are nullable instead of omitted, so the output may contain `null`s. Formatting functions treat those the same as missing properties.
+
+### Validate the result with `diagnostics`
+
+The schema is necessary but not sufficient. Some constraints can't be expressed with the compatible keyword subset:
+
+* Independent combinator alternation (rule/group, combinator, rule/group, ...). The IC schema only allows rules, groups, and combinator strings in any order.
+* With `listsAsArrays: false`, the number of comma-separated values for `between`/`in`.
+* In `'loose'` mode, which operators and values are valid for each field.
+
+Always check LLM output (and any other untrusted query) with the [`diagnostics` export format](/docs/utils/export.md#diagnostics) before using it:
+
+```ts
+import { formatQuery } from '@react-querybuilder/core';
+
+const { diagnostics } = formatQuery(query, { format: 'diagnostics', fields });
+const problems = diagnostics.filter(d => d.code !== 'UNREFERENCED_FIELD');
+if (problems.length > 0) {
+  // Reject, or send `problems` back to the LLM to fix
+}
+```
+
+When `fields` is provided, `diagnostics` reports unknown fields (`UNDEFINED_FIELD`), operators not in `field.operators` (`INVALID_OPERATOR`), wrong `between`/`in` value counts (`INVALID_VALUE_ARITY`), values missing from `field.values` (`VALUE_NOT_IN_OPTIONS`), and values that don't match the field's type (`VALUE_TYPE_MISMATCH`). It reports broken IC alternation (`INVALID_STRUCTURE`) with or without `fields`.
+
+> **Caution:** A schema-valid query is not automatically safe to run. See [Quote field names](/docs/utils/export.md#quote-field-names) and always whitelist fields, operators, and combinators on the server.
 
 
 ---

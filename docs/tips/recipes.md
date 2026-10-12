@@ -750,3 +750,44 @@ Output
   ]
 }
 ```
+
+## JSON Schema (`getQueryJsonSchema`)
+
+JSON Schema for queries matching `fields`, for LLM structured output/tool inputs or Ajv. Loose mode shown for brevity; the default `full` mode also constrains operators and values per field. Check the result with the `diagnostics` format. See [JSON Schema](/docs/utils/json-schema.md).
+
+```ts
+import { getQueryJsonSchema } from '@react-querybuilder/core';
+
+getQueryJsonSchema(fields, { mode: 'loose', operators: ['=', 'in'] });
+```
+
+Output
+
+```json
+{
+  "$defs": {
+    "group": {
+      "type": "object",
+      "properties": {
+        "combinator": { "type": "string", "enum": ["and", "or"] },
+        "rules": {
+          "type": "array",
+          "items": { "anyOf": [{ "$ref": "#/$defs/rule" }, { "$ref": "#/$defs/group" }] }
+        },
+        "not": { "type": "boolean" }
+      },
+      "required": ["combinator", "rules"]
+    },
+    "rule": {
+      "type": "object",
+      "properties": {
+        "field": { "type": "string", "enum": ["firstName", "lastName", "age", "isMusician"] },
+        "operator": { "type": "string", "enum": ["=", "in"] },
+        "value": {}
+      },
+      "required": ["field", "operator", "value"]
+    }
+  },
+  "$ref": "#/$defs/group"
+}
+```
