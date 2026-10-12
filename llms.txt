@@ -75,4 +75,4 @@
 - [Discord server](https://discord.gg/MnAQWyUtEg)
 - [Agent skill (SKILL.md)](https://github.com/react-querybuilder/react-querybuilder/tree/main/skills/react-querybuilder): Install: `npx skills add react-querybuilder/react-querybuilder --skill react-querybuilder`. Also shipped in `node_modules/react-querybuilder/skills/` and `node_modules/@react-querybuilder/core/skills/`.
 - [API index (llms-api.txt)](https://react-querybuilder.js.org/llms-api.txt): Every exported symbol of every package, one line each.
-- [MCP server (@react-querybuilder/mcp)](https://www.npmjs.com/package/@react-querybuilder/mcp): Coming soon. Stdio MCP server: format/parse/convert/validate queries, docs search.
+- [MCP server (@react-querybuilder/mcp)](https://www.npmjs.com/package/@react-querybuilder/mcp): Stdio MCP server (`npx -y @react-querybuilder/mcp`): format/parse/convert/validate queries, JSON Schema, docs search.
