@@ -10535,31 +10535,36 @@ The `preset` option configures options known to enable or improve compatibility 
 
 > **Info:** If `preset` is from `sqlDialectPresets`, it only applies if `format` is undefined or one of the SQL-based formats.
 
-| Dialect        | Preset options                                                                                                                 |
-| -------------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| Dialect        | Preset options                                                                                                                                                                                                                                 |
+| -------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `'ansi'`       | ```json
 {}
-```                                                                                                                   |
+```                                                                                                                                                                                                                                   |
 | `'sqlite'`     | ```json
 { "paramsKeepPrefix": true }
-```                                                                                         |
+```                                                                                                                                                                                                         |
 | `'oracle'`     | ```json
-{}
-```                                                                                                                   |
+{ "numberedParams": true, "paramPrefix": ":" }
+```                                                                                                                                                                                       |
 | `'mssql'`      | ```json
 {
   "quoteFieldNamesWith": ["[", "]"],
   "concatOperator": "+",
   "fieldIdentifierSeparator": ".",
+  "numberedParams": true,
   "paramPrefix": "@"
 }
-``` |
+```Boolean values render as `1`/`0` (T-SQL has no `TRUE`/`FALSE` literals).                |
 | `'mysql'`      | ```json
-{ "concatOperator": "CONCAT" }
-```                                                                                       |
+{
+  "concatOperator": "CONCAT",
+  "quoteFieldNamesWith": "`",
+  "fieldIdentifierSeparator": "."
+}
+```Backslashes in string values are doubled when `escapeQuotes` is on (MySQL/MariaDB treat `\` as an escape character in string literals). |
 | `'postgresql'` | ```json
 { "quoteFieldNamesWith": "\"", "numberedParams": true, "paramPrefix": "$" }
-```                                          |
+```                                                                                                                                                          |
 
 Examples:
 
