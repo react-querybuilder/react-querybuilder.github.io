@@ -168,6 +168,110 @@ Output
 }
 ```
 
+### `qdrant`
+
+Experimental. Qdrant `Filter` for vector search metadata filtering. String ops other than `contains` (full-text `match.text`) are skipped.
+
+```ts
+import { formatQuery } from '@react-querybuilder/core';
+
+formatQuery(query, 'qdrant');
+```
+
+Output
+
+```json
+{
+  "must": [
+    { "key": "firstName", "match": { "prefix": "Stev" } },
+    { "key": "age", "range": { "gte": 18, "lte": 65 } },
+    {
+      "should": [
+        { "key": "lastName", "match": { "any": ["Vai", "Vaughan"] } },
+        { "key": "isMusician", "match": { "value": true } }
+      ]
+    }
+  ]
+}
+```
+
+### `pinecone`
+
+Experimental. Pinecone metadata filter. String ops skipped; `not` groups via De Morgan.
+
+```ts
+import { formatQuery } from '@react-querybuilder/core';
+
+formatQuery(query, 'pinecone');
+```
+
+Output
+
+```json
+{
+  "$and": [
+    { "age": { "$gte": 18, "$lte": 65 } },
+    { "$or": [{ "lastName": { "$in": ["Vai", "Vaughan"] } }, { "isMusician": { "$eq": true } }] }
+  ]
+}
+```
+
+### `chroma`
+
+Experimental. Chroma `where` filter. String ops and `null`/`notNull` skipped; `not` groups via De Morgan.
+
+```ts
+import { formatQuery } from '@react-querybuilder/core';
+
+formatQuery(query, 'chroma');
+```
+
+Output
+
+```json
+{
+  "$and": [
+    { "$and": [{ "age": { "$gte": 18 } }, { "age": { "$lte": 65 } }] },
+    { "$or": [{ "lastName": { "$in": ["Vai", "Vaughan"] } }, { "isMusician": { "$eq": true } }] }
+  ]
+}
+```
+
+### `weaviate`
+
+Experimental. Weaviate `where` filter (GraphQL/REST shape). String ops use `Like`.
+
+```ts
+import { formatQuery } from '@react-querybuilder/core';
+
+formatQuery(query, 'weaviate');
+```
+
+Output
+
+```json
+{
+  "operator": "And",
+  "operands": [
+    { "operator": "Like", "path": ["firstName"], "valueText": "Stev*" },
+    {
+      "operator": "And",
+      "operands": [
+        { "operator": "GreaterThanEqual", "path": ["age"], "valueInt": 18 },
+        { "operator": "LessThanEqual", "path": ["age"], "valueInt": 65 }
+      ]
+    },
+    {
+      "operator": "Or",
+      "operands": [
+        { "operator": "ContainsAny", "path": ["lastName"], "valueText": ["Vai", "Vaughan"] },
+        { "operator": "Equal", "path": ["isMusician"], "valueBoolean": true }
+      ]
+    }
+  ]
+}
+```
+
 ### `jsonlogic`
 
 ```ts
@@ -191,6 +295,22 @@ Output
     }
   ]
 }
+```
+
+### `milvus`
+
+Experimental. Milvus boolean filter expression. Field names are not escaped.
+
+```ts
+import { formatQuery } from '@react-querybuilder/core';
+
+formatQuery(query, 'milvus');
+```
+
+Output
+
+```text
+firstName like "Stev%" and (age >= 18 and age <= 65) and (lastName in ["Vai", "Vaughan"] or isMusician == true)
 ```
 
 ### `cel`

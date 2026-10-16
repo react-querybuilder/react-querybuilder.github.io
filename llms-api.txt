@@ -146,6 +146,7 @@
 - `DefaultRuleGroupArray` (type): The type of the `rules` array in a `DefaultRuleGroupType`.
 - `DefaultRuleGroupICArray` (type): The type of the `rules` array in a `DefaultRuleGroupTypeIC`.
 - `defaultRuleGroupProcessorCEL` (const): Rule group processor used by `formatQuery` for "cel" format.
+- `defaultRuleGroupProcessorChroma` (const): Rule group processor used by `formatQuery` for "chroma" format. Produces a Chroma metadata filter object.
 - `defaultRuleGroupProcessorCypher` (const): Rule group processor used by `formatQuery` for "cypher" and "gql" formats.
 - `defaultRuleGroupProcessorDiagnostics` (const): Rule group processor used by `formatQuery` for "diagnostics" format.
 - `defaultRuleGroupProcessorDrizzle` (const): Default rule group processor used by `formatQuery` for the "drizzle" format. The returned function can be assigned to the `where` property in the Drizzle relational queries API.
@@ -154,21 +155,26 @@
 - `defaultRuleGroupProcessorJSONata` (const): Rule group processor used by `formatQuery` for "jsonata" format.
 - `defaultRuleGroupProcessorJsonLogic` (const): Rule group processor used by `formatQuery` for "jsonlogic" format.
 - `defaultRuleGroupProcessorLDAP` (const): Rule group processor used by `formatQuery` for "ldap" format.
+- `defaultRuleGroupProcessorMilvus` (const): Rule group processor used by `formatQuery` for "milvus" format. Produces a Milvus boolean filter expression string.
 - `defaultRuleGroupProcessorMongoDB` (const): Rule group processor used by `formatQuery` for "mongodb" format.
 - `defaultRuleGroupProcessorMongoDBQuery` (const): Rule group processor used by `formatQuery` for "mongodb_query" format.
 - `defaultRuleGroupProcessorNL` (const): Rule group processor used by `formatQuery` for "natural_language" format.
 - `defaultRuleGroupProcessorParameterized` (const): Rule group processor used by `formatQuery` for "parameterized" and "parameterized_named" formats.
+- `defaultRuleGroupProcessorPinecone` (const): Rule group processor used by `formatQuery` for "pinecone" format. Produces a Pinecone metadata filter object.
 - `defaultRuleGroupProcessorPrisma` (const): Rule group processor used by `formatQuery` for "prisma" format.
+- `defaultRuleGroupProcessorQdrant` (const): Rule group processor used by `formatQuery` for "qdrant" format. Produces a Qdrant [`Filter`](https://qdrant.tech/documentation/concepts/filtering/) object.
 - `defaultRuleGroupProcessorSequelize` (const): Rule group processor used by `formatQuery` for "sequelize" format.
 - `defaultRuleGroupProcessorSPARQL` (const): Rule group processor used by `formatQuery` for "sparql" format.
 - `defaultRuleGroupProcessorSpEL` (const): Default rule processor used by `formatQuery` for "spel" format.
 - `defaultRuleGroupProcessorSQL` (const): Default rule processor used by `formatQuery` for "sql" format.
 - `defaultRuleGroupProcessorTanStackDB` (const): Default rule group processor used by `formatQuery` for the "tanstack_db" format. Returns a `WhereCallback` suitable for TanStack DB's `.where()` method.
+- `defaultRuleGroupProcessorWeaviate` (const): Rule group processor used by `formatQuery` for "weaviate" format. Produces a Weaviate `where` filter object (GraphQL/REST shape; plain JSON).
 - `DefaultRuleGroupType` (type): `RuleGroupType` with the `combinator` property limited to `DefaultCombinatorNameExtended` and `rules` limited to `DefaultRuleType`.
 - `DefaultRuleGroupTypeAny` (type): Shorthand for "either `DefaultRuleGroupType` or `DefaultRuleGroupTypeIC`".
 - `DefaultRuleGroupTypeIC` (interface): `RuleGroupTypeIC` with combinators limited to `DefaultCombinatorName` and rules limited to `DefaultRuleType`.
 - `DefaultRuleOrGroupArray` (type): Shorthand for "either `DefaultRuleGroupArray` or `DefaultRuleGroupICArray`".
 - `defaultRuleProcessorCEL` (const): Default rule processor used by `formatQuery` for "cel" format.
+- `defaultRuleProcessorChroma` (const): Default rule processor used by `formatQuery` for "chroma" format. Returns a Chroma `where` filter object, or `false` if the rule can't be expressed (see `formatCapabilities`).
 - `defaultRuleProcessorCypher` (const): Default rule processor used by `formatQuery` for "cypher" and "gql" formats.
 - `defaultRuleProcessorDrizzle` (const): Default rule processor used by `formatQuery` for the "drizzle" format.
 - `defaultRuleProcessorElasticSearch` (const): Default rule processor used by `formatQuery` for "elasticsearch" format.
@@ -176,16 +182,20 @@
 - `defaultRuleProcessorJSONata` (const): Default rule processor used by `formatQuery` for "jsonata" format.
 - `defaultRuleProcessorJsonLogic` (const): Default rule processor used by `formatQuery` for "jsonlogic" format.
 - `defaultRuleProcessorLDAP` (const): Default rule processor used by `formatQuery` for "ldap" format.
+- `defaultRuleProcessorMilvus` (const): Default rule processor used by `formatQuery` for "milvus" format. Returns a Milvus boolean filter expression, or `""` if the rule can't be expressed (see `formatCapabilities`).
 - `defaultRuleProcessorMongoDB` (const): Default rule processor used by `formatQuery` for "mongodb" format.
 - `defaultRuleProcessorMongoDBQuery` (const): Default rule processor used by `formatQuery` for "mongodb_query" format.
 - `defaultRuleProcessorNL` (const): Default rule processor used by `formatQuery` for "natural_language" format.
 - `defaultRuleProcessorParameterized` (const): Default rule processor used by `formatQuery` for "parameterized" and "parameterized_named" formats.
+- `defaultRuleProcessorPinecone` (const): Default rule processor used by `formatQuery` for "pinecone" format. Returns a Pinecone metadata filter object, or `false` if the rule can't be expressed (see `formatCapabilities`).
 - `defaultRuleProcessorPrisma` (const): Default rule processor used by `formatQuery` for "prisma" format.
+- `defaultRuleProcessorQdrant` (const): Default rule processor used by `formatQuery` for "qdrant" format. Returns a Qdrant filter condition, or `false` if the rule can't be expressed (see `formatCapabilities`).
 - `defaultRuleProcessorSequelize` (const): Default rule processor used by `formatQuery` for the "sequelize" format.
 - `defaultRuleProcessorSPARQL` (const): Default rule processor used by `formatQuery` for "sparql" format.
 - `defaultRuleProcessorSpEL` (const): Default rule processor used by `formatQuery` for "spel" format.
 - `defaultRuleProcessorSQL` (const): Default rule processor used by `formatQuery` for "sql" format.
 - `defaultRuleProcessorTanStackDB` (const): Default rule processor used by `formatQuery` for the "tanstack_db" format.
+- `defaultRuleProcessorWeaviate` (const): Default rule processor used by `formatQuery` for "weaviate" format. Returns a Weaviate `where` filter object (GraphQL/REST shape), or `false` if the rule can't be expressed (see `formatCapabilities`).
 - `DefaultRuleType` (type): `RuleType` with the `operator` property limited to `DefaultOperatorName`.
 - `defaultTranslations` (const): Default configuration of translatable strings.
 - `defaultValidator` (const): This is an example validation function you can pass to `QueryBuilder` in the `validator` prop.
@@ -230,6 +240,8 @@
 - `FlexibleOptionGroup` (type): A group of `BaseOption`s, usually within a `FlexibleOptionList`.
 - `FlexibleOptionList` (type): An array of options or option groups, like `OptionList` but the option type may use either `name` or `value` as the primary identifier.
 - `FlexibleOptionListProp` (type): An array of options or option groups, like `OptionList` but the option type may use either `name` or `value` as the primary identifier.
+- `formatCapabilities` (const): Capabilities of export formats, keyed by `ExportFormat`. Only populated for vector database formats at this time.
+- `FormatCapabilities` (interface): Describes what an export format can express. Used by default rule processors to decide whether to skip a rule and by the "diagnostics" format (`diagnosticsTargetFormat`) to report rules that would be…
 - `formatQuery` (function): Generates a formatted (indented two spaces) JSON string from a query object.
 - `FormatQueryFinalOptions` (interface): Options object curated by `formatQuery` and passed to a `RuleGroupProcessor`.
 - `formatQueryOptionPresets` (const): A collection of option presets for `formatQuery`.
@@ -275,6 +287,7 @@
 - `getRuleValueSourceOptions` (function): Value source options for a rule. A `valueSource` present on the rule but absent from the configured list is appended, so the current selection is always representable.
 - `getSQLConcat` (function): Returns a preset-aware SQL string-concatenation function. Emits `CONCAT(a, b, ...)` when `concatOperator` is `"CONCAT"` (case-insensitive), otherwise joins with the infix operator (e.g.
 - `getSubqueryElementAlias` (function): Returns the element alias for a subquery at the given nesting depth.
+- `getUnsupportedRuleFeature` (function): Returns the first feature of `rule` unsupported per `caps`, or `null` if fully supported. Match-mode rules are checked by mode only (operator ignored).
 - `getValidationClassNames` (function): Gets the standard classname for valid or invalid components based on the given validation result.
 - `getValueEditorReset` (function): Determines whether a rule's `value` needs to be collapsed to a single element because it no longer represents a list, and what it should become.
 - `getValueSelectorUpdate` (function): Produces the next value for a value selector. Multiselect values are normalized to an array first, then comma-joined unless `listsAsArrays` is `true`. Single-select values pass through.
@@ -350,6 +363,9 @@
 - `MoveMethod` (interface)
 - `MoveOptions` (interface): Options for `move`.
 - `NameLabelPair` (type): **Deprecated.**
+- `negateOperator` (function): Returns the logical negation of a `DefaultOperatorName` (case-insensitive), e.g. `"="` → `"!="`, `"<"` → `">="`, `"in"` → `"notIn"`. Returns `undefined` for non-default operators.
+- `negateRule` (function): Negates a rule via `negateOperator`. Match modes `some`↔`none` swap; other match modes and non-default operators can't be negated, so `undefined` is returned.
+- `negateRuleGroup` (function): Applies De Morgan's laws to produce the logical negation of a standard rule group (ignoring the group's own `not` flag): flips the combinator (`and`↔`or`), negates each rule via `negateOperator`, and…
 - `NLTranslationKey` (type): Keys for the `translations` config object used by the "natural_language" format.
 - `NLTranslations` (type): `translations` config object for "natural_language" format.
 - `normalizeConstituentWordOrder` (function): Given a [Constituent word order](https://en.wikipedia.org/wiki/Word_order#Constituent_word_orders) like "svo" or "sov", returns a permutation of `["S", "V", "O"]` based on the first occurrence of each…
@@ -490,6 +506,7 @@
 - `uniqByName` (function): **Deprecated.**
 - `uniqOptGroups` (function): Generates a new `OptionGroup` array with duplicates removed based on the identifying property (`value` or `name`).
 - `uniqOptList` (function): Generates a new `Option` or `OptionGroup` array with duplicates removed based on the identifier property (`value` or `name`).
+- `UnsupportedRuleFeature` (type): Feature of a rule that a format can't express.
 - `update` (const): Updates one or more properties of a rule or group within a query without mutating the original query.
 - `UpdateableProperties` (type): All updateable properties of rules and groups (everything except `id`, `path`, and `rules`).
 - `updateInPlace` (const): Updates one or more properties of a rule or group within a query in place. See `update` for the supported argument forms and ordering semantics.
@@ -853,27 +870,33 @@
 - `defaultDateTimeNLOperatorMap` (const)
 - `getDatetimeJsonLogicOperations` (function): Custom operations for use with JsonLogic objects generated by `datetimeRuleProcessorJsonLogic`.
 - `getDatetimeRuleProcessorCEL` (function): Generates a rule processor with date/time features for use by `formatQuery` with the "cel" format.
+- `getDatetimeRuleProcessorChroma` (function): Generates a rule processor with date/time features for use by `formatQuery` with the "chroma" format. Chroma has no date type, so date values (incl.
 - `getDatetimeRuleProcessorCypher` (function): Generates a rule processor with date/time features for use by `formatQuery` with the "cypher" or "gql" format.
 - `getDatetimeRuleProcessorDrizzle` (function): Generates a rule processor with date/time features for use by `formatQuery` with the "drizzle" format.
 - `getDatetimeRuleProcessorElasticSearch` (function): Generates a rule processor with date/time features for use by `formatQuery` with the "elasticsearch" format.
 - `getDatetimeRuleProcessorGremlin` (function): Generates a rule processor with date/time features for use by `formatQuery` with the "gremlin" format.
 - `getDatetimeRuleProcessorJSONata` (function): Generates a rule processor with date/time features for use by `formatQuery` with the "jsonata" format.
 - `getDatetimeRuleProcessorLDAP` (function): Generates a rule processor with date/time features for use by `formatQuery` with the "ldap" format.
+- `getDatetimeRuleProcessorMilvus` (function): Generates a rule processor with date/time features for use by `formatQuery` with the "milvus" format. Milvus has no date type, so date values (incl.
 - `getDatetimeRuleProcessorMongoDB` (function): Generates a rule processor with date/time features for use by `formatQuery` with the (deprecated) "mongodb" format.
 - `getDatetimeRuleProcessorMongoDBQuery` (function): Generates a rule processor with date/time features for use by `formatQuery` with the "mongodb_query" format.
 - `getDatetimeRuleProcessorNL` (function): Generates a rule processor with date/time features for use by `formatQuery` with the "natural_language" format.
 - `getDatetimeRuleProcessorParameterized` (function): Generates a rule processor with date/time features for use by `formatQuery` with the "parameterized" and "parameterized_named" formats.
+- `getDatetimeRuleProcessorPinecone` (function): Generates a rule processor with date/time features for use by `formatQuery` with the "pinecone" format. Pinecone has no date type, so date values (incl.
 - `getDatetimeRuleProcessorPrisma` (function): Generates a rule processor with date/time features for use by `formatQuery` with the "prisma" format.
+- `getDatetimeRuleProcessorQdrant` (function): Generates a rule processor with date/time features for use by `formatQuery` with the "qdrant" format.
 - `getDatetimeRuleProcessorSequelize` (function): Generates a rule processor with date/time features for use by `formatQuery` with the "sequelize" format.
 - `getDatetimeRuleProcessorSPARQL` (function): Generates a rule processor with date/time features for use by `formatQuery` with the "sparql" format.
 - `getDatetimeRuleProcessorSpEL` (function): Generates a rule processor with date/time features for use by `formatQuery` with the "spel" format.
 - `getDatetimeRuleProcessorSQL` (function): Generates a rule processor with date/time features for use by `formatQuery` with the "sql" format.
 - `getDatetimeRuleProcessorTanStackDB` (function): Generates a rule processor with date/time features for use by `formatQuery` with the "tanstack_db" format.
+- `getDatetimeRuleProcessorWeaviate` (function): Generates a rule processor with date/time features for use by `formatQuery` with the "weaviate" format.
 - `getDatetimeValueProcessorANSI` (function): Generates a value processor with date/time features for use by `formatQuery` with the "sql" format and "ansi" preset.
 - `getDatetimeValueProcessorMSSQL` (function): Generates a value processor with date/time features for use by `formatQuery` with the "sql" format and "mssql" preset.
 - `getDatetimeValueProcessorMySQL` (function): Generates a value processor with date/time features for use by `formatQuery` with the "sql" format and "mysql" preset.
 - `getDatetimeValueProcessorOracle` (function): Generates a value processor with date/time features for use by `formatQuery` with the "sql" format and "oracle" preset.
 - `getDatetimeValueProcessorPostgreSQL` (function): Generates a value processor with date/time features for use by `formatQuery` with the "sql" format and "postgresql" preset.
+- `getEpochMs` (function): Converts a date (`Date` or parseable string) to epoch milliseconds using the given date library API. Returns `undefined` if invalid.
 - `IsDateField` (type)
 - `IsDateFieldFunction` (type)
 - `RelativeDateTimeAnchor` (type): Reference point (zero-offset) for a `RelativeDateTimeValue`. `'now'` is the current date/time; the `startOf*`/`endOf*` anchors truncate to the start or end of the corresponding calendar period.
@@ -898,22 +921,27 @@
 ### @react-querybuilder/datetime/date-fns
 
 - `datetimeRuleProcessorCEL` (const): `formatQuery` rule processor for "cel" format using date-fns
+- `datetimeRuleProcessorChroma` (const): `formatQuery` rule processor for "chroma" format
 - `datetimeRuleProcessorCypher` (const): `formatQuery` rule processor for "cypher"/"gql" format using date-fns
 - `datetimeRuleProcessorDrizzle` (const): `formatQuery` rule processor for "drizzle" format
 - `datetimeRuleProcessorElasticSearch` (const): `formatQuery` rule processor for "elasticsearch" format
 - `datetimeRuleProcessorGremlin` (const): `formatQuery` rule processor for "gremlin" format
 - `datetimeRuleProcessorJSONata` (const): `formatQuery` rule processor for "jsonata" format using date-fns
 - `datetimeRuleProcessorLDAP` (const): `formatQuery` rule processor for "ldap" format
+- `datetimeRuleProcessorMilvus` (const): `formatQuery` rule processor for "milvus" format
 - `datetimeRuleProcessorMongoDB` (const): `formatQuery` rule processor for (deprecated) "mongodb" format
 - `datetimeRuleProcessorMongoDBQuery` (const): `formatQuery` rule processor for "mongodb_query" format using date-fns
 - `datetimeRuleProcessorNL` (const): `formatQuery` rule processor for "natural_language" format using date-fns
 - `datetimeRuleProcessorParameterized` (const): `formatQuery` rule processor for "parameterized"/"parameterized_named" formats
+- `datetimeRuleProcessorPinecone` (const): `formatQuery` rule processor for "pinecone" format
 - `datetimeRuleProcessorPrisma` (const): `formatQuery` rule processor for "prisma" format
+- `datetimeRuleProcessorQdrant` (const): `formatQuery` rule processor for "qdrant" format
 - `datetimeRuleProcessorSequelize` (const): `formatQuery` rule processor for "sequelize" format
 - `datetimeRuleProcessorSPARQL` (const): `formatQuery` rule processor for "sparql" format using date-fns
 - `datetimeRuleProcessorSpEL` (const): `formatQuery` rule processor for "spel" format
 - `datetimeRuleProcessorSQL` (const): `formatQuery` rule processor for "sql" format using date-fns
 - `datetimeRuleProcessorTanStackDB` (const): `formatQuery` rule processor for "tanstack_db" format
+- `datetimeRuleProcessorWeaviate` (const): `formatQuery` rule processor for "weaviate" format
 - `datetimeValueProcessorANSI` (const): `formatQuery` value processor for "sql" format ("ansi" preset) using date-fns
 - `datetimeValueProcessorMSSQL` (const): `formatQuery` value processor for "sql" format ("mssql" preset) using date-fns
 - `datetimeValueProcessorMySQL` (const): `formatQuery` value processor for "sql" format ("mysql" preset) using date-fns
@@ -925,22 +953,27 @@
 ### @react-querybuilder/datetime/dayjs
 
 - `datetimeRuleProcessorCEL` (const): `formatQuery` rule processor for "cel" format using Day.js
+- `datetimeRuleProcessorChroma` (const): `formatQuery` rule processor for "chroma" format
 - `datetimeRuleProcessorCypher` (const): `formatQuery` rule processor for "cypher"/"gql" format using Day.js
 - `datetimeRuleProcessorDrizzle` (const): `formatQuery` rule processor for "drizzle" format using Day.js
 - `datetimeRuleProcessorElasticSearch` (const): `formatQuery` rule processor for "elasticsearch" format using Day.js
 - `datetimeRuleProcessorGremlin` (const): `formatQuery` rule processor for "gremlin" format using Day.js
 - `datetimeRuleProcessorJSONata` (const): `formatQuery` rule processor for "jsonata" format using Day.js
 - `datetimeRuleProcessorLDAP` (const): `formatQuery` rule processor for "ldap" format using Day.js
+- `datetimeRuleProcessorMilvus` (const): `formatQuery` rule processor for "milvus" format
 - `datetimeRuleProcessorMongoDB` (const): `formatQuery` rule processor for (deprecated) "mongodb" format using Day.js
 - `datetimeRuleProcessorMongoDBQuery` (const): `formatQuery` rule processor for "mongodb_query" format using Day.js
 - `datetimeRuleProcessorNL` (const): `formatQuery` rule processor for "natural_language" format using Day.js
 - `datetimeRuleProcessorParameterized` (const): `formatQuery` rule processor for "parameterized"/"parameterized_named" formats using Day.js
+- `datetimeRuleProcessorPinecone` (const): `formatQuery` rule processor for "pinecone" format
 - `datetimeRuleProcessorPrisma` (const): `formatQuery` rule processor for "prisma" format using Day.js
+- `datetimeRuleProcessorQdrant` (const): `formatQuery` rule processor for "qdrant" format
 - `datetimeRuleProcessorSequelize` (const): `formatQuery` rule processor for "sequelize" format using Day.js
 - `datetimeRuleProcessorSPARQL` (const): `formatQuery` rule processor for "sparql" format using Day.js
 - `datetimeRuleProcessorSpEL` (const): `formatQuery` rule processor for "spel" format using Day.js
 - `datetimeRuleProcessorSQL` (const): `formatQuery` rule processor for "sql" format using Day.js
 - `datetimeRuleProcessorTanStackDB` (const): `formatQuery` rule processor for "tanstack_db" format using Day.js
+- `datetimeRuleProcessorWeaviate` (const): `formatQuery` rule processor for "weaviate" format
 - `datetimeValueProcessorANSI` (const): `formatQuery` value processor for "sql" format ("ansi" preset) using Day.js
 - `datetimeValueProcessorMSSQL` (const): `formatQuery` value processor for "sql" format ("mssql" preset) using Day.js
 - `datetimeValueProcessorMySQL` (const): `formatQuery` value processor for "sql" format ("mysql" preset) using Day.js
@@ -952,22 +985,27 @@
 ### @react-querybuilder/datetime/jsdate
 
 - `datetimeRuleProcessorCEL` (const): `formatQuery` rule processor for "cel" format using JavaScript `Date`
+- `datetimeRuleProcessorChroma` (const): `formatQuery` rule processor for "chroma" format
 - `datetimeRuleProcessorCypher` (const): `formatQuery` rule processor for "cypher"/"gql" format using JavaScript `Date`
 - `datetimeRuleProcessorDrizzle` (const): `formatQuery` rule processor for "drizzle" format
 - `datetimeRuleProcessorElasticSearch` (const): `formatQuery` rule processor for "elasticsearch" format
 - `datetimeRuleProcessorGremlin` (const): `formatQuery` rule processor for "gremlin" format
 - `datetimeRuleProcessorJSONata` (const): `formatQuery` rule processor for "jsonata" format using JavaScript `Date`
 - `datetimeRuleProcessorLDAP` (const): `formatQuery` rule processor for "ldap" format
+- `datetimeRuleProcessorMilvus` (const): `formatQuery` rule processor for "milvus" format
 - `datetimeRuleProcessorMongoDB` (const): `formatQuery` rule processor for (deprecated) "mongodb" format
 - `datetimeRuleProcessorMongoDBQuery` (const): `formatQuery` rule processor for "mongodb_query" format using JavaScript `Date`
 - `datetimeRuleProcessorNL` (const): `formatQuery` rule processor for "natural_language" format using JavaScript `Date`
 - `datetimeRuleProcessorParameterized` (const): `formatQuery` rule processor for "parameterized"/"parameterized_named" formats
+- `datetimeRuleProcessorPinecone` (const): `formatQuery` rule processor for "pinecone" format
 - `datetimeRuleProcessorPrisma` (const): `formatQuery` rule processor for "prisma" format
+- `datetimeRuleProcessorQdrant` (const): `formatQuery` rule processor for "qdrant" format
 - `datetimeRuleProcessorSequelize` (const): `formatQuery` rule processor for "sequelize" format
 - `datetimeRuleProcessorSPARQL` (const): `formatQuery` rule processor for "sparql" format using JavaScript `Date`
 - `datetimeRuleProcessorSpEL` (const): `formatQuery` rule processor for "spel" format
 - `datetimeRuleProcessorSQL` (const): `formatQuery` rule processor for "sql" format using JavaScript `Date`
 - `datetimeRuleProcessorTanStackDB` (const): `formatQuery` rule processor for "tanstack_db" format
+- `datetimeRuleProcessorWeaviate` (const): `formatQuery` rule processor for "weaviate" format
 - `datetimeValueProcessorANSI` (const): `formatQuery` value processor for "sql" format ("ansi" preset) using JavaScript `Date`
 - `datetimeValueProcessorMSSQL` (const): `formatQuery` value processor for "sql" format ("mssql" preset) using JavaScript `Date`
 - `datetimeValueProcessorMySQL` (const): `formatQuery` value processor for "sql" format ("mysql" preset) using JavaScript `Date`
@@ -979,22 +1017,27 @@
 ### @react-querybuilder/datetime/luxon
 
 - `datetimeRuleProcessorCEL` (const): `formatQuery` rule processor for "cel" format using Luxon
+- `datetimeRuleProcessorChroma` (const): `formatQuery` rule processor for "chroma" format
 - `datetimeRuleProcessorCypher` (const): `formatQuery` rule processor for "cypher"/"gql" format using Luxon
 - `datetimeRuleProcessorDrizzle` (const): `formatQuery` rule processor for "drizzle" format
 - `datetimeRuleProcessorElasticSearch` (const): `formatQuery` rule processor for "elasticsearch" format
 - `datetimeRuleProcessorGremlin` (const): `formatQuery` rule processor for "gremlin" format
 - `datetimeRuleProcessorJSONata` (const): `formatQuery` rule processor for "jsonata" format using Luxon
 - `datetimeRuleProcessorLDAP` (const): `formatQuery` rule processor for "ldap" format
+- `datetimeRuleProcessorMilvus` (const): `formatQuery` rule processor for "milvus" format
 - `datetimeRuleProcessorMongoDB` (const): `formatQuery` rule processor for (deprecated) "mongodb" format
 - `datetimeRuleProcessorMongoDBQuery` (const): `formatQuery` rule processor for "mongodb_query" format using Luxon
 - `datetimeRuleProcessorNL` (const): `formatQuery` rule processor for "natural_language" format using Luxon
 - `datetimeRuleProcessorParameterized` (const): `formatQuery` rule processor for "parameterized"/"parameterized_named" formats
+- `datetimeRuleProcessorPinecone` (const): `formatQuery` rule processor for "pinecone" format
 - `datetimeRuleProcessorPrisma` (const): `formatQuery` rule processor for "prisma" format
+- `datetimeRuleProcessorQdrant` (const): `formatQuery` rule processor for "qdrant" format
 - `datetimeRuleProcessorSequelize` (const): `formatQuery` rule processor for "sequelize" format
 - `datetimeRuleProcessorSPARQL` (const): `formatQuery` rule processor for "sparql" format using Luxon
 - `datetimeRuleProcessorSpEL` (const): `formatQuery` rule processor for "spel" format
 - `datetimeRuleProcessorSQL` (const): `formatQuery` rule processor for "sql" format using Luxon
 - `datetimeRuleProcessorTanStackDB` (const): `formatQuery` rule processor for "tanstack_db" format
+- `datetimeRuleProcessorWeaviate` (const): `formatQuery` rule processor for "weaviate" format
 - `datetimeValueProcessorANSI` (const): `formatQuery` value processor for "sql" format ("ansi" preset) using Luxon
 - `datetimeValueProcessorMSSQL` (const): `formatQuery` value processor for "sql" format ("mssql" preset) using Luxon
 - `datetimeValueProcessorMySQL` (const): `formatQuery` value processor for "sql" format ("mysql" preset) using Luxon
