@@ -59,7 +59,7 @@ Use the `formatQuery` function to convert query objects to formats like [SQL](ht
 
 Explore all React Query Builder options in the [main component documentation](/docs/components/querybuilder.md). Try different configurations, export/import formats, and features in the interactive [demo](/demo).
 
-Coming from another library? See [how React Query Builder compares](/docs/tips/comparison.md), and the guide for [migrating from react-awesome-query-builder](/docs/tips/migrate-from-raqb.md).
+Coming from another library? See [how React Query Builder compares](/docs/tips/comparison.md), and the guides for migrating from [react-awesome-query-builder](/docs/tips/migrate-from-raqb.md) and [jQuery QueryBuilder](/docs/tips/migrate-from-jquery-querybuilder.md).
 
 ## Using with AI agents
 
