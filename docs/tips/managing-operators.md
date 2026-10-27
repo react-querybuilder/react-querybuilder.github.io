@@ -15,3 +15,21 @@ While the field `operators` property works well for individual field customizati
 `getOperators` receives two arguments: the field identifier and a meta object containing the complete field definition. Using this information, you can reference the `fields` array (or other data sources) to return appropriate operator lists with custom names and labels.
 
 This example demonstrates custom field properties for operator management. Each field includes a custom `datatype` property that determines operator selection and labeling. The `defaultOperators` export provides base functionality where needed. Note that when present, a field's `operators` property overrides `getOperators` results—observe how "Favorite Movie" shows only the "is" operator despite having `datatype: "text"`.
+
+## Regular expression operators
+
+The `matches` and `doesNotMatch` operators test a field against a regular expression. They are not part of `defaultOperators`; opt in with `defaultOperatorsWithRegex` (or append `defaultRegexOperators` to your own list).
+
+```ts
+import { defaultOperatorsWithRegex, type Field } from 'react-querybuilder';
+
+const fields: Field[] = [{ name: 'sku', label: 'SKU', operators: defaultOperatorsWithRegex }];
+```
+
+The rule `value` is the pattern string (no slashes), so the default text `ValueEditor` works as-is. Flags go in the optional `regexFlags` rule property:
+
+```json
+{ "field": "sku", "operator": "matches", "value": "^AB-\\d+", "regexFlags": "i" }
+```
+
+There's no built-in control for `regexFlags`; use a custom `valueEditor` if users need to set flags. `matches` uses unanchored "find" semantics (like `RegExp#test`) in every export format. See [Export > Regular expressions](/docs/utils/export.md#regular-expressions) for per-format output and [Import > Regular expressions](/docs/utils/import.md#regular-expressions) for parser support.

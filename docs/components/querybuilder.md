@@ -93,7 +93,7 @@ export const defaultOperators: DefaultOperators = [
 ];
 ```
 
-> *Source: [/packages/core/src/defaults.ts#L179-L198](https://github.com/react-querybuilder/react-querybuilder/blob/main/packages/core/src/defaults.ts#L179-L198)*
+> *Source: [/packages/core/src/defaults.ts#L181-L200](https://github.com/react-querybuilder/react-querybuilder/blob/main/packages/core/src/defaults.ts#L181-L200)*
 
 For more information about option list props like `operators`, see [Working with option lists](/docs/tips/option-lists.md).
 
@@ -110,7 +110,7 @@ export const defaultCombinators: DefaultCombinators = [
 ];
 ```
 
-> *Source: [/packages/core/src/defaults.ts#L284-L287](https://github.com/react-querybuilder/react-querybuilder/blob/main/packages/core/src/defaults.ts#L284-L287)*
+> *Source: [/packages/core/src/defaults.ts#L317-L320](https://github.com/react-querybuilder/react-querybuilder/blob/main/packages/core/src/defaults.ts#L317-L320)*
 
 For more information about option list props like `combinators`, see [Working with option lists](/docs/tips/option-lists.md).
 

@@ -132,6 +132,7 @@
 - `DefaultOperatorProp` (type): The `getDefaultOperator` option: either an operator name or a function that picks one.
 - `defaultOperators` (const): Default operator list.
 - `DefaultOperators` (type)
+- `defaultOperatorsWithRegex` (const): `defaultOperators` plus `defaultRegexOperators`.
 - `defaultPlaceholderFieldGroupLabel` (const): Default `label` for placeholder option group in the `fields` array.
 - `defaultPlaceholderFieldLabel` (const): Default `label` for placeholder option in the `fields` array.
 - `defaultPlaceholderFieldName` (const): Default `name` for placeholder option in the `fields` array.
@@ -143,6 +144,7 @@
 - `defaultPlaceholderValueGroupLabel` (const): Default `label` for placeholder option group in the `values` array.
 - `defaultPlaceholderValueLabel` (const): Default `label` for placeholder option in the `values` array.
 - `defaultPlaceholderValueName` (const): Default `name` for placeholder option in the `values` array.
+- `defaultRegexOperators` (const): Opt-in regular expression operators (not included in `defaultOperators`).
 - `DefaultRuleGroupArray` (type): The type of the `rules` array in a `DefaultRuleGroupType`.
 - `DefaultRuleGroupICArray` (type): The type of the `rules` array in a `DefaultRuleGroupTypeIC`.
 - `defaultRuleGroupProcessorCEL` (const): Rule group processor used by `formatQuery` for "cel" format.
@@ -314,6 +316,8 @@
 - `isFullOptionGroupArray` (function): Determines if a `FlexibleOptionList` is a `OptionGroup` array of `FullOption`.
 - `isOptionGroupArray` (function): Determines if an `OptionList` is an `OptionGroup` array.
 - `isPojo` (function): Determines if a variable is a plain old JavaScript object, aka POJO.
+- `isRegexOperator` (function): Determines whether an operator is a regular expression operator (`matches`/`doesNotMatch`, case-insensitive).
+- `isRegexRuleInvalid` (function): Determines whether a rule is a `matches`/`doesNotMatch` rule with an invalid pattern. Rules with a `valueSource` other than `"value"` are never considered invalid.
 - `isRuleGroup` (function): Determines if an object is a `RuleGroupType` or `RuleGroupTypeIC`.
 - `isRuleGroupType` (function): Determines if an object is a `RuleGroupType`.
 - `isRuleGroupTypeIC` (function): Determines if an object is a `RuleGroupTypeIC`.
@@ -321,6 +325,7 @@
 - `isRuleType` (function): Determines if an object is a `RuleType` (only checks for a `field` property).
 - `isUnsafeKey` (function): Returns `true` if the key could cause prototype pollution when used as a property name in bracket-notation assignment.
 - `isValidationResult` (function): Determines if an object is useful as a validation result.
+- `isValidRegex` (function): Determines whether `pattern` is a valid (JS) regular expression with the given flags.
 - `isValidValue` (function): Determines whether a value is _anything_ except an empty `string` or `NaN`.
 - `isValueProcessorLegacy` (function): Used by `formatQuery` to determine whether the given value processor is a "legacy" value processor by counting the number of arguments.
 - `joinWith` (function): Joins an array of strings using the given character (see `defaultJoinChar`).
@@ -339,6 +344,7 @@
 - `JsonLogicNone` (type)
 - `JsonLogicNotEqual` (type)
 - `JsonLogicOr` (type)
+- `jsonLogicRegexOperator` (const): Custom JsonLogic operation for the `regex` operator emitted by `matches`/`doesNotMatch` rules (`{ "regex": [{ "var": "f" }, "pattern", "flags"] }`). Unanchored.
 - `JsonLogicReservedOperations` (type)
 - `JsonLogicRulesLogic` (type)
 - `JsonLogicSome` (type)
@@ -428,6 +434,8 @@
 - `regenerateID` (function): Generates a new `id` property for a rule.
 - `RegenerateIdOptions` (interface): Options object for `regenerateID`/`regenerateIDs`.
 - `regenerateIDs` (function): Recursively generates new `id` properties for a rule group and all its rules and subgroups.
+- `regexFallbackRule` (function): Converts a `matches`/`doesNotMatch` rule to `contains`/`doesNotContain` with the pattern as a literal value. Used by formats with no regular expression support. Other rules are returned as-is.
+- `regexOperators` (const): Regular expression operators (`matches`, `doesNotMatch`).
 - `relationalOperators` (const): Relational/comparison operators (`=`, `!=`, `<`, `>`, `<=`, `>=`).
 - `remove` (const): Removes a rule or group from a query without mutating the original query.
 - `removeInPlace` (const): Removes a rule or group from a query in place.
@@ -467,6 +475,7 @@
 - `RuleProcessor` (type): Function to produce a result that `formatQuery` uses when processing a `RuleType` object.
 - `RuleType` (interface): The main rule type. The `field`, `operator`, and `value` properties can be narrowed with generics.
 - `RuleValidator` (type): Function that validates a rule.
+- `sanitizeRegexFlags` (function): Filters regular expression flags to the given whitelist, removing duplicates. `g` and `y` are never kept (stateful/irrelevant for match tests).
 - `SequelizeWhereOptionsLike` (interface): Structural stand-in for Sequelize's `WhereOptions`. Declared locally so the public type surface of this package never references `sequelize`, which is an optional peer dependency.
 - `setAutoFreeze` (const): Globally enables or disables immer's auto-freeze, i.e. the deep freeze applied to every query returned by `add`, `update`, `remove`, `move`, `insert`, and `group`.
 - `shouldCoalesce` (function): Determines whether a change should be absorbed into the current history entry instead of pushing a new one.
@@ -494,6 +503,8 @@
 - `ToFullOption` (type): Utility type to turn an `Option`, `ValueOption` or `BaseOption` into a `FullOption`.
 - `toFullOptionList` (function): Converts an `OptionList` or `FlexibleOptionList` into a `FullOptionList`. Lists of full options are left unchanged.
 - `toFullOptionMap` (function): Converts a `FlexibleOptionList` into a `FullOptionList`. Lists of full options are left unchanged.
+- `toInlineFlagsRegex` (function): Prefixes a pattern with inline flags (e.g. `(?i)`) for targets without a flags argument.
+- `toRegExpSource` (function): Returns the pattern string of a `RegExp` (its `source`) or the string itself.
 - `ToRuleGroupType` (type): Converts a `RuleGroupTypeIC` extension to the corresponding `RuleGroupType` type, preserving any additional properties. If the type already extends `RuleGroupType` (non-IC), it is returned as-is.
 - `ToRuleGroupTypeIC` (type): Converts a `RuleGroupType` extension to the corresponding `RuleGroupTypeIC` type, preserving any additional properties. If the type already extends `RuleGroupTypeIC`, it is returned as-is.
 - `trimIfString` (function): Trims the value if it is a string. Otherwise returns the value as is.

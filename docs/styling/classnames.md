@@ -113,4 +113,4 @@ export const standardClassnames = {
 } as const;
 ```
 
-> *Source: [/packages/core/src/defaults.ts#L327-L376](https://github.com/react-querybuilder/react-querybuilder/blob/main/packages/core/src/defaults.ts#L327-L376)*
+> *Source: [/packages/core/src/defaults.ts#L360-L409](https://github.com/react-querybuilder/react-querybuilder/blob/main/packages/core/src/defaults.ts#L360-L409)*
