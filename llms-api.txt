@@ -667,7 +667,6 @@
 - `ParseCELOptionsStandard` (interface)
 - `ParsedCEL` (interface)
 - `transformAliasInExpression` (function)
-- `unescapeCELString` (function): Unescapes CEL string literal body (non-raw) per CEL spec escape sequences.
 
 ### @react-querybuilder/core/parseCypher
 
