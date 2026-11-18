@@ -482,7 +482,7 @@
 - `shouldRenderAsNumber` (function): Determines whether `formatQuery` should render the given value as a number.
 - `signatureOf` (function): Describes _what changed_ between two versions of a query as a short string, so that consecutive edits to the same property of the same rule (e.g.
 - `sparqlVar` (function): Auto-prefix a SPARQL variable name with `?` unless it's already prefixed, a URI, or a prefixed name.
-- `splitBy` (function): Splits a string by a given character (see `defaultJoinChar`). Escaped characters (characters preceded by a backslash) will not apply to the split, and the backslash will be removed in the array elemen…
+- `splitBy` (function): Splits a string by a given character (see `defaultJoinChar`). A backslash escapes the split character's first character or another backslash; escaped characters don't apply to the split, and the escap…
 - `sqlDialectPresets` (const): A collection of option presets for `formatQuery`, specifically for SQL-based formats.
 - `SQLPreset` (type): Available presets for the "sql" export format.
 - `standardClassnames` (const): Standard classnames applied to each component.
