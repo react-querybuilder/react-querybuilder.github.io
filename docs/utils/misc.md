@@ -140,6 +140,8 @@ Fills absent `inputType`/`valueEditorType` properties based on the field's `data
 const fields = rawFields.map(f => inferFieldDefaults(f));
 ```
 
+The [`inferFieldDefaults` prop](/docs/components/querybuilder.md#inferfielddefaults) (also a `QueryManager` option) applies this to every field automatically. `inferFieldListDefaults` applies it to a list prepared by `prepareOptionList` (list and lookup map).
+
 Since the [date/time package](/docs/datetime.md) keys off `inputType: "date" | "datetime-local"`, date pickers are enabled automatically for `date`/`datetime` fields.
 
 ### `datatypeCategoryComparator`

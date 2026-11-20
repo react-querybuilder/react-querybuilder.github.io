@@ -383,6 +383,13 @@ export interface QueryManagerOptions<
   getDefaultOperator?: DefaultOperatorProp<F>;
   /** Overrides the computed default `value` for a new rule. */
   getDefaultValue?: (rule: RuleType, misc: { fieldData: F }) => unknown;
+  /**
+   * Narrow the operator list per field by `datatype` (see {@link inferOperators}). Applies only
+   * when neither `field.operators` nor `getOperators` provides a list.
+   */
+  inferOperators?: InferOperatorsProp<O>;
+  /** Fill absent `inputType`/`valueEditorType` by `datatype` (see {@link inferFieldDefaults}). */
+  inferFieldDefaults?: InferFieldDefaultsProp;
   /** The operators available for a given field. */
   getOperators?: (field: string, misc: { fieldData: F }) => FlexibleOptionList<O> | null;
   /** The value editor type for a given field/operator, which informs the default value. */
@@ -496,7 +503,7 @@ export interface QueryManagerOptions<
 }
 ```
 
-> *Source: [/packages/core/src/utils/QueryManager.ts#L175-L322](https://github.com/react-querybuilder/react-querybuilder/blob/main/packages/core/src/utils/QueryManager.ts#L175-L322)*
+> *Source: [/packages/core/src/utils/QueryManager.ts#L178-L332](https://github.com/react-querybuilder/react-querybuilder/blob/main/packages/core/src/utils/QueryManager.ts#L178-L332)*
 
 The constructor also accepts the [guard options](#guards) `respectDisabled` (defaulting to **`true`** here, matching the `QueryBuilder` component), `queryDisabled`, and `maxLevels`, plus `resetOnFieldChange` (default `true`) and `resetOnOperatorChange` (default `false`), which mirror the props of the same names.
 
@@ -729,11 +736,11 @@ These methods resolve the same field/operator configuration the `QueryBuilder` c
 
 * `getFields(): FullOptionList<FullField>` — The normalized field list, for populating a field selector.
 * `getCombinators(): FullOptionList<FullCombinator>` — The normalized combinator list, for populating a combinator selector.
-* `getFieldData(field): FullField` — The configured field. For an unconfigured field, returns the same minimal fallback (`{ name, value, label }`, all set to the field name) that `getRuleContext` reports as `fieldData`.
+* `getFieldData(field): FullField` — The configured field. With the [`inferFieldDefaults` option](/docs/components/querybuilder.md#inferfielddefaults), `getFields`, `getFieldMap`, and `getFieldData` return fields with absent `inputType`/`valueEditorType` filled from `datatype`. For an unconfigured field, returns the same minimal fallback (`{ name, value, label }`, all set to the field name) that `getRuleContext` reports as `fieldData`.
 
 `getFields` and `getCombinators` return frozen arrays (unless the [`freeze` option](#freezing-manager) is `false`), so they are safe to hand to rendering code without defensive copying. Either way, treat them as read-only.
 
-* `getOperators(field): FullOptionList<FullOperator>` — The operator list for a field.
+* `getOperators(field): FullOptionList<FullOperator>` — The operator list for a field. With the [`inferOperators` option](/docs/components/querybuilder.md#inferoperators), the `operators` list is narrowed by the field's `datatype` when neither the field's own `operators` nor `getOperators` provides a list.
 * `getValueSources(field, operator): ValueSourceFullOptions` — The available value sources.
 * `getMatchModes(field): MatchModeOptions` — The available match modes.
 * `getValues(field, operator): FullOptionList<Option>` — The value option list.
@@ -827,7 +834,7 @@ deriveRuleClassNames({ classNames: { valueSelector: 'vs', fields: 'f' } });
 
 The precedence rules the `QueryBuilder` component applies when resolving a rule's configuration are exported as standalone functions, so `useQueryBuilderSetup` and `QueryManager` share one implementation rather than each keeping its own:
 
-* `resolveOperatorList({ field, fieldData, getOperators, operators, ... })` — the field's own `operators`, then `getOperators`, then the query-level list.
+* `resolveOperatorList({ field, fieldData, getOperators, operators, inferOperators, ... })` — the field's own `operators`, then `getOperators`, then the query-level list (narrowed by [`inferOperators`](/docs/utils/misc.md#inferoperators) when `inferOperators` is set).
 * `resolveDefaultOperator({ field, fieldData, getDefaultOperator, getOperators })` — the field's `defaultOperator`, then `getDefaultOperator` (string or function), then the first available operator.
 * `resolveValueEditorType({ field, operator, fieldData, getValueEditorType })` — the field's `valueEditorType` (string or function of the operator), then `getValueEditorType`, then `"text"`.
 * `resolveValueList({ field, operator, fieldData, getValues, ... })` — the field's own `values`, then `getValues`, then an empty list.

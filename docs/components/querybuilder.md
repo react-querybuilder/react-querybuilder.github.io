@@ -201,11 +201,29 @@ See [`controlElements`](/docs/components/querybuilder-controlelements.md) for a 
 
 `(field: string, misc: { fieldData: Field }) => OptionList<Operator> | null`
 
-Returns allowed operators for the given `field`. Returning `null` uses the [operators](#operators) prop (or defaults).
+Returns allowed operators for the given `field`. Returning `null` uses the [operators](#operators) prop (or defaults), narrowed by datatype when [`inferOperators`](#inferoperators) is enabled.
 
 `fieldData` provides the complete `Field` object for accessing custom properties.
 
 For more information about option list props like `operators`, see [Working with option lists](/docs/tips/option-lists.md).
+
+### `inferOperators`
+
+`boolean | InferOperatorsOptions` (default `false`)
+
+Narrows each field's operator list to those compatible with its [`datatype`](/docs/typescript.md#data-types) (falling back to `inputType`/`valueEditorType`/`values` hints) using [`inferOperators`](/docs/utils/misc.md#inferoperators). `true` uses the default options; pass an object to configure `map`, `datatypeMap`, `dropUnknownOperators`, `labels`, or `warn` (the `operators` option is ignored; the [`operators`](#operators) prop is narrowed instead).
+
+Precedence: field's own `operators` > [`getOperators`](#getoperators) > inference > [`operators`](#operators) prop. With `warn: true`, fields whose own `operators` conflict with their datatype log a development-only warning (lists returned by `getOperators` are not checked). The default operator for new rules is the first operator of the narrowed list (unless [`getDefaultOperator`](#getdefaultoperator) or the field's `defaultOperator` say otherwise). Existing rules with now-incompatible operators are left as is; use [`datatypeOperatorValidator`](/docs/utils/validation.md#datatype-validation) to flag them. Also applies to subquery builders (`subproperties`), overridable via [`getSubQueryBuilderProps`](#getsubquerybuilderprops).
+
+See [Inferring operators from `datatype`](/docs/tips/managing-operators.md#inferring-operators-from-datatype).
+
+> **Tip:** Define the options object outside the component or memoize it. A new object on every render causes operator lists to be re-resolved.
+
+### `inferFieldDefaults`
+
+`boolean | { datatypeMap?: DatatypeCategoryMap }` (default `false`)
+
+Applies [`inferFieldDefaults`](/docs/utils/misc.md#inferfielddefaults) to each field, filling absent `inputType`/`valueEditorType` based on `datatype` (e.g. `inputType: "number"` for `"int"`, `valueEditorType: "checkbox"` for `"boolean"`). Explicit values are never overridden. Also applies to `subproperties` fields (overridable via `getSubQueryBuilderProps`).
 
 ### `getValueEditorType`
 

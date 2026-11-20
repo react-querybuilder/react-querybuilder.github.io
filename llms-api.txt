@@ -319,9 +319,13 @@
 - `GuardOptions` (interface): Options that block a mutation before it is attempted.
 - `hideValueControlsForOperator` (function): Whether the value editor(s) should be hidden for an operator, based on its `arity`.
 - `inferFieldDefaults` (function): Fills absent `inputType`/`valueEditorType` based on the field's `datatype` (inverse of `inferOperators`). Explicit values are never overridden.
+- `InferFieldDefaultsOptions` (interface): Options for `inferFieldDefaults`.
+- `InferFieldDefaultsProp` (type): Value of the `inferFieldDefaults` prop/option. `true` → default options.
+- `inferFieldListDefaults` (function): Applies `inferFieldDefaults` to a prepared field list and its lookup map (see `prepareOptionList`). Returns the same objects when `opts` is falsy or nothing changed.
 - `inferOperators` (function): Narrows an operator list for a field based on its `datatype` (or `inputType`, `valueEditorType`, `values`, etc. hints; see `getDatatypeCategory`). Fields without hints are not filtered.
 - `InferOperatorsMap` (type): Datatype category → whitelisted (default) operator names. Categories without an entry are not filtered.
 - `InferOperatorsOptions` (interface): Options for `inferOperators`.
+- `InferOperatorsProp` (type): Value of the `inferOperators` prop/option. `true` → default `InferOperatorsOptions`. The `operators` property is ignored (the query-level operator list is narrowed).
 - `inOperators` (const): List-membership operators (`in`, `notIn`).
 - `InputType` (type): HTML5 input types
 - `insert` (const): Inserts a rule or group into a query without mutating the original query.
@@ -464,7 +468,7 @@
 - `RemoveOptions` (interface): Options for `remove`.
 - `resolveCandidateQuery` (function): Resolves the query a query builder should render from the available sources, in precedence order: the controlled `query`, then whatever is already in the store, then the uncontrolled `defaultQuery`, t…
 - `resolveDefaultOperator` (function): Resolves the default operator for a field, applying the same precedence as the `QueryBuilder` component: the field's own `defaultOperator`, then the `getDefaultOperator` option (a string or a function…
-- `resolveOperatorList` (function): Resolves the operator list for a field, applying the same precedence as the `QueryBuilder` component: the field's own `operators`, then the `getOperators` callback, then the query-level operator list.
+- `resolveOperatorList` (function): Resolves the operator list for a field, applying the same precedence as the `QueryBuilder` component: the field's own `operators`, then the `getOperators` callback, then the query-level operator list…
 - `ResolveOptionListOptions` (interface): Options shared by the resolvers below that produce a normalized option list.
 - `resolveValueEditorType` (function): Resolves the value editor type for a field/operator pair, applying the same precedence as the `QueryBuilder` component: the field's own `valueEditorType` (a string or a function of the operator), then…
 - `resolveValueList` (function): Resolves the value option list for a field/operator pair, applying the same precedence as the `QueryBuilder` component: the field's own `values`, then the `getValues` callback, then an empty list.

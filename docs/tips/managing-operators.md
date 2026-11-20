@@ -30,6 +30,12 @@ const getOperators = getOperatorsByDatatype();
 <QueryBuilder fields={fields} getOperators={getOperators} />;
 ```
 
+The [`inferOperators` prop](/docs/components/querybuilder.md#inferoperators) applies the same logic to the [`operators`](/docs/components/querybuilder.md#operators) prop list without a `getOperators` function. It accepts `true` or the options below (except `operators`), and also works with [`QueryManager`](/docs/utils/query-management.md) (`inferOperators` option). Unlike `getOperators`, a field's own `operators` and an explicit `getOperators` both take precedence over the prop.
+
+```tsx
+<QueryBuilder fields={fields} operators={myOperators} inferOperators />
+```
+
 Default operators by category (`defaultInferOperatorsMap`):
 
 | Category                                       | Operators                                                                                                     |
