@@ -22,7 +22,8 @@ interface Field {
   placeholder?: string; // Placeholder text for the value editor when this field is selected
   validator?: RuleValidator; // Validation function for rules that specify this field
   valueSources?: ValueSources | ((operator: string) => ValueSources); // List of allowed value sources (must contain "value", "field", or both)
-  comparator?: string | ((f: Field, operator: string) => boolean); // Determines which (other) fields to include in the list when the rule's valueSource is "field"
+  comparator?: string | ((f: Field, operator: string, meta?: { fieldData: Field }) => boolean); // Determines which (other) fields to include in the list when the rule's valueSource is "field"
+  datatype?: unknown; // Data type of the field (string category or raw DB type like "VARCHAR(50)"; non-strings ignored by datatype utilities; see below)
   className?: Classname; // Assigned to rules where this field is selected
   separator?: ReactNode; // Rendered between multiple value editors, e.g. when the operator is "between" or "notBetween"
 }
@@ -32,6 +33,47 @@ Notes:
 
 * `Field` extends the `Option` interface, described [below](#option-lists).
 * More information on `valueEditorType` is available [below](#value-editor) and in the [`ValueEditor` component documentation](/docs/components/valueeditor.md).
+
+### Data types
+
+`datatype` is typed `unknown` for backward compatibility, but only string values are recognized (others are ignored). Utilities like [`inferOperators`](/docs/tips/managing-operators.md#inferring-operators-from-datatype), [`inferFieldDefaults`](/docs/utils/misc.md#inferfielddefaults), [`datatypeCategoryComparator`](/docs/components/valueeditor.md#filtering-the-field-list), and [`datatypeOperatorValidator`](/docs/utils/validation.md#datatype-validation) normalize it to a `FieldDatatypeCategory` via [`getDatatypeCategory`](/docs/utils/misc.md#getdatatypecategory):
+
+```ts
+type FieldDatatypeCategory =
+  | 'string'
+  | 'number'
+  | 'bigint'
+  | 'boolean'
+  | 'date'
+  | 'datetime'
+  | 'time'
+  | 'enum' // fixed value list
+  | 'array'
+  | 'object'
+  | 'unknown'; // no operator narrowing
+```
+
+Normalization rules (case-insensitive):
+
+* Parenthesized parts are stripped (`VARCHAR(50)` → `varchar`, `decimal(10,2)` → `decimal`).
+* `|` separates multiple types (`"string|number"` → `["string", "number"]`). Commas are *not* separators.
+* Drizzle-style class name prefixes (`Pg`, `MySql`, `SQLite`, `SingleStore`, `Gel`) are removed (`PgVarchar` → `varchar`).
+* Category names map to themselves.
+
+| Category   | Example raw types                                                                                                  |
+| ---------- | ------------------------------------------------------------------------------------------------------------------ |
+| `string`   | `text`, `varchar`, `nvarchar2`, `char`, `clob`, `uuid`, `uniqueidentifier`, `citext`                               |
+| `number`   | `int`, `integer`, `smallint`, `decimal`, `numeric`, `float`, `double precision`, `real`, `money`, `serial`         |
+| `bigint`   | `bigint`, `int8`, `int64`, `bigserial`                                                                             |
+| `boolean`  | `bool`, `boolean`                                                                                                  |
+| `date`     | `date`                                                                                                             |
+| `datetime` | `datetime`, `datetime2`, `datetimeoffset`, `smalldatetime`, `timestamp`, `timestamp with time zone`, `timestamptz` |
+| `time`     | `time`, `timetz`, `time with time zone`                                                                            |
+| `enum`     | `enum(a,b)`                                                                                                        |
+| `array`    | `array`, `text[]`, `set` (MySQL)                                                                                   |
+| `object`   | `json`, `jsonb`, `object`, `map`, `struct`, `record`                                                               |
+
+Unrecognized types (and fields without `datatype`) fall back to hints: `matchModes`/`subproperties` → `array`; `valueEditorType` `checkbox`/`switch` → `boolean`, `select`/`radio`/`multiselect` → `enum`; non-empty `values` → `enum`; `inputType` (`number`/`range` → `number`, `date`/`month`/`week` → `date`, `datetime-local` → `datetime`, `time` → `time`, `text`/`email`/`url`/`tel`/`search` → `string`). No hints → no category (`inferOperators` filters nothing; `datatypeCategoryComparator` excludes the field, whether candidate or the field declaring the `comparator`). Custom mappings can be provided with the `datatypeMap` option (e.g. `{ geography: "object" }`), checked (case-insensitively) against the whole value and each raw `|` member before the built-in rules.
 
 ## Rules and groups
 

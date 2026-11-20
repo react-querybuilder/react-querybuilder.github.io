@@ -693,7 +693,6 @@ firstName = "Steve" and lastName = "Vai"
 >
 > ```ts
 > const customRuleProcessor: RuleProcessor = (rule, options) => {
->   // `datatype` is a non-standard property of the field, used for this example only.
 >   // Replace this condition with your own logic to determine if the value is a date.
 >   if (options?.fieldData?.datatype === 'date') {
 >     return `$toMillis(${rule.field}) ${rule.operator} $toMillis("${rule.value}")`;
@@ -1857,7 +1856,7 @@ formatQuery(query, { ruleGroupProcessor: customRuleGroupProcessor });
 
 ## Validation
 
-Validation options (`validator` and `fields` – see [Validation](/docs/utils/validation.md)) only affect output when `format` is not "json" or "json_without_ids". If the `validator` function returns `false`, the `fallbackExpression` is returned. Otherwise, groups and rules marked as invalid (by the validation map from the `validator` function or field-based `validator` function) are ignored.
+Validation options (`validator` and `fields` – see [Validation](/docs/utils/validation.md)) only affect output when `format` is not "json" or "json_without_ids". If the `validator` function returns `false`, the `fallbackExpression` is returned. Otherwise, groups and rules marked as invalid (by the validation map from the `validator` function or field-based `validator` function) are ignored. To drop rules whose operators (or values) don't fit the field's `datatype`, use [`datatypeOperatorValidator`](/docs/utils/validation.md#datatype-validation).
 
 Example:
 

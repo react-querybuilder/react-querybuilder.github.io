@@ -105,6 +105,15 @@
 - `CreateRuleGroupOptions` (interface): Everything `createRuleGroup` needs to produce a new group.
 - `CreateRuleOptions` (interface): Everything `createRule` needs to produce a new rule. Each member corresponds to the `QueryBuilder` prop (or `useQueryBuilderSetup` output) of the same name.
 - `cypherCombinatorMap` (const): Maps a `DefaultCombinatorName` to a Cypher combinator keyword.
+- `datatypeCategoryComparator` (const): Ready-made `comparator` for fields: includes only fields whose datatype category (see `getDatatypeCategory`) is compatible with the field in question.
+- `DatatypeCategoryComparatorOptions` (interface): Options for `getDatatypeCategoryComparator`.
+- `DatatypeCategoryMap` (type): Custom raw datatype → category map (keys matched case-insensitively). Checked before built-in normalization.
+- `DatatypeOperatorLabels` (type): Datatype category → operator name → label.
+- `datatypeOperatorValidator` (function): Creates a query validator that checks each rule's operator (and optionally value) against the datatype category of its field. Rules with unknown fields are skipped.
+- `DatatypeOperatorValidatorOptions` (interface): Options for `datatypeOperatorValidator`.
+- `datatypeRuleValidator` (function): Creates a rule validator that checks the rule's operator (and optionally value) against the datatype category of the given field. See `inferOperators`.
+- `DatatypeValidationReason` (type): Reason codes reported by `datatypeOperatorValidator`/`datatypeRuleValidator`.
+- `DatatypeValidatorOptions` (type): Options for `datatypeRuleValidator`.
 - `defaultCoalesceMs` (const): Default time window (in milliseconds) within which consecutive changes to the same property of the same rule are coalesced into a single undo step.
 - `DefaultCombinator` (type): A `FullCombinator` definition with a `DefaultCombinatorName` `name` property.
 - `DefaultCombinatorExtended` (type): A `FullCombinator` definition with a `DefaultCombinatorNameExtended` `name` property.
@@ -116,8 +125,10 @@
 - `defaultCombinatorsExtended` (const): Default combinator list, with `XOR` added.
 - `DefaultCombinatorsExtended` (type)
 - `defaultControlClassnames` (const): Default classnames for each component.
+- `defaultDatatypeOperatorLabels` (const): Default type-specific operator labels for `inferOperators` (`labels: true`).
 - `defaultExportOperatorMap` (const): Default operator map used by `formatQuery` for "natural_language" format.
 - `DefaultFieldProp` (type): The `getDefaultField` option: either a field name or a function that picks one.
+- `defaultInferOperatorsMap` (const): Default datatype category → operator whitelist for `inferOperators`. `null`/`notNull` are always retained. `array`, `object`, and `unknown` are not filtered.
 - `defaultJoinChar` (const): Default character used to `.join` and `.split` arrays.
 - `defaultMatchModes` (const): Default match modes.
 - `DefaultMatchModes` (type)
@@ -234,6 +245,7 @@
 - `ExpressionNode` (type): A single node in an expression tree. Expressions are recursive: a `func` node's arguments are themselves `ExpressionNode`s, enabling arbitrary nesting.
 - `Field` (type): Field definition used in the `fields` prop of `QueryBuilder`. This type is an extension of `FullField` where only `name` and `label` are required.
 - `FieldByValue` (type): Field definition used in the `fields` prop of `QueryBuilder`. This type is an extension of `FullField` where only `value` and `label` are required.
+- `FieldDatatypeCategory` (type): Normalized data type category of a field. Raw `datatype` values (e.g. `'VARCHAR(50)'`, `'timestamp with time zone'`) are normalized to one of these categories by `getDatatypeCategory`.
 - `filterFieldsByComparator` (function): For a given `FullField`, returns the `fields` list filtered for other fields that match by `comparator`.
 - `findID` (function): Returns the `RuleType` or `RuleGroupType`/`RuleGroupTypeIC` with the given `id` within a query.
 - `findPath` (function): Returns the `RuleType` or `RuleGroupType`/`RuleGroupTypeIC` at the given path within a query.
@@ -260,6 +272,9 @@
 - `generateID` (function): Default `id` generator. Generates a valid v4 UUID. Uses `crypto.randomUUID()` when available, otherwise uses an alternate method based on `getRandomValues`.
 - `GenericizeRuleGroupType` (type): Converts a narrowed rule group type to its most generic form.
 - `getCommonAncestorPath` (function): Finds the deepest/longest path that two paths have in common.
+- `getDatatypeCategory` (function): Determines the `FieldDatatypeCategory` of a field. `datatype` is normalized first (case-insensitive; `(…)` stripped; `|` separates multiple types), then hints are checked in order: `matchModes`/`subpr…
+- `getDatatypeCategoryComparator` (function): Creates a `comparator` like `datatypeCategoryComparator`, with options (e.g. a custom `datatypeMap`). Create once (outside render) and reuse; each instance caches categories per field object.
+- `GetDatatypeCategoryOptions` (interface): Options for `getDatatypeCategory`.
 - `getFieldData` (function): Resolves the field configuration for a rule's `field`, falling back to a minimal option object when the field isn't present in the field map.
 - `getFirstOption` (function): Gets the first option from an `OptionList`.
 - `getGuardAbortReason` (function): Whether a mutation targeting `pathOrID` is blocked by the given guards, and why. Returns `null` when the mutation may proceed.
@@ -268,6 +283,7 @@
 - `getMatchModesUtil` (function): Utility function to get the match modes array for the given field. If the field definition does not define a `matchModes` property, the `getMatchModes` prop is used.
 - `getMultiValueUpdate` (function): Produces the next value for a series of value editors when the editor at `index` changes.
 - `getNLTranslataion` (function): Used by `formatQuery` to get a translation based on certain conditions for the "natural_language" format.
+- `getOperatorsByDatatype` (function): Creates a `getOperators` function that calls `inferOperators` with the given options. Create outside render for a stable reference.
 - `getOption` (function): Gets the option from an `OptionList` with the given `name`. Handles `Option` arrays as well as `OptionGroup` arrays.
 - `GetOptionIdentifierType` (type): Extracts the type of the identifying property from a `Option`, `ValueOption`, or `FullOption`.
 - `GetOptionType` (type): Extracts the `Option` type from a `FlexibleOptionList`.
@@ -302,6 +318,10 @@
 - `GroupVariantCondition` (type): Rule group condition identifier for the "natural_language" format.
 - `GuardOptions` (interface): Options that block a mutation before it is attempted.
 - `hideValueControlsForOperator` (function): Whether the value editor(s) should be hidden for an operator, based on its `arity`.
+- `inferFieldDefaults` (function): Fills absent `inputType`/`valueEditorType` based on the field's `datatype` (inverse of `inferOperators`). Explicit values are never overridden.
+- `inferOperators` (function): Narrows an operator list for a field based on its `datatype` (or `inputType`, `valueEditorType`, `values`, etc. hints; see `getDatatypeCategory`). Fields without hints are not filtered.
+- `InferOperatorsMap` (type): Datatype category → whitelisted (default) operator names. Categories without an entry are not filtered.
+- `InferOperatorsOptions` (interface): Options for `inferOperators`.
 - `inOperators` (const): List-membership operators (`in`, `notIn`).
 - `InputType` (type): HTML5 input types
 - `insert` (const): Inserts a rule or group into a query without mutating the original query.
@@ -496,7 +516,7 @@
 - `SubscriptionChange` (interface): What changed in the notification a `QueryManager.subscribe` listener is receiving.
 - `substringOperators` (const): Substring/text-matching operators (`contains`, `beginsWith`, `endsWith`, and negations).
 - `TestID` (const): Component identifiers for testing.
-- `toArray` (function): Splits a string by comma then trims each element. Arrays are returned as is except any string elements are trimmed.
+- `toArray` (function): Splits a string by comma (or `splitChar`) then trims each element. Arrays are returned as is except any string elements are trimmed.
 - `toFlatOptionArray` (function): Flattens `FlexibleOptionGroup` arrays into `BaseOption` arrays. If the array is already flat, it is returned as is.
 - `ToFlexibleOption` (type): Utility type to turn an `Option`, `ValueOption`, or `BaseOption` into a `FlexibleOption`.
 - `toFullOption` (function): Converts an `Option` or `ValueOption` (i.e., `BaseOption`) into a `FullOption`. Full options are left unchanged.

@@ -2516,7 +2516,7 @@ const fields: Field[] = {
 }
 ```
 
-The `comparator` property can also be a function that takes a `Field` object as its parameter. Each field in the `fields` prop is evaluated by this function, which should return `true` to include the field in the list or `false` to exclude it. The equivalent configuration using a function for `comparator`:
+The `comparator` property can also be a function. Each field in the `fields` prop is evaluated by this function, which receives the candidate field, the current operator, and a meta object whose `fieldData` property is the field declaring the `comparator` (the rule's selected field). It should return `true` to include the candidate in the list or `false` to exclude it. The equivalent configuration using a function for `comparator`:
 
 ```tsx
 const fields: Field[] = {
@@ -2530,6 +2530,32 @@ const fields: Field[] = {
   { name: 'f4', label: 'f4', datatype: 'string' },
   { name: 'f5', label: 'f5', datatype: 'string' },
 }
+```
+
+#### Comparing by datatype category
+
+Exact `datatype` matching fails when types are equivalent but spelled differently (e.g. `"INTEGER"` and `"numeric(10,2)"`). The `datatypeCategoryComparator` function compares the normalized [datatype categories](/docs/typescript.md#data-types) of both fields instead:
+
+* `number` and `bigint` are compatible, as are `date` and `datetime` (`time` is only compatible with itself).
+* Multi-type fields (e.g. `datatype: "string|number"`) match when any category overlaps.
+* Fields with no determinable category are excluded.
+* For custom types, use `getDatatypeCategoryComparator({ datatypeMap })` instead (see [`datatypeCategoryComparator`](/docs/utils/misc.md#datatypecategorycomparator)).
+
+```tsx
+import { datatypeCategoryComparator } from 'react-querybuilder';
+
+const fields: Field[] = [
+  {
+    name: 'age',
+    label: 'Age',
+    datatype: 'INTEGER',
+    valueSources: ['value', 'field'],
+    comparator: datatypeCategoryComparator,
+  },
+  { name: 'yearsEmployed', label: 'Years Employed', datatype: 'numeric(10,2)' }, // listed
+  { name: 'employeeId', label: 'Employee ID', datatype: 'bigint' }, // listed
+  { name: 'lastName', label: 'Last Name', datatype: 'VARCHAR(50)' }, // excluded
+];
 ```
 
 
@@ -2578,7 +2604,7 @@ The date/time package provides `formatQuery` rule processors that handle date/ti
 
 ### Conditional use
 
-By default, the date/time rule processors only treat a rule value as a date (or series of dates) if the `field` configuration has a `datatype` property starting with "date", "datetime", "datetimeoffset", or "timestamp" (using the `defaultIsDateField` function). Otherwise, rule processing is passed to the default rule processor for that export format.
+By default, the date/time rule processors only treat a rule value as a date (or series of dates) if the `field` configuration has a `datatype` property starting with "date", "datetime", "datetimeoffset", or "timestamp" (using the `defaultIsDateField` function). Otherwise, rule processing is passed to the default rule processor for that export format. Any `datatype` that normalizes to the `date`/`datetime` [datatype categories](/docs/typescript.md#data-types) (e.g. `datetime2`, `smalldatetime`, `timestamptz`, `PgTimestamp`) also qualifies. Use `isDateField` (below) to customize.
 
 You can customize this algorithm by passing a `context.isDateField` configuration in the `formatQuery` options. `isDateField` can be a `boolean`, a function that returns a `boolean`, an object matching `field` properties, or an array of objects matching `field` properties.
 
@@ -5343,7 +5369,7 @@ Load operators that depend on the selected field type:
 const ValueSelectorAsync = (props: ValueSelectorProps) => {
   const asyncProps = useAsyncOptionList(props, {
     loadOptionList: async (value, { ruleOrGroup }) => {
-      const fieldType = props.fieldData.datatype; // custom field property
+      const fieldType = props.fieldData.datatype;
       return getOperatorsForType(fieldType);
     },
     getCacheKey: props => `operators-${props.fieldData.datatype}`,
@@ -5790,7 +5816,7 @@ Consider a scenario where you need a custom date picker for specific fields, whi
 
 Instead of duplicating the default `ValueEditor` code, you can leverage its existing functionality by spreading the same props (`<ValueEditor {...props} />`) and returning it when your custom behavior doesn't apply.
 
-This example creates a custom value editor using the [`react-datepicker`](https://reactdatepicker.com/) library. We'll start by configuring the `fields` array with standard `Field` objects, adding a custom `datatype` attribute to date fields that signals when to display the date picker.
+This example creates a custom value editor using the [`react-datepicker`](https://reactdatepicker.com/) library. We'll start by configuring the `fields` array with standard `Field` objects, adding a `datatype` property to date fields that signals when to display the date picker.
 
 ```ts
 // fields.ts
@@ -6121,7 +6147,7 @@ The following examples demonstrate database-specific queries to extract field in
 
 * Only `label` and at least one of `name` or `value` are required in the `fields` prop; other properties are optional.
 * `label` typically uses the same value as `name` and `value`, but consider using more user-friendly captions from other sources.
-* `datatype` (used by the [date/time package](/docs/datetime.md), though not an official `Field` property) copies the column's declared type directly.
+* `datatype` copies the column's declared type directly. Raw types like `"VARCHAR(50)"`, `"timestamp with time zone"`, or `"PgVarchar"` are [normalized to categories](/docs/typescript.md#data-types) by utilities like [`inferOperators`](/docs/tips/managing-operators.md#inferring-operators-from-datatype) and [`inferFieldDefaults`](/docs/utils/misc.md#inferfielddefaults) (use the `datatypeMap` option for custom types). The [date/time package](/docs/datetime.md) also uses `datatype`.
 * `inputType` gets normalized to HTML5 input types, or `null` when no reliable mapping exists.
 * These examples cast `defaultValue` as text; consider more sophisticated type conversions for your specific needs. `defaultValue` will be `null` when no default is configured.
 * [ORM](#orms) examples read the ORM's model metadata in TypeScript instead of querying the database.
@@ -6282,6 +6308,22 @@ const fields = Object.entries(getTableColumns(myTable)).map(([key, col]) => ({
   inputType: inputTypes[col.dataType] ?? null,
   ...(col.dataType === 'boolean' ? { valueEditorType: 'checkbox' } : {}),
 }));
+```
+
+Alternatively, [`inferFieldDefaults`](/docs/utils/misc.md#inferfielddefaults) can fill `inputType`/`valueEditorType` from `datatype` instead of manual mapping (note: `bigint` columns get no `inputType`, and `date`/`datetime` depend on the column type rather than the JS-level `dataType`):
+
+```ts
+import { inferFieldDefaults } from 'react-querybuilder';
+
+const fields = Object.entries(getTableColumns(myTable)).map(([key, col]) =>
+  inferFieldDefaults({
+    name: key,
+    value: key,
+    label: key,
+    datatype: col.columnType,
+    defaultValue: col.default ?? null,
+  })
+);
 ```
 
 `name` uses the TypeScript property key, which is what the ["drizzle" format](/docs/utils/export.md#drizzle-orm) expects. Use `col.name` instead for the database column name.
@@ -6642,7 +6684,75 @@ While the field `operators` property works well for individual field customizati
 
 `getOperators` receives two arguments: the field identifier and a meta object containing the complete field definition. Using this information, you can reference the `fields` array (or other data sources) to return appropriate operator lists with custom names and labels.
 
-This example demonstrates custom field properties for operator management. Each field includes a custom `datatype` property that determines operator selection and labeling. The `defaultOperators` export provides base functionality where needed. Note that when present, a field's `operators` property overrides `getOperators` results—observe how "Favorite Movie" shows only the "is" operator despite having `datatype: "text"`.
+This example demonstrates field properties for operator management. Each field includes a `datatype` property that determines operator selection and labeling. The `defaultOperators` export provides base functionality where needed. Note that when present, a field's `operators` property overrides `getOperators` results—observe how "Favorite Movie" shows only the "is" operator despite having `datatype: "text"`.
+
+## Inferring operators from `datatype`
+
+The `inferOperators` utility narrows an operator list to those compatible with a field's [datatype category](/docs/typescript.md#data-types). The category comes from `datatype` (raw database types like `"VARCHAR(50)"` or `"timestamp with time zone"` are normalized), falling back to hints from `inputType`, `valueEditorType`, `values`, `matchModes`, and `subproperties`. Fields with no hints are not filtered.
+
+```tsx
+import { getOperatorsByDatatype, inferOperators } from 'react-querybuilder';
+
+<QueryBuilder fields={fields} getOperators={(_f, { fieldData }) => inferOperators(fieldData)} />;
+
+// Equivalent; create outside render for a stable reference
+const getOperators = getOperatorsByDatatype();
+<QueryBuilder fields={fields} getOperators={getOperators} />;
+```
+
+Default operators by category (`defaultInferOperatorsMap`):
+
+| Category                                       | Operators                                                                                                     |
+| ---------------------------------------------- | ------------------------------------------------------------------------------------------------------------- |
+| `string`                                       | `=` `!=` `contains` `beginsWith` `endsWith` `doesNotContain` `doesNotBeginWith` `doesNotEndWith` `in` `notIn` |
+| `number`, `bigint`, `date`, `datetime`, `time` | `=` `!=` `<` `<=` `>` `>=` `between` `notBetween` `in` `notIn`                                                |
+| `boolean`                                      | `=` `!=`                                                                                                      |
+| `enum`                                         | `=` `!=` `in` `notIn`                                                                                         |
+| `array`, `object`, `unknown`                   | (not filtered)                                                                                                |
+
+Rules:
+
+* `null`/`notNull` are always retained.
+* Only operators named in `defaultOperators` are filtered. Custom operators pass through unless `dropUnknownOperators` is `true`.
+* Multi-type fields (`datatype: "string|number"`) get the union of each category's operators. If any member category is unfiltered (`array`/`object`/`unknown`), nothing is filtered.
+* Fields with `valueEditorType: "multiselect"` are limited to `in`/`notIn` (plus `null`/`notNull`), since the value is always a list. Fields with any category lacking a `map` entry (by default `array`/`object`/`unknown`) are still not filtered; an explicit entry (e.g. `map: { object: ["in"] }`) enables filtering for that category. Explicit `map` entries for the field's categories narrow the list ops further.
+* Option groups and the input order are preserved; empty groups are removed.
+* A field's own `operators` property still takes precedence over `getOperators`.
+
+Options:
+
+| Option                 | Description                                                                                                                          |
+| ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
+| `operators`            | Operator list to narrow (default `defaultOperators`)                                                                                 |
+| `map`                  | Category → operator names, merged over `defaultInferOperatorsMap` (each category is replaced, not merged)                            |
+| `datatypeMap`          | Custom raw datatype → category map (case-insensitive), e.g. `{ geography: "object" }`                                                |
+| `dropUnknownOperators` | Remove operators not in `defaultOperators` (default `false`)                                                                         |
+| `labels`               | Type-specific operator labels; `true` uses `defaultDatatypeOperatorLabels` (see below)                                               |
+| `warn`                 | Development-only `console.warn` when a field's `operators` property lists operators incompatible with its datatype (default `false`) |
+
+```ts
+const getOperators = getOperatorsByDatatype({
+  operators: myOperators,
+  map: { boolean: ['='] },
+  datatypeMap: { geography: 'object' },
+});
+```
+
+### Type-specific labels
+
+With `labels: true`, `defaultDatatypeOperatorLabels` replaces labels for `date`/`datetime`/`time` fields (`<` "before", `<=` "on or before", `>` "after", `>=` "on or after") and `boolean` fields (`=` "is", `!=` "is not"). Pass an object to provide your own (e.g. translated) labels; spread `defaultDatatypeOperatorLabels` to extend the defaults.
+
+```ts
+const getOperators = getOperatorsByDatatype({
+  labels: { ...defaultDatatypeOperatorLabels, string: { contains: 'includes' } },
+});
+```
+
+* Lookup order: exact category, then family (`bigint` → `number`, `datetime` → `date`).
+* Only labels still equal to the default label are replaced, so explicit custom labels win.
+* Multi-type fields keep their original labels.
+
+> **Tip:** To validate existing queries against the same rules (e.g. queries loaded from storage or parsed with `parseSQL`), use [`datatypeOperatorValidator`](/docs/utils/validation.md#datatype-validation).
 
 ## Regular expression operators
 
@@ -9558,7 +9668,8 @@ interface Field {
   placeholder?: string; // Placeholder text for the value editor when this field is selected
   validator?: RuleValidator; // Validation function for rules that specify this field
   valueSources?: ValueSources | ((operator: string) => ValueSources); // List of allowed value sources (must contain "value", "field", or both)
-  comparator?: string | ((f: Field, operator: string) => boolean); // Determines which (other) fields to include in the list when the rule's valueSource is "field"
+  comparator?: string | ((f: Field, operator: string, meta?: { fieldData: Field }) => boolean); // Determines which (other) fields to include in the list when the rule's valueSource is "field"
+  datatype?: unknown; // Data type of the field (string category or raw DB type like "VARCHAR(50)"; non-strings ignored by datatype utilities; see below)
   className?: Classname; // Assigned to rules where this field is selected
   separator?: ReactNode; // Rendered between multiple value editors, e.g. when the operator is "between" or "notBetween"
 }
@@ -9568,6 +9679,47 @@ Notes:
 
 * `Field` extends the `Option` interface, described [below](#option-lists).
 * More information on `valueEditorType` is available [below](#value-editor) and in the [`ValueEditor` component documentation](/docs/components/valueeditor.md).
+
+### Data types
+
+`datatype` is typed `unknown` for backward compatibility, but only string values are recognized (others are ignored). Utilities like [`inferOperators`](/docs/tips/managing-operators.md#inferring-operators-from-datatype), [`inferFieldDefaults`](/docs/utils/misc.md#inferfielddefaults), [`datatypeCategoryComparator`](/docs/components/valueeditor.md#filtering-the-field-list), and [`datatypeOperatorValidator`](/docs/utils/validation.md#datatype-validation) normalize it to a `FieldDatatypeCategory` via [`getDatatypeCategory`](/docs/utils/misc.md#getdatatypecategory):
+
+```ts
+type FieldDatatypeCategory =
+  | 'string'
+  | 'number'
+  | 'bigint'
+  | 'boolean'
+  | 'date'
+  | 'datetime'
+  | 'time'
+  | 'enum' // fixed value list
+  | 'array'
+  | 'object'
+  | 'unknown'; // no operator narrowing
+```
+
+Normalization rules (case-insensitive):
+
+* Parenthesized parts are stripped (`VARCHAR(50)` → `varchar`, `decimal(10,2)` → `decimal`).
+* `|` separates multiple types (`"string|number"` → `["string", "number"]`). Commas are *not* separators.
+* Drizzle-style class name prefixes (`Pg`, `MySql`, `SQLite`, `SingleStore`, `Gel`) are removed (`PgVarchar` → `varchar`).
+* Category names map to themselves.
+
+| Category   | Example raw types                                                                                                  |
+| ---------- | ------------------------------------------------------------------------------------------------------------------ |
+| `string`   | `text`, `varchar`, `nvarchar2`, `char`, `clob`, `uuid`, `uniqueidentifier`, `citext`                               |
+| `number`   | `int`, `integer`, `smallint`, `decimal`, `numeric`, `float`, `double precision`, `real`, `money`, `serial`         |
+| `bigint`   | `bigint`, `int8`, `int64`, `bigserial`                                                                             |
+| `boolean`  | `bool`, `boolean`                                                                                                  |
+| `date`     | `date`                                                                                                             |
+| `datetime` | `datetime`, `datetime2`, `datetimeoffset`, `smalldatetime`, `timestamp`, `timestamp with time zone`, `timestamptz` |
+| `time`     | `time`, `timetz`, `time with time zone`                                                                            |
+| `enum`     | `enum(a,b)`                                                                                                        |
+| `array`    | `array`, `text[]`, `set` (MySQL)                                                                                   |
+| `object`   | `json`, `jsonb`, `object`, `map`, `struct`, `record`                                                               |
+
+Unrecognized types (and fields without `datatype`) fall back to hints: `matchModes`/`subproperties` → `array`; `valueEditorType` `checkbox`/`switch` → `boolean`, `select`/`radio`/`multiselect` → `enum`; non-empty `values` → `enum`; `inputType` (`number`/`range` → `number`, `date`/`month`/`week` → `date`, `datetime-local` → `datetime`, `time` → `time`, `text`/`email`/`url`/`tel`/`search` → `string`). No hints → no category (`inferOperators` filters nothing; `datatypeCategoryComparator` excludes the field, whether candidate or the field declaring the `comparator`). Custom mappings can be provided with the `datatypeMap` option (e.g. `{ geography: "object" }`), checked (case-insensitively) against the whole value and each raw `|` member before the built-in rules.
 
 ## Rules and groups
 
@@ -10567,7 +10719,6 @@ firstName = "Steve" and lastName = "Vai"
 >
 > ```ts
 > const customRuleProcessor: RuleProcessor = (rule, options) => {
->   // `datatype` is a non-standard property of the field, used for this example only.
 >   // Replace this condition with your own logic to determine if the value is a date.
 >   if (options?.fieldData?.datatype === 'date') {
 >     return `$toMillis(${rule.field}) ${rule.operator} $toMillis("${rule.value}")`;
@@ -11731,7 +11882,7 @@ formatQuery(query, { ruleGroupProcessor: customRuleGroupProcessor });
 
 ## Validation
 
-Validation options (`validator` and `fields` – see [Validation](/docs/utils/validation.md)) only affect output when `format` is not "json" or "json_without_ids". If the `validator` function returns `false`, the `fallbackExpression` is returned. Otherwise, groups and rules marked as invalid (by the validation map from the `validator` function or field-based `validator` function) are ignored.
+Validation options (`validator` and `fields` – see [Validation](/docs/utils/validation.md)) only affect output when `format` is not "json" or "json_without_ids". If the `validator` function returns `false`, the `fallbackExpression` is returned. Otherwise, groups and rules marked as invalid (by the validation map from the `validator` function or field-based `validator` function) are ignored. To drop rules whose operators (or values) don't fit the field's `datatype`, use [`datatypeOperatorValidator`](/docs/utils/validation.md#datatype-validation).
 
 Example:
 
@@ -13383,6 +13534,94 @@ function convertQuery(query: RuleGroupTypeIC): RuleGroupType;
 
 `convertToIC` and `convertFromIC` perform the same function as `convertQuery` but only in the directions indicated by their names.
 
+### `toArray`
+
+```ts
+function toArray(
+  a: unknown,
+  options?: { retainEmptyStrings?: boolean; splitChar?: string }
+): unknown[];
+```
+
+Converts a value to an array. Strings are split by `splitChar` (default `","`; escaped separators are respected, see `splitBy`) and each element is trimmed. Arrays are returned with string elements trimmed. Empty (or whitespace-only) strings from splitting are removed unless `retainEmptyStrings` is `true`. Numbers are wrapped in an array; other values return an empty array.
+
+```ts
+toArray('a, b, ,c'); // ['a', 'b', 'c']
+toArray('a | b', { splitChar: '|' }); // ['a', 'b']
+toArray('a,,b', { retainEmptyStrings: true }); // ['a', '', 'b']
+```
+
+### `getDatatypeCategory`
+
+```ts
+function getDatatypeCategory(
+  fieldData: FullField,
+  options?: { datatypeMap?: DatatypeCategoryMap; hints?: boolean }
+): FieldDatatypeCategory | FieldDatatypeCategory[] | null;
+```
+
+Normalizes a field's `datatype` (and, unless `hints` is `false`, other properties like `inputType` and `valueEditorType`) to a [datatype category](/docs/typescript.md#data-types). Returns an array for multi-type fields (e.g. `"string|number"`) and `null` when the category can't be determined. `datatypeMap` maps custom raw types to categories (case-insensitive; checked before built-in rules).
+
+```ts
+getDatatypeCategory({ name: 'f', value: 'f', label: 'F', datatype: 'VARCHAR(50)' }); // 'string'
+getDatatypeCategory({ name: 'f', value: 'f', label: 'F', datatype: 'int|text' }); // ['number', 'string']
+getDatatypeCategory({ name: 'f', value: 'f', label: 'F', inputType: 'date' }); // 'date'
+getDatatypeCategory({ name: 'f', value: 'f', label: 'F', inputType: 'date' }, { hints: false }); // null
+```
+
+### `inferOperators`
+
+```ts
+function inferOperators(
+  fieldData: FullField,
+  options?: InferOperatorsOptions
+): FlexibleOptionList<FullOperator>;
+function getOperatorsByDatatype(options?: InferOperatorsOptions): GetOperatorsFunction;
+```
+
+Narrows an operator list based on the field's datatype category. `getOperatorsByDatatype` returns a ready-to-use [`getOperators`](/docs/components/querybuilder.md#getoperators) function. See [Inferring operators from `datatype`](/docs/tips/managing-operators.md#inferring-operators-from-datatype).
+
+### `inferFieldDefaults`
+
+```ts
+function inferFieldDefaults<F extends FullField>(
+  field: F,
+  options?: { datatypeMap?: DatatypeCategoryMap }
+): F;
+```
+
+Fills absent `inputType`/`valueEditorType` properties based on the field's `datatype` (the inverse of [`inferOperators`](#inferoperators)). Only `datatype` is considered (other properties are not used as hints), and explicit values are never overridden. Returns the same object if nothing was filled, otherwise a shallow copy.
+
+| Category                    | Fills                         |
+| --------------------------- | ----------------------------- |
+| `number`                    | `inputType: "number"`         |
+| `boolean`                   | `valueEditorType: "checkbox"` |
+| `date`                      | `inputType: "date"`           |
+| `datetime`                  | `inputType: "datetime-local"` |
+| `time`                      | `inputType: "time"`           |
+| `enum` (with `values`)      | `valueEditorType: "select"`   |
+| Others, multi-type, or none | (nothing)                     |
+
+```ts
+const fields = rawFields.map(f => inferFieldDefaults(f));
+```
+
+Since the [date/time package](/docs/datetime.md) keys off `inputType: "date" | "datetime-local"`, date pickers are enabled automatically for `date`/`datetime` fields.
+
+### `datatypeCategoryComparator`
+
+Ready-made `comparator` for field-to-field comparisons that lists only fields with a compatible datatype category. See [Filtering the field list](/docs/components/valueeditor.md#filtering-the-field-list).
+
+`getDatatypeCategoryComparator(options?)` creates an equivalent comparator with options. Currently the only option is `datatypeMap` (custom raw type → category; see [`getDatatypeCategory`](#getdatatypecategory)). Create it once, outside render:
+
+```ts
+const comparator = getDatatypeCategoryComparator({ datatypeMap: { geography: 'object' } });
+```
+
+### `datatypeOperatorValidator`
+
+Query validator that checks operators (and optionally values) against each field's datatype category. See [Datatype validation](/docs/utils/validation.md#datatype-validation).
+
 ## Number parsing
 
 HTML `<input>` controls store values as strings (even for `type="number"`), but your requirements may call for true numeric values. The [`parseNumbers`](/docs/components/querybuilder.md#parsenumbers) prop on the `QueryBuilder` component and the `formatQuery` function's [`parseNumbers`](/docs/utils/export.md#parse-numbers) option can be used to convert values to numeric types from the UI or during export, respectively. Both configuration options have the same valid values (per the type below) and behave similarly.
@@ -13448,6 +13687,7 @@ The default configuration objects are exported for convenience, including the fo
 
 * `defaultCombinators` (see [`combinators` prop](/docs/components/querybuilder.md#combinators))
 * `defaultOperators` (see [`operators` prop](/docs/components/querybuilder.md#operators))
+* `defaultInferOperatorsMap` and `defaultDatatypeOperatorLabels` (see [Inferring operators from `datatype`](/docs/tips/managing-operators.md#inferring-operators-from-datatype))
 * `defaultTranslations` (see [`translations` prop](/docs/components/querybuilder.md#translations))
 * `defaultValueProcessor` and variants for non-SQL formats (see [Export](/docs/utils/export.md) > [Value processor](/docs/utils/export.md#value-processor))
 * `defaultFields` (see [`fields` prop](/docs/components/querybuilder.md#fields))
@@ -14501,6 +14741,50 @@ const query: RuleGroupType = {
 const App = () => {
   return <QueryBuilder query={query} fields={fields} />;
 };
+```
+
+## Datatype validation
+
+`datatypeOperatorValidator` creates a query validator that marks rules invalid when their operator is incompatible with the field's [datatype category](/docs/typescript.md#data-types), using the same rules as [`inferOperators`](/docs/tips/managing-operators.md#inferring-operators-from-datatype). Rules for fields not found in `fields`, and rules without an `id`, are skipped (each rule needs a unique `id`; `QueryBuilder` assigns them automatically, but `formatQuery` does not).
+
+```tsx
+import type { Field, RuleGroupType } from 'react-querybuilder';
+import { datatypeOperatorValidator, formatQuery, QueryBuilder } from 'react-querybuilder';
+
+const fields: Field[] = [{ name: 'age', label: 'Age', datatype: 'int' }];
+
+const query: RuleGroupType = {
+  combinator: 'and',
+  rules: [
+    { id: 'r1', field: 'age', operator: '>', value: 21 },
+    { id: 'r2', field: 'age', operator: 'contains', value: '2' }, // invalid for `int`
+  ],
+};
+
+const validator = datatypeOperatorValidator({ fields, checkValues: true });
+
+<QueryBuilder fields={fields} validator={validator} />;
+
+// Invalid rules are dropped from export (rules without `id` are not validated)
+formatQuery(query, { format: 'sql', validator });
+// "(age > '21')"
+```
+
+Options: `fields` (required), `map`, `datatypeMap`, `dropUnknownOperators` (same as `inferOperators`), and `checkValues`. When `checkValues` is `true`, values are also checked against the category (`number`: numeric; `bigint`: integer; `boolean`: boolean or `"true"`/`"false"`; `date`/`datetime`: parseable date; `time`: `HH:mm[:ss]`). Each value of `between`/`notBetween`/`in`/`notIn` is checked, multi-type fields accept a value valid for any member category, and value checks are skipped for rules with `valueSource` "field" or "parameter" (operators are still checked).
+
+Invalid rules get a `ValidationResult` whose `reasons` are of type `DatatypeValidationReason`:
+
+```ts
+type DatatypeValidationReason =
+  | { code: 'datatype-operator-mismatch'; datatype: unknown; operator: string }
+  | { code: 'datatype-value-mismatch'; datatype: unknown; operator: string; value: unknown };
+```
+
+For a single field, `datatypeRuleValidator(fieldData, options)` returns a [field-level validator](#field-based-validation):
+
+```ts
+const age: FullField = { name: 'age', value: 'age', label: 'Age', datatype: 'int' };
+age.validator = datatypeRuleValidator(age, { checkValues: true });
 ```
 
 ## Effect on HTML
